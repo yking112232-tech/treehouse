@@ -415,7 +415,7 @@ const S = {
     {tag:'hidden', label:'Hidden from SkyFox', text:'hey whats ur snap? add me', where:'Block Builders · #general-chat', who:'newuser_77', why:'Asked to move to another app', t:'Today, 4:04 PM'},
     {tag:'private', label:'Blocked', text:'my school is Green•••••', where:'Homework Help · #science', who:'SkyFox', why:'School name', t:'Mon, 5:26 PM'}
   ],
-  reports:[], tip:0, tipHidden:false, warn:null, reactOpen:null, typing:null
+  reports:[], silly:true, tip:0, tipHidden:false, warn:null, reactOpen:null, typing:null
 };
 
 const keyOf = c => c.type === 'dm' ? 'dm:' + c.id : c.club + ':' + c.ch;
@@ -510,6 +510,7 @@ function renderChat(){
     <div class="chat-head">
       <button class="icon-btn menu-btn" data-act="drawer" aria-label="Open clubs">${ICON.menu}</button>
       <div class="grow"><h3>${title}</h3><p>${esc(topic)}</p></div>
+      <button class="btn" data-act="silly" aria-pressed="${S.silly}" title="Make the bots think in silly ways">${S.silly ? '🤪 Silly bots: on' : '🙂 Silly bots: off'}</button>
       ${c.type === 'club' ? `<button class="btn" data-act="rules">${ICON.book} Rules</button>` : ''}
     </div>
     ${tip}
@@ -593,21 +594,125 @@ function send(text, sticker){
   (M[keyOf(S.cur)] ||= []).push({id:uid++, u:'me', t:clock(), text, sticker:!!sticker, r:{}, my:{}});
   S.sentNow++;
   const inp = $('#msgInput'); if (inp && !sticker) inp.value = '';
-  renderMsgs(); fakeReply();
+  renderMsgs(); fakeReply(text, sticker);
 }
-let replyTimer;
-function fakeReply(){
-  clearTimeout(replyTimer);
-  const cur = {...S.cur}, k = keyOf(cur);
-  const who = cur.type === 'dm' ? cur.id : (() => { const c = club(cur.club); return c.members[Math.floor(Math.random() * c.members.length)]; })();
-  const pool = REPLIES[cur.type === 'dm' ? 'dm' : cur.club] || REPLIES.dm;
-  replyTimer = setTimeout(() => {
+/* ---------- Bot brain: bots read your message and answer it ---------- */
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const USED = {};
+function fresh(key, arr){
+  const used = USED[key] || (USED[key] = new Set());
+  let opts = arr.filter(x => !used.has(x));
+  if (!opts.length){ used.clear(); opts = arr; }
+  const x = pick(opts); used.add(x); return x;
+}
+const PERSONA = {
+  panda:{hi:'heyyy SkyFox!!', me:'I\'m PixelPanda! I love slides, ziplines and jokes', laugh:['hahaha','LOL','😂 stop it'], ask:['what are you building today?','slides or ziplines, which is better?','wanna hear a joke?','what\'s your favourite mob?']},
+  whale:{hi:'hi SkyFox!', me:'I\'m BlueWhale22, I like rockets and redstone', laugh:['lol','haha good one'], ask:['can you teach me something?','what\'s the coolest thing you ever built?','do you like space?','how old is your minecraft world?']},
+  nova:{hi:'hello SkyFox! 🌟', me:'I\'m StarNova! I like helping people and drawing', laugh:['haha','hehe that\'s funny'], ask:['need help with anything?','what colour would you make it?','did you do the art challenge?']},
+  bean:{hi:'yo SkyFox', me:'I\'m JellyBean, I build giant castles', laugh:['lolol','bahaha'], ask:['have you ever built a castle?','how big is your world?','do you like frogs? I love frogs']},
+  koi:{hi:'hi hi SkyFox!', me:'I\'m CraftyKoi, I like crafts and fish', laugh:['hehe','haha yes'], ask:['do you have a pet?','what\'s your favourite animal?','do you like making crafts?']},
+  maya:{hi:'Hi SkyFox, welcome!', me:'I\'m Coach Maya, the moderator here. I help keep the club kind and safe', laugh:['Ha, love it'], ask:['What are you building this week?']},
+  raj:{hi:'Hello SkyFox!', me:'I\'m Mr. Raj, the moderator for this club', laugh:['Ha, good one'], ask:['What are you curious about today?']},
+  lin:{hi:'Hi SkyFox!', me:'I\'m Ms. Lin, I look after the art clubs', laugh:['Ha, lovely'], ask:['What are you drawing today?']}
+};
+const JOKES = [
+  'why did the creeper cross the road? to get to the other SSSSside 💥',
+  'what do you call a sleeping dinosaur? a dino-SNORE 😴',
+  'why was the maths book sad? it had too many problems',
+  'how do you throw a party in space? you PLANET 🪐',
+  'why did the cat sit on the computer? to keep an eye on the mouse 🐭',
+  'what\'s orange and sounds like a parrot? a carrot 🥕'
+];
+const FAV = {colour:'green, like leaves', color:'green, like leaves', animal:'axolotls!! they smile', food:'pizza, obviously', game:'minecraft duh', planet:'Saturn because of the rings', mob:'the axolotl', block:'glowstone', subject:'art', sport:'swimming', song:'anything with drums', book:'The Wild Robot', number:'7', pet:'a hamster named Nugget'};
+const TOPICS = [
+  {re:/\b(joke|jokes|funny)\b/, lines:JOKES},
+  {re:/\b(thank|thanks|thx|ty)\b/, lines:['you\'re welcome!','anytime :)','no problem SkyFox!','happy to help!']},
+  {re:/\b(sad|upset|lonely|bad day|crying|scared|worried)\b/, lines:['oh no, I hope you feel better soon 💛','sending you a big virtual hug','talking to a grown-up you trust always helps me when I feel like that','you can tell Coach Maya too, she\'s really nice']},
+  {re:/\b(bored|boring|nothing to do)\b/, lines:['build challenge! make a house in 10 minutes, GO','riddle time: what has keys but can\'t open locks?','try drawing your dream pet and post it in Art Corner!','let\'s have a race to find a diamond']},
+  {re:/\bpiano\b/, lines:['YES a piano! you got the riddle 🎹']},
+  {re:/\b(minecraft|build|built|building|house|castle|treehouse|redstone|piston|diamond|creeper|mob|zombie|village|nether|ender|block|sword|pickaxe)/, lines:['ooh what blocks are you using?','I love building with dark oak and lanterns','put a secret door behind a bookshelf!','post a screenshot in #build-showcase when it\'s done!','creepers ALWAYS blow up my builds lol','diamonds are so hard to find, I only have 3','add a slide! everything is better with a slide','you should make a moat with a drawbridge']},
+  {re:/\b(draw|drew|drawing|paint|painting|colou?r|art|sketch|crayon|marker)/, lines:['ooh can you show us in #doodles?','I\'m drawing a dragon right now','tip: mix blue and yellow for a leafy green','I love drawing animals the most','what are you going to draw next?']},
+  {re:/\b(space|planet|rocket|moon|mars|star|sun|jupiter|saturn|astronaut|alien|galaxy)/, lines:['did you know a day on Venus is longer than its year?!','I want to go to Mars one day','Saturn could float in a giant bathtub','the Sun is SO big, a million Earths could fit inside','do you think aliens are real? 👽']},
+  {re:/\b(math|maths|sum|homework|fraction|test|exam|spelling|times table|school)/, lines:['homework is hard sometimes but you got this!','try breaking it into little steps','ask in #maths, Mr. Raj gives really good hints','I have a spelling test on Friday too']},
+  {re:/\b(dog|cat|pet|puppy|kitten|hamster|fish|bunny|rabbit|bird|parrot|turtle|axolotl)/, lines:['awww what\'s its name?','I LOVE animals','my hamster Nugget eats so many seeds','you should join Pet Pals!','cats are so fluffy']},
+  {re:/\b(game|games|play|playing|roblox|mario|pokemon|lego)/, lines:['ooh I love that!','wanna play together later? (with a grown-up\'s OK)','what\'s your favourite level?','I\'m so bad at that game lol']},
+  {re:/\b(food|pizza|ice cream|hungry|lunch|dinner|snack|cake|cookie|chocolate)/, lines:['now I\'m hungry lol','pizza is the best food ever','I had pancakes today!','cookies > everything']},
+  {re:/\b(music|song|sing|guitar|drum|ukulele|dance)/, lines:['what song?','I\'m learning the ukulele!','you should join Music Makers!']},
+  {re:/\b(happy|excited|yay|awesome|amazing|best)\b/, lines:['yay!! 🎉','woohoo!','that\'s awesome!!','love that energy']}
+];
+const STOP = new Set('the a an and or but i you me my your it is are was were to of in on for with that this so just what how why can do does did have has im its it we they he she be at like really very too also okay ok yeah yes no not am will would could should about there their them then than when who whats thats dont cant gonna wanna lets from into out up down all some any more most much many get got make made know think want going been being here'.split(' '));
+const SHORT = /^(nice|cool|same|ok|okay|k|lol|lmao|haha+|yes|yeah|yep|no|nope|wow|oh|hm+|true|sure|fine|good|great|idk|bruh|what|hi|hey)[!.?]*$/;
+
+function mathAnswer(t){
+  const m = t.match(/(\d+)\s*([+\-x*×\/÷]|plus|minus|times)\s*(\d+)/);
+  if (!m) return null;
+  const a = +m[1], b = +m[3], op = m[2];
+  const r = /[+]|plus/.test(op) ? a + b : /-|minus/.test(op) ? a - b : /[x*×]|times/.test(op) ? a * b : b ? Math.round(a / b * 100) / 100 : null;
+  return r === null ? 'you can\'t divide by zero, that breaks the universe 🤯' : `${a} ${op} ${b} = ${r}! I did it in my head 🧠`;
+}
+function topicWord(t){
+  const words = t.toLowerCase().replace(/[^a-z\s']/g, ' ').split(/\s+/).filter(w => w.length >= 4 && !STOP.has(w.replace(/'/g, '')));
+  return words.sort((a, b) => b.length - a.length)[0];
+}
+function brain(text, who, k){
+  const t = text.toLowerCase().trim(), p = PERSONA[who] || PERSONA.panda, fk = k + ':' + who;
+  if (/^(hi|hello|hey|hiya|yo|sup|good (morning|afternoon|evening))\b/.test(t)) return p.hi + ' ' + fresh(fk + 'ask', p.ask);
+  if (/how are (you|u)|how r u|how('s| is) it going/.test(t)) return fresh(fk + 'hru', ['I\'m good! just building stuff. how are you?','great!! I finished my homework early','kinda tired but happy. you?']);
+  if (/(who are (you|u)|what('?s| is) (your|ur) name|about (you|yourself))/.test(t)) return p.me + '!';
+  const fav = t.match(/fav(ou?rite)? (\w+)/);
+  if (fav && /\?|what|whats/.test(t)) return `my favourite ${fav[2]} is ${FAV[fav[2]] || 'hmm... too hard to pick'}! what's yours?`;
+  const math = mathAnswer(t); if (math) return math;
+  for (const tp of TOPICS) if (tp.re.test(t)) return fresh(fk + tp.re.source, tp.lines);
+  if (/^(haha|lol|lmao|😂)/.test(t)) return pick(p.laugh);
+  if (SHORT.test(t) || t.length < 5) return fresh(fk + 'ask', p.ask);
+  const w = topicWord(t);
+  if (/\?$|^(what|how|why|can|do|does|is|are|will|should|which|where|when)\b/.test(t))
+    return fresh(fk + 'q', ['good question! what do you think?', 'hmm I\'m not sure, maybe ask Coach Maya?', w ? `I don't know much about ${w}, can you teach me?` : 'ooh I wanna know too', 'I think so!']);
+  if (w) return fresh(fk + 'w', [`wait, ${w}? tell me more!`, `${w} sounds so cool`, `I\'ve never tried ${w} before`, `haha I love ${w}`, `ooh ${w}! ${pick(p.ask)}`]);
+  return fresh(fk + 'ask', p.ask);
+}
+/* ---------- Silly mode: bots think in funny, upside-down ways ---------- */
+const SILLY_FACTS = ['clouds are just sky sheep that forgot to come down 🐑','the moon is a giant nightlight someone forgot to switch off','socks go missing because they go on holiday','bananas are just yellow boomerangs that gave up 🍌','fish are basically wet birds','spaghetti is long on purpose so it can hug your fork','my goldfish is the mayor of our house','Tuesday is secretly the fastest day of the week','if you whisper "pickle" to a creeper it gets shy (I tested this zero times)','trees are just really slow dancers 🌳'];
+function silly(text, who, k){
+  const t = text.toLowerCase(), w = topicWord(t), fk = k + ':' + who + ':silly';
+  const m = t.match(/(\d+)\s*([+\-x*×\/÷]|plus|minus|times)\s*(\d+)/);
+  if (m) return fresh(fk + 'm', [`${m[1]} ${m[2]} ${m[3]} = ${pick(['BANANA','purple','two llamas','a million and 3','7. it\'s always 7'])}. I checked with my cat 🐱`, `easy, it's ${+m[1] + +m[3] + 1000}. I counted my toes twice`, `that equals a pizza 🍕 everything equals pizza if you believe`]);
+  if (/^(hi|hello|hey|yo|sup)\b/.test(t)) return fresh(fk + 'h', ['hello! I just woke up. it\'s 3 o\'clock in banana time','HI! did you know my shoe is named Gerald?','greetings, earthling 👽 (just kidding I\'m a panda. or am I)']);
+  if (/\?$/.test(t)) return fresh(fk + 'q', ['yes. no. maybe. BANANA 🍌','the answer is inside a sandwich somewhere 🥪','only a duck would know that 🦆 go ask a duck','I asked my pet rock and it said nothing, so... yes?']);
+  if (w) return fresh(fk + 'w', [`${w}?? I think ${w} is secretly a potato wearing a hat 🥔🎩`, `my grandma says ${w} only works on Tuesdays`, `I tried ${w} once and my shoes started singing 🎶`, `${w} is my second favourite thing after ${pick(['socks','clouds','spaghetti','the number 4'])}`, `wait, is ${w} a type of cheese? 🧀`, `${w} sounds like something a dragon eats for breakfast 🐉`, `if you say ${w} backwards three times a llama appears`]);
+  return fresh(fk + 'f', [`fun fact: ${pick(SILLY_FACTS)}`, 'I agree, because penguins can\'t fly and neither can my homework', 'hold on, my sandwich is calling me 📞🥪', 'that\'s exactly what my pet rock said', 'I have no idea but I\'m going to nod like I do']);
+}
+const SERIOUS = /\b(sad|upset|lonely|scared|worried|crying|bad day|hurt|help|rules?|report|mod|moderator)\b/i;
+const CHIME = ['same!!','haha yes','+1','that\'s what I was gonna say','lol'];
+let replyTimer = [];
+function say(k, who, text, delay, then){
+  replyTimer.push(setTimeout(() => {
     if (keyOf(S.cur) === k) $('#typing').textContent = `${P[who].name} is typing…`;
-    replyTimer = setTimeout(() => {
-      M[k].push({id:uid++, u:who, t:clock(), text:pool[Math.floor(Math.random() * pool.length)], r:{}, my:{}});
+    replyTimer.push(setTimeout(() => {
+      M[k].push({id:uid++, u:who, t:clock(), text, r:{}, my:{}});
       if (keyOf(S.cur) === k){ $('#typing').textContent = ''; renderMsgs(); }
-    }, 1400);
-  }, 700);
+      then && then();
+    }, 700 + Math.min(2200, text.length * 35)));
+  }, delay));
+}
+function fakeReply(text, sticker){
+  replyTimer.forEach(clearTimeout); replyTimer = [];
+  const cur = {...S.cur}, k = keyOf(cur);
+  const mine = M[k][M[k].length - 1];
+  let who;
+  if (cur.type === 'dm') who = cur.id;
+  else {
+    const c = club(cur.club), mention = Object.keys(P).find(id => c.members.includes(id) && new RegExp('@?' + P[id].name, 'i').test(text));
+    who = mention || (/\b(rule|rules|mod|moderator|help me|report)\b/i.test(text) ? c.mod : pick(c.members));
+  }
+  if (Math.random() < .45 && mine){ const e = pick(['❤️','⭐','👍','😂']); mine.r[e] = (mine.r[e] || 0) + 1; renderMsgs(); }
+  const answer = sticker ? pick(['haha ' + text, text + text, 'love that sticker', pick(PERSONA[who]?.laugh || ['lol'])]) : (S.silly && Math.random() < .65 && !SERIOUS.test(text) ? silly(text, who, k) : brain(text, who, k));
+  say(k, who, answer, 600, () => {
+    if (cur.type === 'club' && Math.random() < .35){
+      const other = pick(club(cur.club).members.filter(m => m !== who));
+      if (other) say(k, other, Math.random() < .5 ? pick(S.silly ? [...CHIME,'BANANA 🍌','I also agree with the banana','my pet rock agrees'] : CHIME) : '@' + P[who].name + ' ' + pick(CHIME), 900);
+    }
+  });
 }
 function findMsg(id){ for (const k in M){ const m = M[k].find(x => x.id === +id); if (m) return m; } }
 function closeDrawer(){ $('#app').classList.remove('drawer'); }
@@ -729,6 +834,7 @@ document.addEventListener('click', e => {
     case 'leave': { club(id).joined = false; toast(`You left ${club(id).name}`); const f = CLUBS.find(c => c.joined && c.allowed); go(f ? {type:'club', club:f.id, ch:f.chs[0][0]} : {type:'dm', id:S.friends[0]}); break; }
     case 'request-club': closeModal(); toast('Idea sent to your grown-up and the Treehouse team'); break;
     case 'rules': rulesModal(); break;
+    case 'silly': S.silly = !S.silly; renderChat(); toast(S.silly ? 'Silly bots are ON. Expect bananas.' : 'Silly bots are off. Back to normal.'); break;
     case 'modal-close': closeModal(); break;
     case 'tip-next': S.tip = (S.tip + 1) % TIPS.length; if (S.tip === 0) S.tipHidden = true; renderChat(); break;
     case 'react-open': S.reactOpen = S.reactOpen === +id ? null : +id; renderMsgs(); break;
@@ -778,5 +884,6 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#modal
 
 renderAll();
 </script>
+
 </body>
 </html>
