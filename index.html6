@@ -1,0 +1,1275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Treehouse: a safe, moderated chat app for kids aged 8-12.">
+<title>Treehouse Kids Chat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Lexend:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#E6F1EB; --surface:#FFFFFF; --surface-2:#F3F8F5; --rail:#1D3A38; --rail-2:#27504C; --rail-ink:#CFE6DE;
+  --ink:#15302D; --muted:#58716D; --line:#D4E3DC;
+  --leaf:#1F8F57; --leaf-ink:#FFFFFF; --leaf-soft:#DAF1E3;
+  --sun:#E9A70F; --sun-soft:#FFF1C9; --coral:#CF4430; --coral-soft:#FCE2DC;
+  --grape:#5A4BD3; --grape-soft:#EAE7FC; --sky:#2A7FC4;
+  --shadow:0 1px 2px rgba(21,48,45,.06),0 10px 28px rgba(21,48,45,.09);
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1817; --surface:#15231F; --surface-2:#1B2C29; --rail:#08110F; --rail-2:#1B3431; --rail-ink:#A9C9BF;
+    --ink:#E4F1EC; --muted:#8FAAA4; --line:#28403B;
+    --leaf:#46C07F; --leaf-ink:#07170F; --leaf-soft:#153626;
+    --sun:#FFC845; --sun-soft:#3A2F14; --coral:#FF7C66; --coral-soft:#3C201B;
+    --grape:#A094FF; --grape-soft:#25214A; --sky:#6AB6F2;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.35);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1817; --surface:#15231F; --surface-2:#1B2C29; --rail:#08110F; --rail-2:#1B3431; --rail-ink:#A9C9BF;
+  --ink:#E4F1EC; --muted:#8FAAA4; --line:#28403B;
+  --leaf:#46C07F; --leaf-ink:#07170F; --leaf-soft:#153626;
+  --sun:#FFC845; --sun-soft:#3A2F14; --coral:#FF7C66; --coral-soft:#3C201B;
+  --grape:#A094FF; --grape-soft:#25214A; --sky:#6AB6F2;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.35);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;padding:16px;background:var(--bg);color:var(--ink);font:15px/1.5 var(--body)}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+svg{flex:none}
+.shell{height:100%;display:flex;flex-direction:column;gap:12px;min-height:0}
+
+/* Top bar */
+.topbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:8px;font:800 26px/1 var(--display);letter-spacing:-.01em;margin-right:auto}
+.brand small{font:500 12px/1 var(--body);color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-left:4px;padding:4px 8px;border:1px solid var(--line);border-radius:99px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;font-size:13px;font-weight:500}
+.pill.safe{background:var(--leaf-soft);color:var(--leaf)}
+.timeleft{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.bar{width:90px;height:8px;border-radius:9px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--leaf);border-radius:9px}
+.seg{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:3px}
+.seg button{border:0;background:none;padding:7px 12px;border-radius:9px;font-weight:500;font-size:14px;display:flex;gap:6px;align-items:center;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--rail);color:#fff}
+
+/* App grid */
+.app{flex:1;min-height:0;display:grid;grid-template-columns:76px 250px minmax(0,1fr) 230px;background:var(--surface);border-radius:20px;overflow:hidden;box-shadow:var(--shadow);position:relative}
+.rail{background:var(--rail);display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px 0;overflow-y:auto}
+.rail .sep{width:32px;height:2px;background:var(--rail-2);border-radius:2px}
+.club-btn{width:50px;height:50px;border-radius:18px;border:0;display:grid;place-items:center;font-size:24px;background:var(--rail-2);position:relative;transition:border-radius .15s}
+.club-btn:hover{border-radius:14px}
+.club-btn.on{border-radius:14px;box-shadow:0 0 0 3px var(--sun)}
+.club-btn.add{background:transparent;border:2px dashed var(--rail-ink);color:var(--rail-ink);font-size:26px}
+.club-btn .dot{position:absolute;right:-2px;top:-2px;min-width:18px;height:18px;border-radius:9px;background:var(--coral);color:#fff;font:600 11px/18px var(--body);padding:0 4px;border:2px solid var(--rail)}
+.side{background:var(--surface-2);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.side-head{padding:16px 16px 12px;border-bottom:1px solid var(--line)}
+.side-head h2{margin:0;font:700 21px/1.15 var(--display)}
+.modline{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin-top:4px}
+.side-body{flex:1;overflow-y:auto;padding:12px 10px;display:flex;flex-direction:column;gap:16px}
+.group-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0 8px 4px}
+.nav-list{display:flex;flex-direction:column;gap:2px}
+.nav-item{display:flex;align-items:center;gap:10px;border:0;background:none;text-align:left;padding:8px 10px;border-radius:10px;color:var(--muted);font-weight:500;width:100%}
+.nav-item:hover{background:var(--line);color:var(--ink)}
+.nav-item.on{background:var(--leaf-soft);color:var(--ink)}
+.nav-item .hash{font:700 18px/1 var(--display);color:var(--leaf);width:16px;text-align:center}
+.nav-item .mini{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:16px}
+.pending{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:var(--sun-soft);font-size:13px}
+.pending b{display:block;font-weight:600}
+.pending span{color:var(--muted);font-size:12px}
+.side-foot{border-top:1px solid var(--line);padding:10px 12px;display:flex;align-items:center;gap:10px}
+.me-av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:20px;background:var(--sun-soft)}
+.side-foot b{display:block;font-size:14px}
+.side-foot span{font-size:12px;color:var(--leaf)}
+
+/* Chat */
+.chat{display:flex;flex-direction:column;min-width:0;min-height:0}
+.chat-head{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--line);min-height:62px}
+.chat-head h3{margin:0;font:700 20px/1.2 var(--display);display:flex;align-items:center;gap:6px}
+.chat-head h3 .hash{color:var(--leaf)}
+.chat-head p{margin:0;color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-head .grow{flex:1;min-width:0;display:flex;align-items:baseline;gap:12px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:7px 12px;font-weight:500;font-size:13px;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--leaf)}
+.btn.primary{background:var(--leaf);color:var(--leaf-ink);border-color:var(--leaf)}
+.btn.danger{background:var(--coral);color:#fff;border-color:var(--coral)}
+.btn.ghost{border-color:transparent;background:none}
+.menu-btn{display:none}
+.tip{margin:12px 18px 0;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:var(--grape-soft);font-size:13.5px}
+.tip b{color:var(--grape);font-weight:600}
+.tip .x{margin-left:auto}
+.msgs{flex:1;overflow-y:auto;padding:14px 18px 8px;display:flex;flex-direction:column;gap:4px}
+.day{align-self:center;font-size:12px;color:var(--muted);padding:4px 10px;border-radius:99px;background:var(--surface-2);margin:6px 0}
+.msg{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:12px;padding:8px 10px;border-radius:12px;position:relative}
+.msg:hover{background:var(--surface-2)}
+.av{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-size:22px}
+.meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.meta b{font-weight:600}
+.meta time{font-size:12px;color:var(--muted)}
+.badge{font-size:11px;font-weight:600;padding:2px 7px;border-radius:6px;display:inline-flex;gap:4px;align-items:center}
+.badge.mod{background:var(--leaf-soft);color:var(--leaf)}
+.badge.you{background:var(--sun-soft);color:var(--ink)}
+.text{overflow-wrap:anywhere}
+.text .mention{background:var(--grape-soft);color:var(--grape);border-radius:5px;padding:0 3px;font-weight:500}
+.sticker{font-size:44px;line-height:1.1}
+.reacts{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.rx{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:1px 9px;font-size:14px;display:inline-flex;gap:4px;align-items:center}
+.rx span{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.rx.on{border-color:var(--leaf);background:var(--leaf-soft)}
+.picker{display:flex;gap:4px;margin-top:6px;padding:4px;border-radius:12px;background:var(--surface);border:1px solid var(--line);width:max-content;box-shadow:var(--shadow)}
+.picker button{border:0;background:none;font-size:20px;padding:4px 6px;border-radius:8px}
+.picker button:hover{background:var(--surface-2)}
+.actions{display:flex;gap:4px;opacity:0;align-self:start;transition:opacity .12s}
+.msg:hover .actions,.msg:focus-within .actions{opacity:1}
+.icon-btn{border:1px solid var(--line);background:var(--surface);border-radius:9px;width:32px;height:32px;display:grid;place-items:center;color:var(--muted)}
+.icon-btn:hover{color:var(--ink);border-color:var(--muted)}
+.icon-btn.flag:hover{color:var(--coral);border-color:var(--coral)}
+.hidden-msg{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:4px 10px;padding:10px 12px;border-radius:12px;border:1px dashed var(--line);background:var(--surface-2);font-size:13.5px;color:var(--muted)}
+.hidden-msg svg{color:var(--leaf)}
+.hidden-msg > span{flex:1 1 220px}
+.hidden-msg.reported svg{color:var(--coral)}
+.link{border:0;background:none;color:var(--grape);font-weight:600;padding:0;text-decoration:underline;text-underline-offset:2px}
+.sys{align-self:center;text-align:center;font-size:13px;color:var(--muted);padding:6px 12px;max-width:520px}
+.typing{font-size:12.5px;color:var(--muted);padding:0 20px;height:20px}
+
+.composer{padding:6px 18px 14px}
+.warn{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;padding:12px 14px;border-radius:14px;margin-bottom:10px;background:var(--coral-soft);border:1px solid color-mix(in srgb,var(--coral) 35%,transparent)}
+.warn.kind{background:var(--sun-soft);border-color:color-mix(in srgb,var(--sun) 50%,transparent)}
+.warn .big{font-size:26px;line-height:1}
+.warn h4{margin:0 0 2px;font:700 17px/1.25 var(--display)}
+.warn p{margin:0;font-size:13.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:5px 12px;font-size:13px}
+.chip:hover{border-color:var(--leaf);color:var(--leaf)}
+.compose-row{display:flex;align-items:center;gap:8px;background:var(--surface-2);border:1.5px solid var(--line);border-radius:16px;padding:6px 6px 6px 8px}
+.compose-row:focus-within{border-color:var(--leaf)}
+.compose-row input{flex:1;min-width:0;border:0;background:none;padding:8px 4px;outline:none;font-size:15px}
+.stk{display:flex;gap:2px}
+.stk button{border:0;background:none;font-size:20px;padding:4px;border-radius:8px}
+.stk button:hover{background:var(--line)}
+.send{border:0;background:var(--leaf);color:var(--leaf-ink);font-weight:600;border-radius:12px;padding:9px 16px}
+.hint{display:flex;align-items:center;gap:6px;margin:8px 4px 0;font-size:12px;color:var(--muted)}
+.quiet{display:flex;align-items:center;gap:14px;padding:16px;border-radius:16px;background:var(--grape-soft)}
+.quiet h4{margin:0;font:700 18px/1.2 var(--display)}
+.quiet p{margin:2px 0 0;font-size:13.5px;color:var(--muted)}
+.quiet .moon{font-size:34px}
+
+/* Members */
+.members{border-left:1px solid var(--line);background:var(--surface-2);overflow-y:auto;padding:16px 12px;display:flex;flex-direction:column;gap:14px}
+.member{display:flex;align-items:center;gap:10px;padding:5px 6px;font-size:14px}
+.member .mini{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:17px;position:relative}
+.member .mini::after{content:"";position:absolute;right:-1px;bottom:-1px;width:10px;height:10px;border-radius:50%;background:var(--leaf);border:2px solid var(--surface-2)}
+.member small{display:block;color:var(--muted);font-size:11.5px}
+.safety-card{padding:12px;border-radius:14px;background:var(--leaf-soft);font-size:12.5px;display:flex;flex-direction:column;gap:6px}
+.safety-card b{font:700 16px/1.2 var(--display)}
+.safety-card ul{margin:0;padding-left:18px}
+
+/* Parent dashboard */
+.parent{flex:1;min-height:0;overflow-y:auto;background:var(--surface);border-radius:20px;box-shadow:var(--shadow)}
+.p-wrap{max-width:1080px;margin:0 auto;padding:24px 22px 40px;display:flex;flex-direction:column;gap:20px}
+.p-head{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.p-head h1{margin:0;font:800 32px/1.1 var(--display);text-wrap:balance}
+.p-head p{margin:4px 0 0;color:var(--muted)}
+.p-head .btn{margin-left:auto}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.stat{padding:14px 16px;border-radius:16px;background:var(--surface-2);border:1px solid var(--line);display:flex;flex-direction:column;gap:4px}
+.stat .lbl{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.stat .num{font:800 34px/1 var(--display);font-variant-numeric:tabular-nums}
+.stat .num small{font:500 14px var(--body);color:var(--muted)}
+.stat .sub{font-size:12.5px;color:var(--muted)}
+.stat .bar{width:100%}
+.p-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;align-items:start}
+.p-col{display:flex;flex-direction:column;gap:16px}
+.card{border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.card h2{margin:0;font:700 20px/1.2 var(--display);display:flex;align-items:center;gap:8px}
+.card h2 .count{font:600 12px/1 var(--body);background:var(--coral);color:#fff;border-radius:99px;padding:3px 8px}
+.card .desc{margin:-6px 0 0;font-size:13px;color:var(--muted)}
+.row{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.row:first-of-type{border-top:0}
+.row .grow{flex:1;min-width:0}
+.row b{font-weight:600}
+.row .sub{font-size:12.5px;color:var(--muted)}
+.row .acts{display:flex;gap:6px}
+.log{display:flex;flex-direction:column}
+.log-item{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:13.5px}
+.log-item:first-child{border-top:0}
+.tag{font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;white-space:nowrap;height:max-content}
+.tag.private{background:var(--coral-soft);color:var(--coral)}
+.tag.rude{background:var(--sun-soft);color:var(--ink)}
+.tag.mean{background:var(--sun-soft);color:var(--ink)}
+.tag.hidden{background:var(--grape-soft);color:var(--grape)}
+.tag.report{background:var(--coral);color:#fff}
+.log-item q{font-style:italic;color:var(--muted);quotes:"“" "”"}
+.log-item .sub{font-size:12px;color:var(--muted)}
+.empty{font-size:13.5px;color:var(--muted);padding:8px 0}
+.switch{width:46px;height:26px;border-radius:99px;border:0;background:var(--line);position:relative;flex:none;transition:background .15s}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .15s}
+.switch[aria-checked="true"]{background:var(--leaf)}
+.switch[aria-checked="true"]::after{transform:translateX(20px)}
+select{border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:6px 8px}
+
+/* Modal & toast */
+.modal-wrap{position:fixed;inset:0;background:rgba(8,20,18,.45);display:grid;place-items:center;padding:16px;z-index:50}
+.modal{background:var(--surface);border-radius:20px;box-shadow:var(--shadow);width:min(480px,100%);max-height:calc(100% - 32px);overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:14px}
+.modal h2{margin:0;font:800 24px/1.15 var(--display);text-wrap:balance}
+.modal p{margin:0;color:var(--muted);font-size:14px}
+.modal ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px}
+.modal ol b{display:block}
+.opt{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;cursor:pointer}
+.opt:has(input:checked){border-color:var(--leaf);background:var(--leaf-soft)}
+.opt input{accent-color:var(--leaf)}
+.modal-foot{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.pin{display:flex;gap:8px;justify-content:center}
+.pin input{width:52px;height:60px;text-align:center;font:700 26px var(--display);border:1.5px solid var(--line);border-radius:12px;background:var(--surface-2)}
+.pin input:focus{border-color:var(--leaf);outline:none}
+.err{color:var(--coral);font-size:13px;text-align:center;min-height:18px}
+.club-card{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:14px}
+.club-card .ic{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;font-size:26px}
+.club-card b{font:700 17px/1.2 var(--display)}
+.club-card .sub{font-size:12.5px;color:var(--muted)}
+.field{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500}
+.field input{border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--surface-2)}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--rail);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;box-shadow:var(--shadow);z-index:60;max-width:calc(100% - 32px)}
+.scrim{display:none}
+
+/* Treehouse Island */
+.island{flex:1;display:flex;flex-direction:column;min-height:0}
+.coins{display:inline-flex;align-items:center;gap:6px;background:var(--sun-soft);color:var(--ink);padding:6px 12px;border-radius:99px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.scene{position:relative;flex:1;min-height:260px;overflow:hidden;cursor:pointer;margin:12px 18px 0;border-radius:18px;user-select:none;-webkit-user-select:none;touch-action:manipulation;isolation:isolate}
+.island .chat-head h3{white-space:nowrap}
+.scene.plaza{background:linear-gradient(#BFE6FF 0 34%,#9ED98F 34% 100%)}
+.scene.beach{background:linear-gradient(#BDE8FF 0 26%,#3FA9D9 26% 44%,#F4DDA0 44% 100%)}
+.scene.snow{background:linear-gradient(#CFE0F2 0 34%,#F4F8FC 34% 100%)}
+.decor{position:absolute;transform:translate(-50%,-100%);pointer-events:none;line-height:1}
+.ava{position:absolute;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center;transition-property:left,top;transition-timing-function:linear;pointer-events:none}
+
+.ava .nm{font-size:11px;font-weight:600;background:rgba(255,255,255,.92);color:#15302D;padding:1px 6px;border-radius:6px;margin-top:2px;white-space:nowrap}
+.ava.me .nm{background:#FFC845}
+.bubble{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#fff;color:#15302D;padding:6px 10px;border-radius:12px;font-size:13px;line-height:1.35;width:max-content;max-width:190px;box-shadow:0 2px 8px rgba(0,0,0,.18);text-align:center}
+.bubble::after{content:"";position:absolute;top:100%;left:50%;margin-left:-6px;border:6px solid transparent;border-top-color:#fff}
+.isl-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 18px 0}
+.isl-note{font-size:12px;color:var(--muted);margin:6px 18px 0}
+.zone-item .lock{margin-left:auto;font-size:12px;color:var(--muted);display:inline-flex;gap:4px;align-items:center}
+.game-wrap{position:fixed;inset:0;background:rgba(8,20,18,.55);display:grid;place-items:center;padding:16px;z-index:55}
+.game{background:var(--surface);border-radius:20px;box-shadow:var(--shadow);padding:16px;width:min(400px,100%);display:flex;flex-direction:column;gap:10px}
+.game h2{margin:0;font:800 24px/1.1 var(--display)}
+.game .hud{display:flex;justify-content:space-between;font-weight:600;font-variant-numeric:tabular-nums}
+.game canvas{width:100%;max-width:calc((100vh - 220px) * .75);align-self:center;aspect-ratio:3/4;border-radius:14px;background:linear-gradient(#BFE6FF,#E6F6DF);touch-action:none;cursor:none}
+.game p{margin:0;font-size:13.5px;color:var(--muted)}
+
+
+.ava .body{display:block;line-height:0;transition:transform .15s}
+.ava.walking .body svg{animation:waddle .35s ease-in-out infinite alternate}
+@keyframes waddle{from{transform:rotate(-7deg)}to{transform:rotate(7deg)}}
+.swatches{display:flex;flex-wrap:wrap;gap:8px}
+.sw{width:34px;height:34px;border-radius:50%;border:2px solid var(--line)}
+.sw.on{box-shadow:0 0 0 3px var(--leaf);border-color:var(--surface)}
+.hat-opt{display:flex;flex-direction:column;align-items:center;gap:2px;border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:4px 6px 6px;font-size:11px;min-width:64px}
+.hat-opt.on{border-color:var(--leaf);background:var(--leaf-soft)}
+.hat-opt[data-locked]{opacity:.55}
+.sw{position:relative}
+.price{position:absolute;right:-8px;bottom:-8px;font-size:10px;font-weight:600;background:var(--sun-soft);color:var(--ink);border-radius:8px;padding:0 4px;border:1px solid var(--line);white-space:nowrap}
+.hat-opt .price{position:static;margin-top:2px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.member .mini svg,.me-av svg{display:block}
+@media (prefers-reduced-motion:reduce){.ava.walking .body svg{animation:none}}
+@media (max-width:1150px){
+  .app{grid-template-columns:76px 240px minmax(0,1fr)}
+  .members{display:none}
+}
+@media (max-width:980px){
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .p-grid{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:820px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .rail,.side{position:absolute;top:0;bottom:0;z-index:20;transition:transform .2s}
+  .rail{left:0;width:76px;transform:translateX(-100%)}
+  .side{left:76px;width:250px;transform:translateX(calc(-100% - 76px))}
+  .app.drawer .rail,.app.drawer .side{transform:none}
+  .app.drawer .scrim{display:block;position:absolute;inset:0;background:rgba(8,20,18,.4);z-index:10}
+  .menu-btn{display:grid}
+  .chat-head p{display:none}
+  .pill.safe span,.timeleft span{display:none}
+  .stk{display:none}
+  .actions{opacity:1}
+}
+@media (max-width:520px){
+  .brand small{display:none}
+  .seg button{padding:7px 9px;font-size:13px}
+  .stats{grid-template-columns:minmax(0,1fr)}
+  .p-head h1{font-size:26px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <header class="topbar">
+    <div class="brand">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="12" r="11" fill="#2FA86A"/><circle cx="9" cy="15" r="6" fill="#23925A"/><circle cx="25" cy="15" r="6" fill="#23925A"/><rect x="15" y="18" width="4" height="15" rx="1.5" fill="#8A5A34"/><rect x="10" y="12" width="14" height="9" rx="1.5" fill="#F5B521"/><path d="M8.5 13 17 6.5 25.5 13Z" fill="#CF4430"/><rect x="15.3" y="15" width="3.4" height="6" rx="1" fill="#1D3A38"/></svg>
+      Treehouse <small>Prototype</small>
+    </div>
+    <span class="pill safe" title="Safety filter on"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg><span>Safety filter on</span></span>
+    <div class="timeleft" id="timeLeft"></div>
+    <div class="seg" role="group" aria-label="Switch view">
+      <button id="vKid" data-act="view-kid" aria-pressed="true">Kid view</button>
+      <button id="vParent" data-act="view-parent" aria-pressed="false"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Grown-up</button>
+    </div>
+  </header>
+
+  <div class="app" id="app">
+    <nav class="rail" id="rail" aria-label="Clubs"></nav>
+    <aside class="side" id="side"></aside>
+    <main class="chat" id="chat"></main>
+    <aside class="members" id="members"></aside>
+    <div class="scrim" data-act="drawer"></div>
+  </div>
+
+  <div class="parent" id="parent" hidden></div>
+</div>
+
+<div class="modal-wrap" id="modalWrap" hidden><div class="modal" id="modal" role="dialog" aria-modal="true"></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clock = () => new Date().toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+let uid = 1000;
+
+const ICON = {
+  shield:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>',
+  flag:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></svg>',
+  smile:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5a4.5 4.5 0 0 0 7 0"/><path d="M9 9.5h.01M15 9.5h.01"/></svg>',
+  lock:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+  menu:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
+  x:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+  chat:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>',
+  book:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/></svg>',
+  check:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>',
+  bulb:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg>'
+};
+
+const P = {
+  me:{name:'SkyFox', av:'🦊', c:'#F28A3B'},
+  panda:{name:'PixelPanda', av:'🐼', c:'#5A4BD3'},
+  whale:{name:'BlueWhale22', av:'🐳', c:'#2A7FC4'},
+  nova:{name:'StarNova', av:'🌟', c:'#E9A70F'},
+  koi:{name:'CraftyKoi', av:'🐟', c:'#CF4430'},
+  bean:{name:'JellyBean', av:'🐸', c:'#1F8F57'},
+  maya:{name:'Coach Maya', av:'🧑‍🏫', c:'#1F8F57', mod:true},
+  raj:{name:'Mr. Raj', av:'🔭', c:'#2A7FC4', mod:true},
+  lin:{name:'Ms. Lin', av:'🖌️', c:'#5A4BD3', mod:true},
+  waddles:{name:'Waddles', av:'🐧', c:'#2A7FC4'},
+  pebble:{name:'Pebble', av:'🐧', c:'#5A4BD3'},
+  stranger:{name:'newuser_77', av:'👤', c:'#888'}
+};
+
+const CLUBS = [
+  {id:'mc', name:'Block Builders', icon:'⛏️', c:'#1F8F57', mod:'maya', joined:true, allowed:true, about:'Minecraft builds, redstone tricks and weekly challenges',
+    chs:[['general-chat','Say hi and talk about your worlds'],['build-showcase','Show off what you built this week'],['redstone-help','Ask for help with circuits and doors']], members:['panda','whale','nova','koi','bean']},
+  {id:'art', name:'Art Corner', icon:'🎨', c:'#5A4BD3', mod:'lin', joined:true, allowed:true, about:'Drawing, painting and crafts. Friendly feedback only',
+    chs:[['doodles','Share anything you drew today'],['weekly-challenge','This week: draw your dream pet'],['colour-tips','Ask how to mix and shade']], members:['nova','bean','panda']},
+  {id:'hw', name:'Homework Help', icon:'📚', c:'#2A7FC4', mod:'raj', joined:true, allowed:true, about:'Maths, science and reading. Hints, not answers',
+    chs:[['maths','Stuck on a sum? Ask for a hint'],['science','Experiments and big questions'],['reading-club','This month: The Wild Robot']], members:['whale','nova']},
+  {id:'space', name:'Space Explorers', icon:'🚀', c:'#E9A70F', mod:'raj', joined:true, allowed:true, about:'Planets, rockets and cool space facts',
+    chs:[['general','Talk about space'],['rocket-facts','Share a fact you learned']], members:['whale','panda','bean']},
+  {id:'pets', name:'Pet Pals', icon:'🐾', c:'#CF4430', mod:'lin', joined:false, allowed:true, about:'Share stories about your pets and favourite animals',
+    chs:[['pet-stories','Tell us about your pet'],['animal-facts','Weird and wonderful animals']], members:['koi','bean']},
+  {id:'music', name:'Music Makers', icon:'🎵', c:'#5A4BD3', mod:'maya', joined:false, allowed:true, about:'Songs you love, instruments you play, beats you make',
+    chs:[['general','Talk music'],['practice-log','What did you practise today?']], members:['nova','koi']},
+  {id:'games', name:'Game Night', icon:'🎲', c:'#2A7FC4', mod:'maya', joined:false, allowed:false, about:'Board games, puzzles and riddles',
+    chs:[['riddles','Post a riddle, guess a riddle']], members:['panda']}
+];
+
+const M = {};
+const seed = (key, arr) => M[key] = arr.map(m => ({id: uid++, r:{}, my:{}, ...m}));
+seed('mc:general-chat', [
+  {u:'maya', t:'3:58 PM', text:'Good afternoon builders! This week\'s challenge: build a treehouse with a secret room. Post screenshots in #build-showcase by Friday.', r:{'🎉':6,'⭐':3}},
+  {u:'panda', t:'4:01 PM', text:'ooh I\'m doing a treehouse with a slide that goes into a lake!', r:{'😂':2,'❤️':1}},
+  {u:'whale', t:'4:03 PM', text:'can someone explain how to make a hidden door with pistons?'},
+  {u:'stranger', t:'4:04 PM', text:'[hidden]', hidden:'move the chat to another app (Snapchat)'},
+  {u:'nova', t:'4:05 PM', text:'@BlueWhale22 I can help! you need 2 sticky pistons, some redstone dust and a lever', r:{'👍':4}},
+  {u:'whale', t:'4:06 PM', text:'thank you @StarNova!!', r:{'❤️':2}}
+]);
+seed('mc:build-showcase', [
+  {u:'bean', t:'Yesterday', text:'I built a castle with a moat and a drawbridge. took me 3 days', r:{'⭐':8,'🎉':3}},
+  {u:'koi', t:'Yesterday', text:'wow the towers look amazing'}
+]);
+seed('art:doodles', [
+  {u:'lin', t:'2:30 PM', text:'Welcome to Doodles! Remember: we only give kind, helpful feedback here.'},
+  {u:'nova', t:'2:41 PM', text:'I drew a cat astronaut today', r:{'❤️':5}},
+  {u:'bean', t:'2:44 PM', text:'@StarNova it has a tiny fishbowl helmet haha', r:{'😂':3}}
+]);
+seed('hw:maths', [
+  {u:'raj', t:'5:10 PM', text:'Reminder: in Homework Help we give hints, not answers. It helps your brain grow!'},
+  {u:'whale', t:'5:12 PM', text:'how do you do 3/4 + 1/8?'},
+  {u:'nova', t:'5:14 PM', text:'hint: make the bottom numbers the same first. 3/4 is the same as 6/8', r:{'👍':3}}
+]);
+seed('space:general', [
+  {u:'raj', t:'11:00 AM', text:'Fact of the day: a day on Venus is longer than its whole year!', r:{'🤯':4}},
+  {u:'panda', t:'11:04 AM', text:'wait WHAT'}
+]);
+seed('dm:panda', [
+  {u:'panda', t:'3:30 PM', text:'are you doing the treehouse challenge?'},
+  {u:'me', t:'3:31 PM', text:'yes! mine is going to have a rope bridge'},
+  {u:'panda', t:'3:31 PM', text:'we should connect them with a zipline', r:{'🎉':1}}
+]);
+seed('dm:nova', [{u:'nova', t:'Yesterday', text:'thanks for helping me with the fractions'}]);
+seed('dm:whale', [{u:'whale', t:'Monday', text:'did you see the rocket launch video Mr. Raj posted?'}]);
+
+const REPLIES = {
+  mc:['that\'s so cool!','can you post a screenshot in #build-showcase?','I\'m putting a secret room behind a bookshelf','nice idea!!','wanna build together after homework?'],
+  art:['I love that idea!','I\'m drawing a dragon today','try mixing blue and yellow for a leafy green','ooh share it when you\'re done'],
+  hw:['good question! try breaking it into smaller steps','I was stuck on that too','Mr. Raj explained this yesterday, scroll up!'],
+  space:['did you know Saturn could float in a giant bathtub?','rockets are the best','I want to be an astronaut when I grow up'],
+  pets:['aww I love that','my dog does that too!'],
+  music:['what song is it?','I\'m learning the ukulele'],
+  dm:['haha yes!','wanna build together later?','ok see you in Block Builders!','that\'s awesome','lol same']
+};
+
+const TIPS = [
+  ['Try the safety filter:', 'type a phone number like 98765 43210, a word like "stupid", or "what\'s your snap?" and press Send.'],
+  ['Kindness tip:', 'say something nice about someone\'s build today. It makes the whole club better.'],
+  ['Stay safe:', 'moderators are grown-ups checked by Treehouse. They will never ask for your address or photos.'],
+  ['Feeling weird about a message?', 'press the flag to report it. You won\'t get in trouble for reporting.']
+];
+
+const S = {
+  view:'kid', unlocked:false,
+  cur:{type:'club', club:'mc', ch:'general-chat'},
+  lastCh:{},
+  friends:['panda','nova','whale'],
+  requests:[{id:'koi', from:'Met in Block Builders', when:'Today, 4:20 PM'}],
+  settings:{quiet:true, quietPreview:false, limit:60, dmFriends:true, pics:false, strict:true},
+  minutes:34, weekMsgs:86, sentNow:0,
+  filterLog:[
+    {tag:'hidden', label:'Hidden from SkyFox', text:'hey whats ur snap? add me', where:'Block Builders · #general-chat', who:'newuser_77', why:'Asked to move to another app', t:'Today, 4:04 PM'},
+    {tag:'private', label:'Blocked', text:'my school is Green•••••', where:'Homework Help · #science', who:'SkyFox', why:'School name', t:'Mon, 5:26 PM'}
+  ],
+  reports:[], silly:false, look:{color:'#FF8A3D', hat:'beanie', scarf:'#2A7FC4'}, best:0, coins:20, owned:new Set(['hat:none','hat:beanie','color:#1E2A3A','color:#2A7FC4','color:#FF8A3D','scarf:none','scarf:#2A7FC4']), zone:'plaza', open:{plaza:true}, tip:0, tipHidden:false, warn:null, reactOpen:null, typing:null
+};
+
+const keyOf = c => c.type === 'island' ? 'island' : c.type === 'dm' ? 'dm:' + c.id : c.club + ':' + c.ch;
+const club = id => CLUBS.find(c => c.id === id);
+const tint = (hex, pct) => `color-mix(in srgb, ${hex} ${pct}%, var(--surface))`;
+
+/* ---------- Safety filter ---------- */
+const MEAN = ['stupid','idiot','dumb','loser','shut up','hate you','ugly','you suck','trash','noob','weirdo','nobody likes you','go away'];
+const PRIVATE = [
+  {re:/(\d[\s.\-()]?){7,}/, kind:'a phone number', short:'Phone number'},
+  {re:/[\w.+-]+@[\w-]+\.[a-z]{2,}/i, kind:'an email address', short:'Email address'},
+  {re:/\b\d+[a-z]?,?\s+\w+(\s\w+)?\s+(street|st|road|rd|avenue|ave|lane|ln|drive|dr|nagar|colony|marg|sector)\b/i, kind:'a home address', short:'Home address'},
+  {re:/\b(where do (you|u) live|what'?s (your|ur) address|my address is|i live (at|on|near)|which school|what school|my school is|i go to .* school)\b/i, kind:'where someone lives or goes to school', short:'Location / school'},
+  {re:/\b(password|passcode|pin is)\b/i, kind:'a password', short:'Password'},
+  {re:/\b(snap(chat)?|insta(gram)?|whats ?app|tiktok|discord|telegram|kik|facetime)\b/i, kind:'another app (chats stay on Treehouse)', short:'Other app'},
+  {re:/(https?:\/\/|www\.)\S+/i, kind:'a web link', short:'Link'},
+  {re:/\b(send|share) (me )?(a |your )?(pic|pics|photo|photos|selfie|picture)\b/i, kind:'a request for photos', short:'Photo request'},
+  {re:/\b(meet (up|me)|how old are (you|u)|what'?s your real name|my real name is)\b/i, kind:'private info about you', short:'Personal info'}
+];
+const RUDE = ['hell','damn','crap','wtf','omg','stfu','shit','fuck','bitch','ass','frick','heck no'];
+const whyOf = r => r.type === 'mean' ? 'Unkind word' : r.type === 'rude' ? 'Rude word' : r.short;
+function checkMsg(text){
+  const n = text.toLowerCase().replace(/0/g,'o').replace(/1/g,'i').replace(/3/g,'e').replace(/@(?=\w)/g,'a').replace(/\$/g,'s');
+  for (const p of PRIVATE) if (p.re.test(text) || (p.short !== 'Phone number' && p.re.test(n))) return {type:'private', ...p};
+  for (const w of RUDE) if (new RegExp('\\b' + w + '\\b').test(n)) return {type:'rude', word:w};
+  for (const w of MEAN) if (new RegExp('\\b' + w.replace(' ', '\\s+') + '\\b').test(n)) return {type:'mean', word:w};
+  return null;
+}
+const mask = t => t.length <= 12 ? t.slice(0,3) + '•••••' : t.slice(0, 12) + '•••••';
+
+/* ---------- Rendering: kid view ---------- */
+function renderTop(){
+  const left = Math.max(0, S.settings.limit - S.minutes);
+  $('#timeLeft').innerHTML = `<div class="bar" title="${S.minutes} of ${S.settings.limit} minutes used"><i style="width:${Math.min(100, S.minutes / S.settings.limit * 100)}%"></i></div><span>${left} min left today</span>`;
+  $('#vKid').setAttribute('aria-pressed', S.view === 'kid');
+  $('#vParent').setAttribute('aria-pressed', S.view === 'parent');
+  $('#app').hidden = S.view !== 'kid';
+  $('#parent').hidden = S.view !== 'parent';
+}
+function renderRail(){
+  const isHome = S.cur.type === 'dm' || S.cur.type === 'home';
+  const pend = S.requests.length;
+  let h = `<button class="club-btn ${isHome ? 'on' : ''}" data-act="home" title="Friends" aria-label="Friends" style="background:var(--sun-soft)">🏡${pend ? `<span class="dot">${pend}</span>` : ''}</button>
+    <button class="club-btn ${S.cur.type === 'island' ? 'on' : ''}" data-act="island" title="Treehouse Island" aria-label="Treehouse Island" style="background:#BDE8FF">🏝️</button><div class="sep"></div>`;
+  CLUBS.filter(c => c.joined && c.allowed).forEach(c => {
+    h += `<button class="club-btn ${S.cur.club === c.id ? 'on' : ''}" data-act="club" data-id="${c.id}" title="${esc(c.name)}" aria-label="${esc(c.name)}" style="background:${tint(c.c, 30)}">${c.icon}</button>`;
+  });
+  h += `<button class="club-btn add" data-act="browse" title="Find a club" aria-label="Find a club">+</button>`;
+  $('#rail').innerHTML = h;
+}
+function renderSide(){
+  if (S.cur.type === 'island') return islandSide();
+  const foot = `<div class="side-foot"><div class="me-av">${P.me.av}</div><div><b>${P.me.name}</b><span>● Online · Safe mode</span></div></div>`;
+  if (S.cur.type === 'club'){
+    const c = club(S.cur.club), mod = P[c.mod];
+    $('#side').innerHTML = `<div class="side-head"><h2>${esc(c.name)}</h2><div class="modline">${ICON.shield} Moderated by ${esc(mod.name)}</div></div>
+      <div class="side-body"><div><div class="group-label">Rooms</div><div class="nav-list">
+      ${c.chs.map(([id]) => `<button class="nav-item ${S.cur.ch === id ? 'on' : ''}" data-act="channel" data-id="${id}"><span class="hash">#</span>${id}</button>`).join('')}
+      </div></div>
+      <div><div class="group-label">Club</div><div class="nav-list">
+        <button class="nav-item" data-act="rules">${ICON.book} Club rules</button>
+        <button class="nav-item" data-act="leave" data-id="${c.id}">${ICON.x} Leave club</button>
+      </div></div></div>${foot}`;
+  } else {
+    $('#side').innerHTML = `<div class="side-head"><h2>Friends</h2><div class="modline">${ICON.shield} Only grown-up approved friends</div></div>
+      <div class="side-body"><div><div class="group-label">Messages</div><div class="nav-list">
+      ${S.friends.map(f => `<button class="nav-item ${S.cur.id === f ? 'on' : ''}" data-act="dm" data-id="${f}"><span class="mini" style="background:${tint(P[f].c, 25)}">${P[f].av}</span>${P[f].name}</button>`).join('')}
+      </div></div>
+      <div><div class="group-label">Waiting for a grown-up</div><div class="nav-list" style="gap:6px">
+      ${S.requests.length ? S.requests.map(r => `<div class="pending"><span class="mini" style="font-size:20px">${P[r.id]?.av || '🙂'}</span><div><b>${esc(P[r.id]?.name || r.id)}</b><span>Needs a grown-up to say OK</span></div></div>`).join('') : '<div class="empty" style="padding:0 8px">No requests waiting.</div>'}
+      </div></div>
+      <div class="nav-list"><button class="btn" data-act="add-friend" style="justify-content:center">+ Add a friend</button></div>
+      </div>${foot}`;
+  }
+}
+function renderMembers(){
+  if (S.cur.type === 'island') return islandMembers();
+  if (S.cur.type !== 'club'){
+    $('#members').innerHTML = `<div class="safety-card"><b>How friends work</b><ul><li>You can only message friends a grown-up approved.</li><li>Pictures are turned off in messages.</li><li>Grown-ups can see who you talk to, not a copy of every chat.</li></ul></div>`;
+    return;
+  }
+  const c = club(S.cur.club), mod = P[c.mod];
+  $('#members').innerHTML = `
+    <div><div class="group-label">Moderator</div><div class="member"><span class="mini" style="background:${tint(mod.c, 25)}">${mod.av}</span><div>${esc(mod.name)}<small>Grown-up · ID checked</small></div></div></div>
+    <div><div class="group-label">Online · ${c.members.length + 1}</div>
+      <div class="member"><span class="mini" style="background:${tint(P.me.c, 25)}">${P.me.av}</span><div>${P.me.name}<small>You</small></div></div>
+      ${c.members.map(m => `<div class="member"><span class="mini" style="background:${tint(P[m].c, 25)}">${P[m].av}</span><div>${P[m].name}${S.friends.includes(m) ? '<small>Friend</small>' : ''}</div></div>`).join('')}
+    </div>
+    <div class="safety-card"><b>Safe club</b><ul><li>Ages 8–12 only</li><li>Every message is checked</li><li>No pictures, links or other apps</li></ul></div>`;
+}
+function renderChat(){
+  if (S.cur.type === 'island') return renderIsland();
+  stopIsland();
+  const c = S.cur;
+  let title, topic;
+  if (c.type === 'club'){ const cl = club(c.club); title = `<span class="hash">#</span>${c.ch}`; topic = cl.chs.find(x => x[0] === c.ch)[1]; }
+  else { title = `<span style="font-size:20px">${P[c.id].av}</span> ${P[c.id].name}`; topic = 'Private chat with an approved friend'; }
+  const tip = S.tipHidden ? '' : `<div class="tip" role="status"><span style="color:var(--grape)">${ICON.bulb}</span><div><b>${TIPS[S.tip][0]}</b> ${TIPS[S.tip][1]}</div><button class="icon-btn x" data-act="tip-next" aria-label="Next tip">${ICON.x}</button></div>`;
+  $('#chat').innerHTML = `
+    <div class="chat-head">
+      <button class="icon-btn menu-btn" data-act="drawer" aria-label="Open clubs">${ICON.menu}</button>
+      <div class="grow"><h3>${title}</h3><p>${esc(topic)}</p></div>
+      <button class="btn" data-act="silly" aria-pressed="${S.silly}" title="Make the bots think in silly ways">${S.silly ? '🤪 Silly bots: on' : '🙂 Silly bots: off'}</button>
+      ${c.type === 'club' ? `<button class="btn" data-act="rules">${ICON.book} Rules</button>` : ''}
+    </div>
+    ${tip}
+    <div class="msgs" id="msgs" aria-live="polite"></div>
+    <div class="typing" id="typing"></div>
+    <div class="composer" id="composer"></div>`;
+  renderMsgs(); renderComposer();
+}
+function textHTML(t){
+  return esc(t).replace(/@(\w+)/g, '<span class="mention">@$1</span>').replace(/(^|\s)#([\w-]+)/g, '$1<span class="mention">#$2</span>');
+}
+function msgHTML(m){
+  if (m.sys) return `<div class="sys">${esc(m.text)}</div>`;
+  const p = P[m.u];
+  if (m.hidden) return `<div class="hidden-msg">${ICON.shield}<span>Treehouse Safety hid a message from <b>${esc(p.name)}</b> because it asked you to ${esc(m.hidden)}.</span><button class="link" data-act="why" data-id="${m.id}">Why?</button></div>`;
+  if (m.reported) return `<div class="hidden-msg reported">${ICON.flag}<span>You reported a message from <b>${esc(p.name)}</b>. ${esc(P[m.modId || 'maya'].name)} will look at it. Thanks for speaking up.</span></div>`;
+  const rx = Object.entries(m.r).filter(([,n]) => n > 0).map(([e, n]) => `<button class="rx ${m.my[e] ? 'on' : ''}" data-act="react" data-id="${m.id}" data-e="${e}">${e}<span>${n}</span></button>`).join('');
+  const picker = S.reactOpen === m.id ? `<div class="picker">${['❤️','⭐','👍','😂','🎉'].map(e => `<button data-act="react" data-id="${m.id}" data-e="${e}" aria-label="React ${e}">${e}</button>`).join('')}</div>` : '';
+  const badge = p.mod ? `<span class="badge mod">${ICON.check} Moderator</span>` : m.u === 'me' ? '<span class="badge you">You</span>' : '';
+  return `<div class="msg"><div class="av" style="background:${tint(p.c, 25)}">${p.av}</div>
+    <div><div class="meta"><b>${esc(p.name)}</b>${badge}<time>${m.t}</time></div>
+    <div class="${m.sticker ? 'sticker' : 'text'}">${m.sticker ? m.text : textHTML(m.text)}</div>
+    ${rx || picker ? `<div class="reacts">${rx}</div>${picker}` : ''}</div>
+    <div class="actions"><button class="icon-btn" data-act="react-open" data-id="${m.id}" aria-label="Add a reaction" title="Add a kind reaction">${ICON.smile}</button>
+    ${m.u !== 'me' ? `<button class="icon-btn flag" data-act="report" data-id="${m.id}" aria-label="Report message" title="Report">${ICON.flag}</button>` : ''}</div></div>`;
+}
+function renderMsgs(){
+  const list = M[keyOf(S.cur)] || (M[keyOf(S.cur)] = []);
+  let h = '<div class="day">Today</div>';
+  if (!list.length){
+    const c = S.cur.type === 'club' ? club(S.cur.club) : null;
+    h += `<div class="sys">${c ? `This is the start of #${S.cur.ch}. Say hi and remember the club rules.` : 'Say hi to your friend!'}</div>`;
+  }
+  h += list.map(msgHTML).join('');
+  const el = $('#msgs'); el.innerHTML = h; el.scrollTop = el.scrollHeight;
+}
+function renderComposer(){
+  const box = $('#composer');
+  if (S.settings.quietPreview){
+    box.innerHTML = `<div class="quiet"><span class="moon">🌙</span><div><h4>Treehouse is resting for the night</h4><p>Quiet hours are on from 8:30 PM to 7:00 AM. You can read messages, and chatting opens again in the morning.</p></div></div>`;
+    return;
+  }
+  const where = S.cur.type === 'club' ? '#' + S.cur.ch : P[S.cur.id].name;
+  box.innerHTML = `<div id="warnBox"></div>
+    <form class="compose-row" id="composeForm" autocomplete="off">
+      <input id="msgInput" maxlength="300" placeholder="Message ${esc(where)}" aria-label="Type a message">
+      <div class="stk">${['👍','❤️','🎉','😂','🦊'].map(s => `<button type="button" data-act="sticker" data-e="${s}" aria-label="Send ${s} sticker">${s}</button>`).join('')}</div>
+      <button class="send" type="submit">Send</button>
+    </form>
+    <p class="hint">${ICON.lock} Every message is checked for mean words and private info before anyone sees it.</p>`;
+  $('#composeForm').addEventListener('submit', e => { e.preventDefault(); send($('#msgInput').value); });
+  renderWarn();
+}
+function renderWarn(){
+  const box = $('#warnBox'); if (!box) return;
+  const w = S.warn;
+  if (!w){ box.innerHTML = ''; return; }
+  if (w.type === 'rude'){
+    box.innerHTML = `<div class="warn kind"><span class="big">🙊</span><div><h4>Oops, that word isn't allowed</h4><p>Treehouse is for kids, so words like "${esc(w.word)}" get blocked. It wasn't sent. Try one of these instead:</p>
+      <div class="chips">${['what the heck?','oh no!','huh??','that\'s so weird lol'].map(t => `<button class="chip" data-act="suggest" data-t="${esc(t)}">${esc(t)}</button>`).join('')}</div></div>
+      <button class="icon-btn" data-act="warn-close" aria-label="Close">${ICON.x}</button></div>`;
+    return;
+  }
+  if (w.type === 'private'){
+    box.innerHTML = `<div class="warn"><span class="big">🔒</span><div><h4>Whoa, that stays private!</h4><p>Your message looks like it has ${esc(w.kind)}. On Treehouse we never share where we live, our phone numbers, school names or other apps. It wasn't sent.</p></div><button class="icon-btn" data-act="warn-close" aria-label="Close">${ICON.x}</button></div>`;
+  } else {
+    box.innerHTML = `<div class="warn kind"><span class="big">💛</span><div><h4>That might hurt someone's feelings</h4><p>The word "${esc(w.word)}" isn't allowed here, so it wasn't sent. Want to try one of these instead?</p>
+      <div class="chips">${['I don\'t agree, but that\'s okay','Can we try a different idea?','I need a break','Let\'s ask the moderator'].map(t => `<button class="chip" data-act="suggest" data-t="${esc(t)}">${esc(t)}</button>`).join('')}</div></div>
+      <button class="icon-btn" data-act="warn-close" aria-label="Close">${ICON.x}</button></div>`;
+  }
+}
+function renderKid(){ renderRail(); renderSide(); renderChat(); renderMembers(); }
+
+/* ---------- Actions ---------- */
+function where(){ return S.cur.type === 'club' ? `${club(S.cur.club).name} · #${S.cur.ch}` : `Private chat · ${P[S.cur.id].name}`; }
+function send(text, sticker){
+  text = (text || '').trim(); if (!text) return;
+  if (!sticker){
+    const r = checkMsg(text);
+    if (r){
+      S.warn = r;
+      S.filterLog.unshift({tag:r.type, label:'Blocked', text:mask(text), where:where(), who:'SkyFox', why:whyOf(r), t:'Today, ' + clock()});
+      renderWarn(); return;
+    }
+  }
+  S.warn = null; renderWarn();
+  (M[keyOf(S.cur)] ||= []).push({id:uid++, u:'me', t:clock(), text, sticker:!!sticker, r:{}, my:{}});
+  S.sentNow++;
+  const inp = $('#msgInput'); if (inp && !sticker) inp.value = '';
+  renderMsgs(); fakeReply(text, sticker);
+}
+/* ---------- Bot brain: bots read your message and answer it ---------- */
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const USED = {};
+function fresh(key, arr){
+  const used = USED[key] || (USED[key] = new Set());
+  let opts = arr.filter(x => !used.has(x));
+  if (!opts.length){ used.clear(); opts = arr; }
+  const x = pick(opts); used.add(x); return x;
+}
+const PERSONA = {
+  panda:{hi:'heyyy SkyFox!!', me:'I\'m PixelPanda! I love slides, ziplines and jokes', laugh:['hahaha','LOL','😂 stop it'], ask:['what are you building today?','slides or ziplines, which is better?','wanna hear a joke?','what\'s your favourite mob?']},
+  whale:{hi:'hi SkyFox!', me:'I\'m BlueWhale22, I like rockets and redstone', laugh:['lol','haha good one'], ask:['can you teach me something?','what\'s the coolest thing you ever built?','do you like space?','how old is your minecraft world?']},
+  nova:{hi:'hello SkyFox! 🌟', me:'I\'m StarNova! I like helping people and drawing', laugh:['haha','hehe that\'s funny'], ask:['need help with anything?','what colour would you make it?','did you do the art challenge?']},
+  bean:{hi:'yo SkyFox', me:'I\'m JellyBean, I build giant castles', laugh:['lolol','bahaha'], ask:['have you ever built a castle?','how big is your world?','do you like frogs? I love frogs']},
+  koi:{hi:'hi hi SkyFox!', me:'I\'m CraftyKoi, I like crafts and fish', laugh:['hehe','haha yes'], ask:['do you have a pet?','what\'s your favourite animal?','do you like making crafts?']},
+  waddles:{hi:'*waddle waddle* hi SkyFox!', me:'I\'m Waddles the penguin! I love sliding on my belly', laugh:['honk honk haha','hehehe *flaps*'], ask:['wanna go belly-sliding?','do you like fish? I LOVE fish','can foxes slide on ice?']},
+  pebble:{hi:'hiii SkyFox! 🐧', me:'I\'m Pebble! I collect shiny pebbles and give them to friends', laugh:['hehe','*happy penguin noises*'], ask:['want a shiny pebble?','have you seen a snowflake up close?','wanna build an igloo... I mean a snow fort?']},
+  maya:{hi:'Hi SkyFox, welcome!', me:'I\'m Coach Maya, the moderator here. I help keep the club kind and safe', laugh:['Ha, love it'], ask:['What are you building this week?']},
+  raj:{hi:'Hello SkyFox!', me:'I\'m Mr. Raj, the moderator for this club', laugh:['Ha, good one'], ask:['What are you curious about today?']},
+  lin:{hi:'Hi SkyFox!', me:'I\'m Ms. Lin, I look after the art clubs', laugh:['Ha, lovely'], ask:['What are you drawing today?']}
+};
+const JOKES = [
+  'why did the creeper cross the road? to get to the other SSSSside 💥',
+  'what do you call a sleeping dinosaur? a dino-SNORE 😴',
+  'why was the maths book sad? it had too many problems',
+  'how do you throw a party in space? you PLANET 🪐',
+  'why did the cat sit on the computer? to keep an eye on the mouse 🐭',
+  'what\'s orange and sounds like a parrot? a carrot 🥕'
+];
+const FAV = {colour:'green, like leaves', color:'green, like leaves', animal:'axolotls!! they smile', food:'pizza, obviously', game:'minecraft duh', planet:'Saturn because of the rings', mob:'the axolotl', block:'glowstone', subject:'art', sport:'swimming', song:'anything with drums', book:'The Wild Robot', number:'7', pet:'a hamster named Nugget'};
+const TOPICS = [
+  {re:/\b(joke|jokes|funny)\b/, lines:JOKES},
+  {re:/\b(thank|thanks|thx|ty)\b/, lines:['you\'re welcome!','anytime :)','no problem SkyFox!','happy to help!']},
+  {re:/\b(sad|upset|lonely|bad day|crying|scared|worried)\b/, lines:['oh no, I hope you feel better soon 💛','sending you a big virtual hug','talking to a grown-up you trust always helps me when I feel like that','you can tell Coach Maya too, she\'s really nice']},
+  {re:/\b(bored|boring|nothing to do)\b/, lines:['build challenge! make a house in 10 minutes, GO','riddle time: what has keys but can\'t open locks?','try drawing your dream pet and post it in Art Corner!','let\'s have a race to find a diamond']},
+  {re:/\bpiano\b/, lines:['YES a piano! you got the riddle 🎹']},
+  {re:/\b(minecraft|build|built|building|house|castle|treehouse|redstone|piston|diamond|creeper|mob|zombie|village|nether|ender|block|sword|pickaxe)/, lines:['ooh what blocks are you using?','I love building with dark oak and lanterns','put a secret door behind a bookshelf!','post a screenshot in #build-showcase when it\'s done!','creepers ALWAYS blow up my builds lol','diamonds are so hard to find, I only have 3','add a slide! everything is better with a slide','you should make a moat with a drawbridge']},
+  {re:/\b(draw|drew|drawing|paint|painting|colou?r|art|sketch|crayon|marker)/, lines:['ooh can you show us in #doodles?','I\'m drawing a dragon right now','tip: mix blue and yellow for a leafy green','I love drawing animals the most','what are you going to draw next?']},
+  {re:/\b(space|planet|rocket|moon|mars|star|sun|jupiter|saturn|astronaut|alien|galaxy)/, lines:['did you know a day on Venus is longer than its year?!','I want to go to Mars one day','Saturn could float in a giant bathtub','the Sun is SO big, a million Earths could fit inside','do you think aliens are real? 👽']},
+  {re:/\b(math|maths|sum|homework|fraction|test|exam|spelling|times table|school)/, lines:['homework is hard sometimes but you got this!','try breaking it into little steps','ask in #maths, Mr. Raj gives really good hints','I have a spelling test on Friday too']},
+  {re:/\b(dog|cat|pet|puppy|kitten|hamster|fish|bunny|rabbit|bird|parrot|turtle|axolotl)/, lines:['awww what\'s its name?','I LOVE animals','my hamster Nugget eats so many seeds','you should join Pet Pals!','cats are so fluffy']},
+  {re:/\b(game|games|play|playing|roblox|mario|pokemon|lego)/, lines:['ooh I love that!','wanna play together later? (with a grown-up\'s OK)','what\'s your favourite level?','I\'m so bad at that game lol']},
+  {re:/\b(food|pizza|ice cream|hungry|lunch|dinner|snack|cake|cookie|chocolate)/, lines:['now I\'m hungry lol','pizza is the best food ever','I had pancakes today!','cookies > everything']},
+  {re:/\b(music|song|sing|guitar|drum|ukulele|dance)/, lines:['what song?','I\'m learning the ukulele!','you should join Music Makers!']},
+  {re:/\b(happy|excited|yay|awesome|amazing|best)\b/, lines:['yay!! 🎉','woohoo!','that\'s awesome!!','love that energy']}
+];
+const STOP = new Set('the a an and or but i you me my your it is are was were to of in on for with that this so just what how why can do does did have has im its it we they he she be at like really very too also okay ok yeah yes no not am will would could should about there their them then than when who whats thats dont cant gonna wanna lets from into out up down all some any more most much many get got make made know think want going been being here'.split(' '));
+const SHORT = /^(nice|cool|same|ok|okay|k|lol|lmao|haha+|yes|yeah|yep|no|nope|wow|oh|hm+|true|sure|fine|good|great|idk|bruh|what|hi|hey)[!.?]*$/;
+
+function mathAnswer(t){
+  const m = t.match(/(\d+)\s*([+\-x*×\/÷]|plus|minus|times)\s*(\d+)/);
+  if (!m) return null;
+  const a = +m[1], b = +m[3], op = m[2];
+  const r = /[+]|plus/.test(op) ? a + b : /-|minus/.test(op) ? a - b : /[x*×]|times/.test(op) ? a * b : b ? Math.round(a / b * 100) / 100 : null;
+  return r === null ? 'you can\'t divide by zero, that breaks the universe 🤯' : `${a} ${op} ${b} = ${r}! I did it in my head 🧠`;
+}
+function topicWord(t){
+  const words = t.toLowerCase().replace(/[^a-z\s']/g, ' ').split(/\s+/).filter(w => w.length >= 4 && !STOP.has(w.replace(/'/g, '')));
+  return words.sort((a, b) => b.length - a.length)[0];
+}
+function brain(text, who, k){
+  const t = text.toLowerCase().trim(), p = PERSONA[who] || PERSONA.panda, fk = k + ':' + who;
+  const me = S.nick || 'SkyFox';
+  const nm = text.match(/\b(?:my name is|my name's|i'm called|im called|call me)\s+([a-z][\w-]{1,15})/i);
+  if (nm){
+    const first = !S.nick; S.nick = nm[1][0].toUpperCase() + nm[1].slice(1);
+    return fresh(fk + 'nm', [`nice to meet you, ${S.nick}! 👋`, `${S.nick}! that's such a cool name`, `hi ${S.nick}! I'm ${P[who].name}`]) + (first ? ' (good job using a nickname, real names stay secret here 🔒)' : '');
+  }
+  if (/what('?s| is) my name/.test(t)) return S.nick ? `your name is ${S.nick}! I remembered 😎` : `you're SkyFox! unless you have a nickname? tell me!`;
+  if (/^(what|wat|huh|hm+|what\?+|what do (you|u) mean|i don'?t get it|that makes no sense|what are (you|u) (saying|talking about)|that'?s random|why would you say that)[?!. ]*$/.test(t))
+    return fresh(fk + 'cf', ['sorry, I got mixed up 😅 what were you saying?', 'oops, my brain glitched. can you say it again?', 'haha sorry, I wasn\'t paying attention. what\'s up?']);
+  if (/\b(you'?re|ur|you are|u r) (so )?(bad|weird|annoying|boring|not funny|confusing)\b|bad (bot|answer|response)/.test(t))
+    return fresh(fk + 'sorry', ['sorry 😅 I\'ll try to be better! what do you want to talk about?', 'oops, my bad. ask me anything!', 'ok ok I\'ll stop being weird lol. what\'s up?']);
+  const like = t.match(/\bi (?:really |kinda |also )?(?:like|love|enjoy|adore) ([a-z' ]{2,30})/);
+  const have = t.match(/\bi (?:have|got) ((?:a |an |two |some )?[a-z' ]{2,25})/);
+  const made = t.match(/\bi (?:made|built|drew|painted|finished|wrote) (?:a |an |my )?([a-z' ]{2,25})/);
+  const ph = m => m[1].trim().split(/\s+/).slice(0, 3).join(' ').replace(/\b(and|but|so|because|too)$/, '').trim();
+  if (/^(hi|hello|hey|hiya|yo|sup|good (morning|afternoon|evening))\b/.test(t) && !like && !have) return p.hi.replace('SkyFox', me) + ' ' + fresh(fk + 'ask', p.ask);
+  if (/how are (you|u)|how r u|how('s| is) it going/.test(t)) return fresh(fk + 'hru', ['I\'m good! just building stuff. how are you?','great!! I finished my homework early','kinda tired but happy. you?']);
+  if (/(who are (you|u)|what('?s| is) (your|ur) name|about (you|yourself))/.test(t)) return p.me + '!';
+  const fav = t.match(/fav(ou?rite)? (\w+)/);
+  if (fav && /\?|what|whats/.test(t)) return `my favourite ${fav[2]} is ${FAV[fav[2]] || 'hmm... too hard to pick'}! what's yours?`;
+  const math = mathAnswer(t); if (math) return math;
+  if (made) return fresh(fk + 'made', [`wow, you made ${ph(made)}? that's awesome!`, `no way! I wanna see your ${ph(made)}`, `${ph(made)}?! you're so talented, ${me}`]);
+  if (like) return fresh(fk + 'like', [`you like ${ph(like)}? me too!!`, `ooh ${ph(like)} is awesome. what's your favourite thing about it?`, `${ph(like)}! good choice, ${me}`]);
+  if (have) return fresh(fk + 'have', [`you have ${ph(have)}? lucky!`, `cool! tell me about your ${ph(have).replace(/^(a|an|two|some) /, '')}`, `I wish I had ${ph(have)} too`]);
+  for (const tp of TOPICS) if (tp.re.test(t)) return fresh(fk + tp.re.source, tp.lines);
+  if (/^(haha|lol|lmao|😂)/.test(t)) return pick(p.laugh);
+  if (SHORT.test(t) || t.length < 5) return fresh(fk + 'ask', p.ask);
+  const w = topicWord(t);
+  if (/\?$|^(what|how|why|can|do|does|is|are|will|should|which|where|when)\b/.test(t))
+    return fresh(fk + 'q', ['good question! what do you think?', 'hmm I\'m not sure, maybe ask Coach Maya?', w ? `I don't know much about ${w}, can you teach me?` : 'ooh I wanna know too', 'I think so!']);
+  return fresh(fk + 'gen', ['oh cool! tell me more', 'haha nice', 'really? that\'s awesome', 'ooh, what happened next?', `that's so cool, ${me}!`, pick(p.ask)]);
+  return fresh(fk + 'ask', p.ask);
+}
+/* ---------- Silly mode: bots think in funny, upside-down ways ---------- */
+const SILLY_FACTS = ['clouds are just sky sheep that forgot to come down 🐑','the moon is a giant nightlight someone forgot to switch off','socks go missing because they go on holiday','bananas are just yellow boomerangs that gave up 🍌','fish are basically wet birds','spaghetti is long on purpose so it can hug your fork','my goldfish is the mayor of our house','Tuesday is secretly the fastest day of the week','if you whisper "pickle" to a creeper it gets shy (I tested this zero times)','trees are just really slow dancers 🌳'];
+function silly(text, who, k){
+  const t = text.toLowerCase(), w = topicWord(t), fk = k + ':' + who + ':silly';
+  const m = t.match(/(\d+)\s*([+\-x*×\/÷]|plus|minus|times)\s*(\d+)/);
+  if (m) return fresh(fk + 'm', [`${m[1]} ${m[2]} ${m[3]} = ${pick(['BANANA','purple','two llamas','a million and 3','7. it\'s always 7'])}. I checked with my cat 🐱`, `easy, it's ${+m[1] + +m[3] + 1000}. I counted my toes twice`, `that equals a pizza 🍕 everything equals pizza if you believe`]);
+  if (/^(hi|hello|hey|yo|sup)\b/.test(t)) return fresh(fk + 'h', ['hello! I just woke up. it\'s 3 o\'clock in banana time','HI! did you know my shoe is named Gerald?','greetings, earthling 👽 (just kidding I\'m a panda. or am I)']);
+  if (/\?$/.test(t)) return fresh(fk + 'q', ['yes. no. maybe. BANANA 🍌','the answer is inside a sandwich somewhere 🥪','only a duck would know that 🦆 go ask a duck','I asked my pet rock and it said nothing, so... yes?']);
+  if (false) return fresh(fk + 'w', [`${w}?? I think ${w} is secretly a potato wearing a hat 🥔🎩`, `my grandma says ${w} only works on Tuesdays`, `I tried ${w} once and my shoes started singing 🎶`, `${w} is my second favourite thing after ${pick(['socks','clouds','spaghetti','the number 4'])}`, `wait, is ${w} a type of cheese? 🧀`, `${w} sounds like something a dragon eats for breakfast 🐉`, `if you say ${w} backwards three times a llama appears`]);
+  return fresh(fk + 'f', [`fun fact: ${pick(SILLY_FACTS)}`, 'I agree, because penguins can\'t fly and neither can my homework', 'hold on, my sandwich is calling me 📞🥪', 'that\'s exactly what my pet rock said', 'I have no idea but I\'m going to nod like I do']);
+}
+const NOSILLY = /my name|call me|what|huh|who are|how are|mean|bad|weird|\?$/i;
+const SERIOUS = /\b(sad|upset|lonely|scared|worried|crying|bad day|hurt|help|rules?|report|mod|moderator)\b/i;
+const CHIME = ['same!!','haha yes','+1','that\'s what I was gonna say','lol'];
+let replyTimer = [];
+function say(k, who, text, delay, then){
+  replyTimer.push(setTimeout(() => {
+    if (keyOf(S.cur) === k) $('#typing').textContent = `${P[who].name} is typing…`;
+    replyTimer.push(setTimeout(() => {
+      M[k].push({id:uid++, u:who, t:clock(), text, r:{}, my:{}});
+      if (keyOf(S.cur) === k){ $('#typing').textContent = ''; renderMsgs(); }
+      then && then();
+    }, 700 + Math.min(2200, text.length * 35)));
+  }, delay));
+}
+function fakeReply(text, sticker){
+  replyTimer.forEach(clearTimeout); replyTimer = [];
+  const cur = {...S.cur}, k = keyOf(cur);
+  const mine = M[k][M[k].length - 1];
+  let who;
+  if (cur.type === 'dm') who = cur.id;
+  else {
+    const c = club(cur.club), mention = Object.keys(P).find(id => c.members.includes(id) && new RegExp('@?' + P[id].name, 'i').test(text));
+    who = mention || (/\b(rule|rules|mod|moderator|help me|report)\b/i.test(text) ? c.mod : pick(c.members));
+  }
+  if (Math.random() < .45 && mine){ const e = pick(['❤️','⭐','👍','😂']); mine.r[e] = (mine.r[e] || 0) + 1; renderMsgs(); }
+  const answer = sticker ? pick(['haha ' + text, text + text, 'love that sticker', pick(PERSONA[who]?.laugh || ['lol'])]) : (S.silly && Math.random() < .35 && !SERIOUS.test(text) && !NOSILLY.test(text) ? silly(text, who, k) : brain(text, who, k));
+  say(k, who, answer, 600, () => {
+    if (cur.type === 'club' && Math.random() < .35){
+      const other = pick(club(cur.club).members.filter(m => m !== who));
+      if (other) say(k, other, Math.random() < .5 ? pick(S.silly ? [...CHIME,'BANANA 🍌','I also agree with the banana','my pet rock agrees'] : CHIME) : '@' + P[who].name + ' ' + pick(CHIME), 900);
+    }
+  });
+}
+function findMsg(id){ for (const k in M){ const m = M[k].find(x => x.id === +id); if (m) return m; } }
+function closeDrawer(){ $('#app').classList.remove('drawer'); }
+function go(cur){ S.cur = cur; S.warn = null; S.reactOpen = null; closeDrawer(); renderKid(); }
+
+function toast(t){ const el = $('#toast'); el.textContent = t; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => el.hidden = true, 2600); }
+function modal(html){ $('#modal').innerHTML = html; $('#modalWrap').hidden = false; const f = $('#modal').querySelector('input,button'); f && f.focus(); }
+function closeModal(){ $('#modalWrap').hidden = true; }
+
+function rulesModal(){
+  const c = S.cur.type === 'club' ? club(S.cur.club) : null;
+  modal(`<h2>${c ? esc(c.name) + ' rules' : 'Treehouse rules'}</h2>
+    <ol>
+      <li><b>Be kind.</b>No mean words, teasing or leaving people out.</li>
+      <li><b>Keep private stuff private.</b>Your real name, school, address, phone number and passwords stay secret.</li>
+      <li><b>Stay on Treehouse.</b>Don't ask anyone to chat on other apps or games.</li>
+      <li><b>Speak up.</b>If something feels wrong, press the flag or tell a grown-up. You won't get in trouble.</li>
+      <li><b>Moderators are grown-ups checked by Treehouse.</b>They will never ask for private info or photos.</li>
+    </ol>
+    <div class="modal-foot"><button class="btn primary" data-act="modal-close">I'll follow the rules</button></div>`);
+}
+function browseModal(){
+  const list = CLUBS.filter(c => c.allowed);
+  modal(`<h2>Find a club</h2><p>Every club is made and watched by Treehouse moderators. You'll only see clubs your grown-up allows.</p>
+    ${list.map(c => `<div class="club-card"><div class="ic" style="background:${tint(c.c, 25)}">${c.icon}</div><div><b>${esc(c.name)}</b><div class="sub">${esc(c.about)}</div><div class="sub">Ages 8–12 · Moderated by ${esc(P[c.mod].name)}</div></div>
+      ${c.joined ? `<button class="btn" data-act="club" data-id="${c.id}">Open</button>` : `<button class="btn primary" data-act="join" data-id="${c.id}">Join</button>`}</div>`).join('')}
+    <div class="modal-foot"><button class="btn ghost" data-act="request-club">Ask for a new club</button><button class="btn" data-act="modal-close">Close</button></div>`);
+}
+function reportModal(id){
+  const m = findMsg(id);
+  modal(`<h2>Report this message</h2><p>A moderator will read it. ${esc(P[m.u].name)} won't know it was you.</p>
+    <div style="display:flex;flex-direction:column;gap:8px" role="radiogroup">
+      ${['It\'s mean or rude','It makes me feel uncomfortable','It asks for private info','Someone wants to chat somewhere else','It\'s spam or annoying'].map((r, i) => `<label class="opt"><input type="radio" name="rr" value="${esc(r)}" ${i === 0 ? 'checked' : ''}>${esc(r)}</label>`).join('')}
+    </div>
+    <label class="opt"><input type="checkbox" id="tellParent" checked> Also tell my grown-up</label>
+    <div class="modal-foot"><button class="btn" data-act="modal-close">Cancel</button><button class="btn danger" data-act="report-submit" data-id="${id}">Send report</button></div>`);
+}
+function pinModal(){
+  modal(`<h2>Grown-ups only</h2><p>Enter your 4-digit parent PIN to open the dashboard. For this prototype the PIN is <b>1234</b>.</p>
+    <div class="pin">${[0,1,2,3].map(i => `<input id="pin${i}" inputmode="numeric" maxlength="1" aria-label="PIN digit ${i + 1}">`).join('')}</div>
+    <div class="err" id="pinErr"></div>
+    <div class="modal-foot"><button class="btn" data-act="modal-close">Cancel</button><button class="btn primary" data-act="pin-submit">Open dashboard</button></div>`);
+  const ins = [...document.querySelectorAll('.pin input')];
+  ins.forEach((inp, i) => {
+    inp.addEventListener('input', () => { inp.value = inp.value.replace(/\D/g, ''); if (inp.value && ins[i + 1]) ins[i + 1].focus(); if (i === 3 && inp.value) checkPin(); });
+    inp.addEventListener('keydown', e => { if (e.key === 'Backspace' && !inp.value && ins[i - 1]) ins[i - 1].focus(); if (e.key === 'Enter') checkPin(); });
+  });
+}
+function checkPin(){
+  const v = [0,1,2,3].map(i => $('#pin' + i).value).join('');
+  if (v === '1234'){ S.unlocked = true; closeModal(); S.view = 'parent'; renderAll(); }
+  else { $('#pinErr').textContent = 'That PIN isn\'t right. Try again.'; document.querySelectorAll('.pin input').forEach(i => i.value = ''); $('#pin0').focus(); }
+}
+
+/* ---------- Treehouse Island: everyone is a penguin you can design ---------- */
+const ZONES = {
+  plaza:{name:'Treetop Plaza', icon:'🌳', pass:false, about:'The big square in the middle of the island',
+    decor:[['🌳',8,40,64],['🌳',92,42,70],['🏡',50,38,74],['⛲',28,70,52],['🌷',70,86,26],['🌼',12,90,26],['🪵',80,66,34]], bots:['panda','nova','bean'],
+    lines:['race you to the fountain!','I love this plaza','who wants to play Acorn Catch?','nice hat!!','I just changed my colour, do you like it?']},
+  beach:{name:'Sunny Beach', icon:'🏖️', pass:true, about:'Sand, waves and crabs',
+    decor:[['🌴',10,52,70],['🌴',88,50,64],['⛵',62,34,40],['🦀',30,80,30],['🐚',74,88,24],['⛱️',46,62,52]], bots:['whale','koi','waddles'],
+    lines:['the water is warm!','I built a sandcastle','a crab waved at me 🦀','let\'s look for shells','penguins are great swimmers 🌊']},
+  snow:{name:'Snowy Mountain', icon:'🏔️', pass:true, about:'Sledding, snowmen and belly-sliding',
+    decor:[['🏔️',24,40,90],['🏔️',72,38,76],['⛄',40,74,48],['🌲',8,62,56],['🌲',92,66,60],['🛷',70,86,34]], bots:['waddles','pebble','nova'],
+    lines:['*belly slides past* WHEEE','brrr... just kidding, penguins love the cold','race you down the hill!','I found a shiny pebble ✨','wanna build a snow fort?']}
+};
+const PCOLORS = ['#1E2A3A','#2A7FC4','#7FCBEA','#1F8F57','#46C07F','#F5B521','#FF8A3D','#E8553F','#EC6FAE','#8E5BD8','#8A5A34','#9AA5B1'];
+const HATS = [
+  {id:'none', name:'No hat'}, {id:'beanie', name:'Beanie'}, {id:'party', name:'Party hat'}, {id:'cap', name:'Cap'},
+  {id:'flower', name:'Flower'}, {id:'headphones', name:'Headphones'}, {id:'bow', name:'Bow'},
+  {id:'crown', name:'Crown', pass:true}, {id:'wizard', name:'Wizard hat', pass:true}
+];
+const PRICE = {hat:{beanie:0, party:30, cap:25, flower:20, headphones:40, bow:20}, color:15, scarf:10};
+const priceOf = (k, v) => k === 'hat' ? (PRICE.hat[v] ?? 0) : PRICE[k];
+const SCARVES = ['none','#E8553F','#2A7FC4','#F5B521','#1F8F57','#EC6FAE','#8E5BD8','#FFFFFF'];
+const LOOKS = {
+  panda:{color:'#1E2A3A', hat:'headphones', scarf:'#EC6FAE'}, whale:{color:'#2A7FC4', hat:'cap', scarf:'none'},
+  nova:{color:'#F5B521', hat:'flower', scarf:'#8E5BD8'}, bean:{color:'#46C07F', hat:'party', scarf:'none'},
+  koi:{color:'#E8553F', hat:'bow', scarf:'#FFFFFF'}, waddles:{color:'#1E2A3A', hat:'beanie', scarf:'#E8553F'},
+  pebble:{color:'#9AA5B1', hat:'none', scarf:'#7FCBEA'}
+};
+const shade = (hex, k) => '#' + hex.slice(1).match(/../g).map(h => Math.max(0, Math.min(255, Math.round(parseInt(h, 16) * k))).toString(16).padStart(2, '0')).join('');
+function hatSVG(h, c){
+  switch (h){
+    case 'beanie': return `<path d="M15 19 Q30 0 45 19 Z" fill="${shade(c === '#1E2A3A' ? '#E8553F' : c, .75)}"/><rect x="13" y="17" width="34" height="5" rx="2.5" fill="#fff"/><circle cx="30" cy="5" r="4" fill="#fff"/>`;
+    case 'party': return `<path d="M21 18 L30 -4 L39 18 Z" fill="#8E5BD8"/><path d="M24 11 L36 11 M26.5 4 L33.5 4" stroke="#F5B521" stroke-width="2.4"/><circle cx="30" cy="-4" r="3" fill="#F5B521"/>`;
+    case 'cap': return `<path d="M15 18 Q30 2 45 18 Z" fill="#E8553F"/><rect x="34" y="15" width="18" height="4" rx="2" fill="#B83A28"/><circle cx="30" cy="8" r="1.8" fill="#fff"/>`;
+    case 'flower': return `<g transform="translate(40 12)">${[0,72,144,216,288].map(a => `<circle cx="${Math.cos(a * Math.PI / 180) * 4.2}" cy="${Math.sin(a * Math.PI / 180) * 4.2}" r="3.4" fill="#EC6FAE"/>`).join('')}<circle r="2.6" fill="#F5B521"/></g>`;
+    case 'headphones': return `<path d="M12 26 Q12 6 30 6 Q48 6 48 26" fill="none" stroke="#2B2F36" stroke-width="3.2"/><rect x="7" y="21" width="8" height="12" rx="3.5" fill="#E8553F"/><rect x="45" y="21" width="8" height="12" rx="3.5" fill="#E8553F"/>`;
+    case 'bow': return `<g transform="translate(30 11)"><path d="M0 0 L-10 -6 L-10 6 Z M0 0 L10 -6 L10 6 Z" fill="#EC6FAE"/><circle r="3" fill="#D04E92"/></g>`;
+    case 'crown': return `<path d="M17 18 L17 6 L23.5 12 L30 3 L36.5 12 L43 6 L43 18 Z" fill="#F5B521" stroke="#C98E0A" stroke-width="1"/><circle cx="30" cy="13" r="2" fill="#E8553F"/>`;
+    case 'wizard': return `<ellipse cx="30" cy="18" rx="19" ry="4" fill="#4B3BA8"/><path d="M19 18 L33 -10 L41 18 Z" fill="#5A4BD3"/><path d="M30 6 l1.5 3 3.2.4-2.3 2.2.6 3.2-3-1.6-3 1.6.6-3.2-2.3-2.2 3.2-.4z" fill="#F5B521"/>`;
+    default: return '';
+  }
+}
+function penguinSVG(look, w){
+  const c = look.color, dark = shade(c, .78);
+  const scarf = look.scarf && look.scarf !== 'none' ? `<path d="M13 37 Q30 44 47 37 L47 42 Q30 49 13 42 Z" fill="${look.scarf}" stroke="rgba(0,0,0,.12)"/><rect x="38" y="41" width="6" height="13" rx="2.5" fill="${look.scarf}" stroke="rgba(0,0,0,.12)"/>` : '';
+  return `<svg width="${w}" height="${Math.round(w * 76 / 60)}" viewBox="0 -12 60 76" aria-hidden="true">
+    <ellipse cx="30" cy="62" rx="17" ry="2.6" fill="rgba(0,0,0,.15)"/>
+    <ellipse cx="22" cy="60" rx="7" ry="3.2" fill="#F59A23"/><ellipse cx="38" cy="60" rx="7" ry="3.2" fill="#F59A23"/>
+    <ellipse cx="9.5" cy="40" rx="5" ry="12" transform="rotate(18 9.5 40)" fill="${dark}"/><ellipse cx="50.5" cy="40" rx="5" ry="12" transform="rotate(-18 50.5 40)" fill="${dark}"/>
+    <ellipse cx="30" cy="35" rx="20" ry="25" fill="${c}"/>
+    <ellipse cx="30" cy="43" rx="13" ry="15.5" fill="#FFFFFF"/>
+    <circle cx="23.5" cy="24" r="4.3" fill="#fff"/><circle cx="36.5" cy="24" r="4.3" fill="#fff"/>
+    <circle cx="24.3" cy="24.6" r="2.2" fill="#1A1A1A"/><circle cx="37.3" cy="24.6" r="2.2" fill="#1A1A1A"/>
+    <circle cx="25" cy="23.6" r=".8" fill="#fff"/><circle cx="38" cy="23.6" r=".8" fill="#fff"/>
+    <circle cx="18" cy="31" r="2.6" fill="#FF9DB5" opacity=".7"/><circle cx="42" cy="31" r="2.6" fill="#FF9DB5" opacity=".7"/>
+    <path d="M26 29.5 L34 29.5 L30 34.5 Z" fill="#F59A23"/>
+    ${scarf}${hatSVG(look.hat, c)}</svg>`;
+}
+const lookOf = id => id === 'me' ? S.look : (LOOKS[id] || LOOKS.pebble);
+const AV = {}; const POS = {};
+let islandTimer = null;
+const rnd = (a, b) => a + Math.random() * (b - a);
+function stopIsland(){ clearInterval(islandTimer); islandTimer = null; }
+function islandSide(){
+  const foot = `<div class="side-foot"><div class="me-av" style="background:var(--surface)">${penguinSVG(S.look, 26)}</div><div><b>${P.me.name}</b><span>● On Treehouse Island</span></div></div>`;
+  $('#side').innerHTML = `<div class="side-head"><h2>Treehouse Island</h2><div class="modline">${ICON.shield} Same safety filter as the clubs</div></div>
+    <div class="side-body"><div><div class="group-label">Places</div><div class="nav-list">
+    ${Object.entries(ZONES).map(([id, z]) => `<button class="nav-item zone-item ${S.zone === id ? 'on' : ''}" data-act="zone" data-id="${id}"><span style="font-size:18px">${z.icon}</span>${z.name}${S.open[id] ? '' : `<span class="lock">${ICON.lock} Pass</span>`}</button>`).join('')}
+    </div></div>
+    <div><div class="group-label">My penguin</div><div class="nav-list"><button class="nav-item" data-act="customize"><span style="font-size:18px">🛍️</span>Penguin shop</button></div></div>
+    <div><div class="group-label">Minigames</div><div class="nav-list"><button class="nav-item" data-act="play-game"><span style="font-size:18px">🌰</span>Acorn Catch</button></div></div>
+    <div class="nav-list"><span class="coins" style="align-self:flex-start">🪙 ${S.coins} coins</span></div>
+    </div>${foot}`;
+}
+function islandMembers(){
+  const z = ZONES[S.zone];
+  const row = id => `<div class="member"><span class="mini" style="background:var(--surface)">${penguinSVG(lookOf(id), 24)}</span><div>${P[id].name}${id === 'me' ? '<small>You</small>' : ''}</div></div>`;
+  $('#members').innerHTML = `<div><div class="group-label">Here now · ${z.bots.length + 1}</div>${['me', ...z.bots].map(row).join('')}</div>
+    <div class="safety-card"><b>Island rules</b><ul><li>Chat bubbles are checked just like club messages</li><li>Be kind to every penguin</li><li>Never share your real name or where you live</li></ul></div>`;
+}
+function placeAv(id, x, y, walk){
+  const el = AV[id]; if (!el) return;
+  const old = POS[id] || {x, y};
+  if (walk && Math.abs(x - old.x) > .5) el.querySelector('.body').style.transform = x < old.x ? 'scaleX(-1)' : '';
+  el.style.transitionDuration = walk ? Math.max(.3, Math.hypot(x - old.x, y - old.y) / 22) + 's' : '0s';
+  el.style.left = x + '%'; el.style.top = y + '%'; el.style.zIndex = Math.round(y * 10);
+  el.classList.toggle('walking', !!walk);
+  clearTimeout(el._t); if (walk) el._t = setTimeout(() => el.classList.remove('walking'), parseFloat(el.style.transitionDuration) * 1000);
+  POS[id] = {x, y};
+}
+function bubble(id, text){
+  const el = AV[id]; if (!el) return;
+  el.querySelector('.bubble')?.remove();
+  const b = document.createElement('div'); b.className = 'bubble'; b.textContent = text; el.appendChild(b);
+  setTimeout(() => b.remove(), 4800);
+}
+function renderIsland(){
+  stopIsland();
+  const z = ZONES[S.zone];
+  $('#chat').innerHTML = `<div class="island">
+    <div class="chat-head">
+      <button class="icon-btn menu-btn" data-act="drawer" aria-label="Open places">${ICON.menu}</button>
+      <div class="grow"><h3><span style="font-size:20px">${z.icon}</span> ${z.name}</h3><p>${esc(z.about)}. Click anywhere to waddle there.</p></div>
+      <span class="coins">🪙 ${S.coins}</span>
+      <button class="btn" data-act="customize">🛍️ Shop</button>
+      ${S.member ? '' : '<button class="btn" data-act="pass">⭐ Island Pass</button>'}
+      <button class="btn primary" data-act="play-game">🌰 Acorn Catch</button>
+    </div>
+    <div class="scene ${S.zone}" id="scene" aria-label="${esc(z.name)}. Click to walk."></div>
+    <p class="isl-note">Click anywhere to waddle. Earn coins in Acorn Catch and spend them in the shop. Coins are pretend and can't be bought with real money.</p>
+    <div class="composer" style="padding-top:8px"><div id="warnBox"></div>
+      <form class="compose-row" id="islandForm" autocomplete="off">
+        <input id="islandInput" maxlength="120" placeholder="Say something in a bubble…" aria-label="Say something">
+        <button class="send" type="submit">Say</button>
+      </form></div></div>`;
+  const sc = $('#scene');
+  sc.innerHTML = z.decor.map(([e, x, y, s]) => `<div class="decor" style="left:${x}%;top:${y}%;font-size:${s}px;z-index:${y * 10}">${e}</div>`).join('');
+  for (const k in AV) delete AV[k];
+  ['me', ...z.bots].forEach(id => {
+    const d = document.createElement('div'); d.className = 'ava' + (id === 'me' ? ' me' : '');
+    d.innerHTML = `<span class="body">${penguinSVG(lookOf(id), 50)}</span><span class="nm">${id === 'me' && S.member ? '⭐ ' : ''}${esc(P[id].name)}</span>`;
+    sc.appendChild(d); AV[id] = d; delete POS[id];
+    placeAv(id, id === 'me' ? 50 : rnd(12, 88), id === 'me' ? 84 : rnd(58, 90), false);
+  });
+  sc.addEventListener('click', e => {
+    const r = sc.getBoundingClientRect();
+    placeAv('me', Math.min(95, Math.max(5, (e.clientX - r.left) / r.width * 100)), Math.min(96, Math.max(50, (e.clientY - r.top) / r.height * 100)), true);
+  });
+  $('#islandForm').addEventListener('submit', e => { e.preventDefault(); islandSay($('#islandInput').value); });
+  islandTimer = setInterval(() => {
+    if (!document.body.contains(sc)){ stopIsland(); return; }
+    placeAv(pick(z.bots), rnd(10, 90), rnd(56, 92), true);
+    if (Math.random() < .3) bubble(pick(z.bots), fresh('isl:' + S.zone, z.lines));
+  }, 2600);
+  setTimeout(() => bubble(z.bots[0], S.zone === 'plaza' ? 'hi SkyFox! cool penguin!' : `you made it to ${z.name}!!`), 600);
+}
+function islandSay(text){
+  text = (text || '').trim(); if (!text) return;
+  const r = checkMsg(text);
+  if (r){
+    S.warn = r; renderWarn();
+    S.filterLog.unshift({tag:r.type, label:'Blocked', text:mask(text), where:'Treehouse Island · ' + ZONES[S.zone].name, who:'SkyFox', why:whyOf(r), t:'Today, ' + clock()});
+    return;
+  }
+  S.warn = null; renderWarn(); $('#islandInput').value = ''; S.sentNow++;
+  bubble('me', text);
+  const z = ZONES[S.zone];
+  const near = z.bots.slice().sort((a, b) => Math.hypot(POS[a].x - POS.me.x, POS[a].y - POS.me.y) - Math.hypot(POS[b].x - POS.me.x, POS[b].y - POS.me.y))[0];
+  const ans = S.silly && Math.random() < .35 && !SERIOUS.test(text) && !NOSILLY.test(text) ? silly(text, near, 'island') : brain(text, near, 'island');
+  setTimeout(() => placeAv(near, Math.min(92, POS.me.x + (POS.me.x > 50 ? -12 : 12)), POS.me.y, true), 300);
+  setTimeout(() => bubble(near, ans), 1500);
+}
+function zoneClick(id){
+  if (S.open[id]){ S.zone = id; closeDrawer(); renderKid(); return; }
+  const z = ZONES[id];
+  modal(`<h2>${z.icon} ${z.name}</h2><p>${esc(z.about)}. This place comes with the <b>Island Pass</b>. Ask a grown-up to unlock it!</p>
+    <div class="modal-foot"><button class="btn" data-act="modal-close">Not now</button><button class="btn primary" data-act="pass">⭐ Island Pass</button></div>`);
+}
+
+/* ---------- Penguin designer ---------- */
+function customize(){
+  S.draft = {...S.look};
+  const tag = (k, v) => S.owned.has(k + ':' + v) ? '' : `<span class="price">🪙${priceOf(k, v)}</span>`;
+  modal(`<h2>🛍️ Penguin shop</h2>
+    <div style="display:flex;justify-content:space-between;align-items:center"><p>Tap something to try it on. Things with a price cost coins.</p><span class="coins" id="shopCoins">🪙 ${S.coins}</span></div>
+    <div style="display:grid;place-items:center;padding:6px;border-radius:16px;background:var(--surface-2)" id="pPreview">${penguinSVG(S.draft, 110)}</div>
+    <div class="group-label" style="padding:0">Colour</div>
+    <div class="swatches">${PCOLORS.map(c => `<button class="sw ${S.draft.color === c ? 'on' : ''}" data-act="look" data-k="color" data-v="${c}" style="background:${c}" aria-label="Colour ${c}">${tag('color', c)}</button>`).join('')}</div>
+    <div class="group-label" style="padding:0">Hat</div>
+    <div class="swatches">${HATS.map(h => { const locked = h.pass && !S.member; return `<button class="hat-opt ${S.draft.hat === h.id ? 'on' : ''}" data-act="look" data-k="hat" data-v="${h.id}" ${locked ? 'data-locked="1"' : ''} title="${h.name}">${penguinSVG({color:'#C9D3DC', hat:h.id, scarf:'none'}, 34)}<span>${h.name}${locked ? ' 🔒' : ''}</span>${h.pass ? '' : tag('hat', h.id)}</button>`; }).join('')}</div>
+    <div class="group-label" style="padding:0">Scarf</div>
+    <div class="swatches">${SCARVES.map(c => `<button class="sw ${S.draft.scarf === c ? 'on' : ''}" data-act="look" data-k="scarf" data-v="${c}" style="background:${c === 'none' ? 'repeating-linear-gradient(45deg,var(--surface),var(--surface) 4px,var(--line) 4px,var(--line) 8px)' : c}" aria-label="${c === 'none' ? 'No scarf' : 'Scarf ' + c}">${tag('scarf', c)}</button>`).join('')}</div>
+    <div class="err" id="shopMsg" style="text-align:left"></div>
+    <div class="modal-foot"><button class="btn" data-act="modal-close">Cancel</button><button class="btn primary" id="shopSave" data-act="look-save">Wear it!</button></div>`);
+  shopCheck();
+}
+function setLook(b){
+  if (b.dataset.locked){ toast('That hat comes with the Island Pass'); return; }
+  S.draft[b.dataset.k] = b.dataset.v;
+  $('#pPreview').innerHTML = penguinSVG(S.draft, 110);
+  b.parentElement.querySelectorAll('.on').forEach(x => x.classList.remove('on')); b.classList.add('on');
+  shopCheck();
+}
+function shopCost(){ return ['color','hat','scarf'].reduce((n, k) => n + (S.owned.has(k + ':' + S.draft[k]) || (k === 'hat' && HATS.find(h => h.id === S.draft.hat)?.pass) ? 0 : priceOf(k, S.draft[k])), 0); }
+function shopCheck(){
+  const cost = shopCost(), btn = $('#shopSave'), msg = $('#shopMsg');
+  if (!btn) return;
+  btn.textContent = cost ? `Buy & wear for 🪙 ${cost}` : 'Wear it!';
+  btn.disabled = cost > S.coins;
+  msg.textContent = cost > S.coins ? `You need ${cost - S.coins} more coins. Play Acorn Catch to earn them!` : '';
+}
+function shopSave(){
+  const cost = shopCost(); if (cost > S.coins) return;
+  S.coins -= cost; ['color','hat','scarf'].forEach(k => S.owned.add(k + ':' + S.draft[k]));
+  S.look = {...S.draft}; closeModal(); toast(cost ? `Bought for ${cost} coins. Looking good, penguin!` : 'Looking good, penguin!'); renderKid();
+}
+
+/* ---------- Island Pass: grown-up gate + pretend checkout (no card details, no real money) ---------- */
+function passGate(){
+  const a = 11 + Math.floor(Math.random() * 9), b = 3 + Math.floor(Math.random() * 7);
+  S.gate = a * b;
+  modal(`<h2>Ask a grown-up 🔒</h2><p>This part is for grown-ups only. Grown-ups, please answer to continue.</p>
+    <label class="field" style="font-size:16px">What is ${a} × ${b}?<input id="gateAns" inputmode="numeric" maxlength="4" autocomplete="off"></label>
+    <div class="err" id="gateErr"></div>
+    <div class="modal-foot"><button class="btn" data-act="modal-close">Cancel</button><button class="btn primary" data-act="gate-check">Continue</button></div>`);
+  $('#gateAns').addEventListener('keydown', e => { if (e.key === 'Enter') gateCheck(); });
+}
+function gateCheck(){
+  if (+$('#gateAns').value === S.gate) return passOffer();
+  $('#gateErr').textContent = 'That\'s not right. Please ask a grown-up to help.';
+  setTimeout(passGate, 1200);
+}
+function passOffer(){
+  modal(`<h2>⭐ Treehouse Island Pass</h2>
+    <p><b>For grown-ups.</b> The Island Pass unlocks the whole island for your child:</p>
+    <ul style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:14px">
+      <li>Every place: Sunny Beach and Snowy Mountain</li>
+      <li>Special penguin hats: the crown and the wizard hat</li>
+      <li>A gold ⭐ Member badge on their name</li>
+    </ul>
+    <div class="safety-card" style="background:var(--grape-soft)"><b style="font-size:15px">How paying would work</b>
+      In the real app, payment would go through the App Store or Google Play, using the account you already have. Nobody ever types card details into Treehouse. This prototype is a demo, so it never takes money.</div>
+    <div class="modal-foot"><button class="btn" data-act="modal-close">Not now</button><button class="btn primary" data-act="pass-buy">Unlock Island Pass (demo, free)</button></div>`);
+}
+function passBuy(){
+  S.member = true; Object.keys(ZONES).forEach(z => S.open[z] = true);
+  closeModal(); toast('Island Pass unlocked! The whole island is open.'); renderKid();
+  if (AV.me) bubble('me', 'I got the Island Pass! ⭐');
+}
+
+/* ---------- Minigame: Acorn Catch (just for fun, beat your best score) ---------- */
+let G = null;
+function startGame(){
+  closeModal(); stopGame();
+  const wrap = document.createElement('div'); wrap.className = 'game-wrap'; wrap.id = 'gameWrap';
+  wrap.innerHTML = `<div class="game" role="dialog" aria-modal="true" aria-label="Acorn Catch">
+    <h2>🌰 Acorn Catch</h2>
+    <p>Move the basket with your mouse, finger or arrow keys. 🌰 = 1 coin, ⭐ = 5 coins. Dodge the 🐛 bugs!</p>
+    <div class="hud"><span id="gScore">Score 0</span><span id="gLives">❤️❤️❤️</span><span id="gTime">⏱ 30</span></div>
+    <canvas id="gCanvas" width="360" height="480"></canvas>
+    <div class="modal-foot" id="gFoot"><span style="margin-right:auto;font-size:13px;color:var(--muted)">Best: ${S.best}</span><button class="btn" data-act="game-close">Stop playing</button></div></div>`;
+  document.body.appendChild(wrap);
+  const cv = $('#gCanvas'), ctx = cv.getContext('2d');
+  G = {cv, ctx, x:180, items:[], score:0, lives:3, end:performance.now() + 30000, last:performance.now(), spawn:0, keys:{}, over:false, raf:0};
+  const move = e => { const r = cv.getBoundingClientRect(); G.x = Math.max(28, Math.min(332, (e.clientX - r.left) / r.width * 360)); };
+  cv.addEventListener('pointermove', move); cv.addEventListener('pointerdown', move);
+  G.kd = e => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight'){ G.keys[e.key] = true; e.preventDefault(); } };
+  G.ku = e => { G.keys[e.key] = false; };
+  addEventListener('keydown', G.kd); addEventListener('keyup', G.ku);
+  G.raf = requestAnimationFrame(tick);
+}
+function tick(now){
+  if (!G || G.over) return;
+  const dt = Math.min(50, now - G.last) / 1000; G.last = now;
+  const left = Math.max(0, (G.end - now) / 1000), speedUp = 1 + (30 - left) / 30;
+  if (G.keys.ArrowLeft) G.x = Math.max(28, G.x - 320 * dt);
+  if (G.keys.ArrowRight) G.x = Math.min(332, G.x + 320 * dt);
+  G.spawn -= dt;
+  if (G.spawn <= 0){
+    const r = Math.random();
+    G.items.push({x:rnd(20, 340), y:-20, v:rnd(120, 190) * speedUp, k:r < .12 ? 'star' : r < .32 ? 'bug' : 'acorn'});
+    G.spawn = rnd(.35, .7) / speedUp;
+  }
+  const ctx = G.ctx; ctx.clearRect(0, 0, 360, 480);
+  ctx.fillStyle = '#9ED98F'; ctx.fillRect(0, 440, 360, 40);
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  for (const it of G.items){
+    it.y += it.v * dt;
+    if (!it.hit && it.y > 400 && it.y < 440 && Math.abs(it.x - G.x) < 38){
+      it.hit = true;
+      if (it.k === 'bug') G.lives--; else G.score += it.k === 'star' ? 5 : 1;
+    }
+    if (!it.hit){ ctx.font = '30px serif'; ctx.fillText(it.k === 'star' ? '⭐' : it.k === 'bug' ? '🐛' : '🌰', it.x, it.y); }
+  }
+  G.items = G.items.filter(it => !it.hit && it.y < 500);
+  ctx.font = '50px serif'; ctx.fillText('🧺', G.x, 420);
+  $('#gScore').textContent = 'Score ' + G.score;
+  $('#gLives').textContent = '❤️'.repeat(Math.max(0, G.lives)) + '🤍'.repeat(3 - Math.max(0, G.lives));
+  $('#gTime').textContent = '⏱ ' + Math.ceil(left);
+  if (left <= 0 || G.lives <= 0) return endGame();
+  G.raf = requestAnimationFrame(tick);
+}
+function endGame(){
+  G.over = true;
+  const record = G.score > S.best; if (record) S.best = G.score; S.coins += G.score;
+  const ctx = G.ctx; ctx.fillStyle = 'rgba(255,255,255,.88)'; ctx.fillRect(0, 150, 360, 170);
+  ctx.fillStyle = '#15302D'; ctx.font = '700 28px system-ui'; ctx.fillText(G.lives <= 0 ? 'Bugged out!' : 'Time\'s up!', 180, 200);
+  ctx.font = '600 22px system-ui'; ctx.fillText(`You earned 🪙 ${G.score} coins`, 180, 245);
+  ctx.font = '16px system-ui'; ctx.fillText(`${record ? '🏆 New best! · ' : ''}You have ${S.coins} coins`, 180, 282);
+  $('#gFoot').innerHTML = `<button class="btn" data-act="game-close">Back to the island</button><button class="btn primary" data-act="play-game">Play again</button>`;
+  if (S.cur.type === 'island'){ islandSide(); const c = document.querySelector('.chat-head .coins'); if (c) c.textContent = '🪙 ' + S.coins; }
+  if (record && AV.me) bubble('me', `new best score: ${G.score}! 🏆`);
+}
+function stopGame(){
+  if (G){ cancelAnimationFrame(G.raf); removeEventListener('keydown', G.kd); removeEventListener('keyup', G.ku); G = null; }
+  $('#gameWrap')?.remove();
+}
+
+/* ---------- Parent dashboard ---------- */
+function sw(key, label, sub){
+  return `<div class="row"><div class="grow"><b>${label}</b><div class="sub">${sub}</div></div><button class="switch" role="switch" aria-checked="${!!S.settings[key]}" aria-label="${esc(label)}" data-act="p-toggle" data-k="${key}"></button></div>`;
+}
+function renderParent(){
+  const blocked = S.filterLog.length, pct = Math.min(100, S.minutes / S.settings.limit * 100);
+  const log = [...S.reports.map(r => ({tag:'report', label:'Reported', text:r.text, where:r.where, who:r.who, why:r.reason, t:r.t})), ...S.filterLog];
+  $('#parent').innerHTML = `<div class="p-wrap">
+    <div class="p-head"><div><h1>SkyFox's week on Treehouse</h1><p>Signed in as the grown-up for SkyFox · Age 10</p></div><button class="btn" data-act="view-kid">Back to kid view</button></div>
+    <div class="stats">
+      <div class="stat"><span class="lbl">Time today</span><span class="num">${S.minutes}<small> / ${S.settings.limit} min</small></span><div class="bar"><i style="width:${pct}%"></i></div></div>
+      <div class="stat"><span class="lbl">Messages this week</span><span class="num">${S.weekMsgs + S.sentNow}</span><span class="sub">Mostly in Block Builders</span></div>
+      <div class="stat"><span class="lbl">Safety filter</span><span class="num">${blocked}</span><span class="sub">messages blocked or hidden</span></div>
+      <div class="stat"><span class="lbl">Reports by SkyFox</span><span class="num">${S.reports.length}</span><span class="sub">${S.reports.length ? 'Sent to moderators' : 'Nothing reported yet'}</span></div>
+    </div>
+    <div class="p-grid">
+      <div class="p-col">
+        <section class="card"><h2>Friend requests ${S.requests.length ? `<span class="count">${S.requests.length}</span>` : ''}</h2>
+          <p class="desc">SkyFox can only message friends you approve.</p>
+          <div>${S.requests.length ? S.requests.map(r => `<div class="row"><span class="av" style="background:${tint(P[r.id]?.c || '#888', 25)}">${P[r.id]?.av || '🙂'}</span><div class="grow"><b>${esc(P[r.id]?.name || r.id)}</b><div class="sub">${esc(r.from)} · ${esc(r.when)}</div></div><div class="acts"><button class="btn" data-act="p-decline" data-id="${r.id}">Decline</button><button class="btn primary" data-act="p-approve" data-id="${r.id}">Approve</button></div></div>`).join('') : '<div class="empty">No requests waiting. Nice and quiet.</div>'}</div>
+        </section>
+        <section class="card"><h2>Safety activity</h2>
+          <p class="desc">What the filter caught and what SkyFox reported. Message text is partly hidden to respect their privacy.</p>
+          <div class="log">${log.map(l => `<div class="log-item"><span class="tag ${l.tag}">${l.label}</span><div><div><b>${esc(l.why)}</b> · from ${esc(l.who)}</div><q>${esc(l.text)}</q><div class="sub">${esc(l.where)} · ${esc(l.t)}</div></div></div>`).join('')}</div>
+        </section>
+      </div>
+      <div class="p-col">
+        <section class="card"><h2>Rules and limits</h2>
+          <div>
+            <div class="row"><div class="grow"><b>Daily time limit</b><div class="sub">Treehouse closes for the day when time runs out</div></div>
+              <select id="limitSel" aria-label="Daily time limit">${[30,45,60,90,120].map(v => `<option value="${v}" ${v === S.settings.limit ? 'selected' : ''}>${v} min</option>`).join('')}</select></div>
+            ${sw('quiet', 'Quiet hours', '8:30 PM to 7:00 AM, chat pauses overnight')}
+            ${sw('quietPreview', 'Preview quiet hours now', 'See what SkyFox sees at bedtime')}
+            ${sw('dmFriends', 'Private chats with approved friends only', 'Recommended for ages 8–12')}
+            ${sw('pics', 'Allow sharing pictures', 'Off by default. Pictures are checked by a moderator first')}
+            ${sw('strict', 'Strict word filter', 'Also blocks mild words like "dumb" and "noob"')}
+          </div>
+        </section>
+        <section class="card"><h2>Clubs SkyFox can join</h2>
+          <p class="desc">Every club has a trained, ID-checked moderator.</p>
+          <div>${CLUBS.map(c => `<div class="row"><span class="av" style="background:${tint(c.c, 25)};border-radius:14px">${c.icon}</span><div class="grow"><b>${esc(c.name)}</b><div class="sub">${c.joined && c.allowed ? 'Joined' : c.allowed ? 'Allowed, not joined' : 'Not allowed'} · ${esc(P[c.mod].name)}</div></div><button class="switch" role="switch" aria-checked="${c.allowed}" aria-label="Allow ${esc(c.name)}" data-act="p-club" data-id="${c.id}"></button></div>`).join('')}</div>
+        </section>
+      </div>
+    </div></div>`;
+  $('#limitSel').addEventListener('change', e => { S.settings.limit = +e.target.value; renderTop(); renderParent(); toast(`Daily limit set to ${S.settings.limit} minutes`); });
+}
+function renderAll(){ renderTop(); if (S.view === 'kid') renderKid(); else renderParent(); }
+
+/* ---------- Events ---------- */
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]');
+  if (e.target.id === 'modalWrap'){ closeModal(); return; }
+  if (!b) return;
+  const a = b.dataset.act, id = b.dataset.id;
+  switch (a){
+    case 'view-kid': S.view = 'kid'; renderAll(); break;
+    case 'view-parent': if (S.unlocked){ S.view = 'parent'; renderAll(); } else pinModal(); break;
+    case 'home': go({type:'dm', id:S.friends[0]}); break;
+    case 'island': go({type:'island'}); break;
+    case 'zone': zoneClick(id); break;
+    case 'play-game': startGame(); break;
+    case 'pass': passGate(); break;
+    case 'customize': customize(); break;
+    case 'look': setLook(b); break;
+    case 'look-save': shopSave(); break;
+    case 'gate-check': gateCheck(); break;
+    case 'pass-buy': passBuy(); break;
+    case 'game-close': stopGame(); break;
+    case 'club': closeModal(); go({type:'club', club:id, ch:S.lastCh[id] || club(id).chs[0][0]}); break;
+    case 'channel': S.lastCh[S.cur.club] = id; go({type:'club', club:S.cur.club, ch:id}); break;
+    case 'dm': go({type:'dm', id}); break;
+    case 'drawer': $('#app').classList.toggle('drawer'); break;
+    case 'browse': browseModal(); break;
+    case 'join': club(id).joined = true; toast(`You joined ${club(id).name}!`); browseModal(); renderRail(); break;
+    case 'leave': { club(id).joined = false; toast(`You left ${club(id).name}`); const f = CLUBS.find(c => c.joined && c.allowed); go(f ? {type:'club', club:f.id, ch:f.chs[0][0]} : {type:'dm', id:S.friends[0]}); break; }
+    case 'request-club': closeModal(); toast('Idea sent to your grown-up and the Treehouse team'); break;
+    case 'rules': rulesModal(); break;
+    case 'silly': S.silly = !S.silly; renderChat(); toast(S.silly ? 'Silly bots are ON. Expect bananas.' : 'Silly bots are off. Back to normal.'); break;
+    case 'modal-close': closeModal(); break;
+    case 'tip-next': S.tip = (S.tip + 1) % TIPS.length; if (S.tip === 0) S.tipHidden = true; renderChat(); break;
+    case 'react-open': S.reactOpen = S.reactOpen === +id ? null : +id; renderMsgs(); break;
+    case 'react': { const m = findMsg(id), em = b.dataset.e; if (m.my[em]){ m.my[em] = false; m.r[em]--; } else { m.my[em] = true; m.r[em] = (m.r[em] || 0) + 1; } S.reactOpen = null; renderMsgs(); break; }
+    case 'report': reportModal(id); break;
+    case 'report-submit': {
+      const m = findMsg(id), reason = document.querySelector('input[name=rr]:checked').value;
+      m.reported = true; m.modId = S.cur.type === 'club' ? club(S.cur.club).mod : 'maya';
+      S.reports.unshift({text:mask(m.text), who:P[m.u].name, reason, where:where(), t:'Today, ' + clock()});
+      closeModal(); renderMsgs(); toast('Report sent. Thanks for keeping Treehouse safe.'); break;
+    }
+    case 'why': {
+      const m = findMsg(id);
+      modal(`<h2>Why was this hidden?</h2><p>A message from <b>${esc(P[m.u].name)}</b> asked you to ${esc(m.hidden)}. Treehouse hides messages that try to move chats to other apps, ask for photos, or ask where you live.</p><p>The moderator and your grown-up have been told. You don't need to do anything, and you're not in trouble.</p><div class="modal-foot"><button class="btn primary" data-act="modal-close">Got it</button></div>`);
+      break;
+    }
+    case 'sticker': send(b.dataset.e, true); break;
+    case 'suggest': S.cur.type === 'island' ? islandSay(b.dataset.t) : send(b.dataset.t); break;
+    case 'warn-close': S.warn = null; renderWarn(); break;
+    case 'add-friend':
+      modal(`<h2>Add a friend</h2><p>Type your friend's Treehouse name. Your grown-up has to say OK before you can chat.</p><label class="field">Friend's Treehouse name<input id="friendName" placeholder="e.g. JellyBean" maxlength="24"></label><div class="modal-foot"><button class="btn" data-act="modal-close">Cancel</button><button class="btn primary" data-act="add-friend-submit">Send request</button></div>`); break;
+    case 'add-friend-submit': {
+      const v = $('#friendName').value.trim(); if (!v) return;
+      const k = Object.keys(P).find(k => P[k].name.toLowerCase() === v.toLowerCase());
+      if (k && S.friends.includes(k)){ toast(`${P[k].name} is already your friend`); closeModal(); return; }
+      const nid = k || ('u' + uid++); if (!k) P[nid] = {name:v, av:'🙂', c:'#2A7FC4'};
+      if (!S.requests.find(r => r.id === nid)) S.requests.push({id:nid, from:'Asked by SkyFox', when:'Today, ' + clock()});
+      closeModal(); renderRail(); renderSide(); toast(`Request sent. Your grown-up will check it.`); break;
+    }
+    case 'pin-submit': checkPin(); break;
+    case 'p-approve': case 'p-decline': {
+      const r = S.requests.find(x => x.id === id); S.requests = S.requests.filter(x => x.id !== id);
+      if (a === 'p-approve'){ S.friends.push(id); M['dm:' + id] = [{id:uid++, sys:true, text:`You and ${P[id].name} are now friends. A grown-up said OK.`}]; toast(`${P[id].name} can now chat with SkyFox`); }
+      else toast(`Request from ${P[id].name} declined`);
+      renderParent(); break;
+    }
+    case 'p-toggle': { const k = b.dataset.k; S.settings[k] = !S.settings[k];
+      if (k === 'strict'){ ['dumb','noob','weirdo','trash'].forEach(w => { const i = MEAN.indexOf(w); if (!S.settings.strict && i > -1) MEAN.splice(i, 1); if (S.settings.strict && i < 0) MEAN.push(w); }); }
+      if (k === 'quietPreview' && S.settings.quietPreview) toast('Switch to kid view to see bedtime mode');
+      renderParent(); break; }
+    case 'p-club': { const c = club(id); c.allowed = !c.allowed;
+      if (!c.allowed && S.cur.club === id){ const f = CLUBS.find(x => x.joined && x.allowed); S.cur = f ? {type:'club', club:f.id, ch:f.chs[0][0]} : {type:'dm', id:S.friends[0]}; }
+      toast(c.allowed ? `${c.name} is now allowed` : `${c.name} is hidden from SkyFox`); renderParent(); break; }
+  }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#modalWrap').hidden) closeModal(); });
+
+renderAll();
+</script>
+
+</body>
+</html>
