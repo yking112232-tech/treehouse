@@ -205,6 +205,7 @@ svg{flex:none}
 .log-item:first-child{border-top:0}
 .tag{font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;white-space:nowrap;height:max-content}
 .tag.private{background:var(--coral-soft);color:var(--coral)}
+.tag.rude{background:var(--sun-soft);color:var(--ink)}
 .tag.mean{background:var(--sun-soft);color:var(--ink)}
 .tag.hidden{background:var(--grape-soft);color:var(--grape)}
 .tag.report{background:var(--coral);color:#fff}
@@ -276,6 +277,10 @@ select{border:1px solid var(--line);background:var(--surface);border-radius:9px;
 .hat-opt{display:flex;flex-direction:column;align-items:center;gap:2px;border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:4px 6px 6px;font-size:11px;min-width:64px}
 .hat-opt.on{border-color:var(--leaf);background:var(--leaf-soft)}
 .hat-opt[data-locked]{opacity:.55}
+.sw{position:relative}
+.price{position:absolute;right:-8px;bottom:-8px;font-size:10px;font-weight:600;background:var(--sun-soft);color:var(--ink);border-radius:8px;padding:0 4px;border:1px solid var(--line);white-space:nowrap}
+.hat-opt .price{position:static;margin-top:2px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
 .member .mini svg,.me-av svg{display:block}
 @media (prefers-reduced-motion:reduce){.ava.walking .body svg{animation:none}}
 @media (max-width:1150px){
@@ -454,7 +459,7 @@ const S = {
     {tag:'hidden', label:'Hidden from SkyFox', text:'hey whats ur snap? add me', where:'Block Builders · #general-chat', who:'newuser_77', why:'Asked to move to another app', t:'Today, 4:04 PM'},
     {tag:'private', label:'Blocked', text:'my school is Green•••••', where:'Homework Help · #science', who:'SkyFox', why:'School name', t:'Mon, 5:26 PM'}
   ],
-  reports:[], silly:true, look:{color:'#FF8A3D', hat:'beanie', scarf:'#2A7FC4'}, best:0, zone:'plaza', open:{plaza:true}, tip:0, tipHidden:false, warn:null, reactOpen:null, typing:null
+  reports:[], silly:false, look:{color:'#FF8A3D', hat:'beanie', scarf:'#2A7FC4'}, best:0, coins:20, owned:new Set(['hat:none','hat:beanie','color:#1E2A3A','color:#2A7FC4','color:#FF8A3D','scarf:none','scarf:#2A7FC4']), zone:'plaza', open:{plaza:true}, tip:0, tipHidden:false, warn:null, reactOpen:null, typing:null
 };
 
 const keyOf = c => c.type === 'island' ? 'island' : c.type === 'dm' ? 'dm:' + c.id : c.club + ':' + c.ch;
@@ -474,9 +479,12 @@ const PRIVATE = [
   {re:/\b(send|share) (me )?(a |your )?(pic|pics|photo|photos|selfie|picture)\b/i, kind:'a request for photos', short:'Photo request'},
   {re:/\b(meet (up|me)|how old are (you|u)|what'?s your real name|my real name is)\b/i, kind:'private info about you', short:'Personal info'}
 ];
+const RUDE = ['hell','damn','crap','wtf','omg','stfu','shit','fuck','bitch','ass','frick','heck no'];
+const whyOf = r => r.type === 'mean' ? 'Unkind word' : r.type === 'rude' ? 'Rude word' : r.short;
 function checkMsg(text){
   const n = text.toLowerCase().replace(/0/g,'o').replace(/1/g,'i').replace(/3/g,'e').replace(/@(?=\w)/g,'a').replace(/\$/g,'s');
   for (const p of PRIVATE) if (p.re.test(text) || (p.short !== 'Phone number' && p.re.test(n))) return {type:'private', ...p};
+  for (const w of RUDE) if (new RegExp('\\b' + w + '\\b').test(n)) return {type:'rude', word:w};
   for (const w of MEAN) if (new RegExp('\\b' + w.replace(' ', '\\s+') + '\\b').test(n)) return {type:'mean', word:w};
   return null;
 }
@@ -612,6 +620,12 @@ function renderWarn(){
   const box = $('#warnBox'); if (!box) return;
   const w = S.warn;
   if (!w){ box.innerHTML = ''; return; }
+  if (w.type === 'rude'){
+    box.innerHTML = `<div class="warn kind"><span class="big">🙊</span><div><h4>Oops, that word isn't allowed</h4><p>Treehouse is for kids, so words like "${esc(w.word)}" get blocked. It wasn't sent. Try one of these instead:</p>
+      <div class="chips">${['what the heck?','oh no!','huh??','that\'s so weird lol'].map(t => `<button class="chip" data-act="suggest" data-t="${esc(t)}">${esc(t)}</button>`).join('')}</div></div>
+      <button class="icon-btn" data-act="warn-close" aria-label="Close">${ICON.x}</button></div>`;
+    return;
+  }
   if (w.type === 'private'){
     box.innerHTML = `<div class="warn"><span class="big">🔒</span><div><h4>Whoa, that stays private!</h4><p>Your message looks like it has ${esc(w.kind)}. On Treehouse we never share where we live, our phone numbers, school names or other apps. It wasn't sent.</p></div><button class="icon-btn" data-act="warn-close" aria-label="Close">${ICON.x}</button></div>`;
   } else {
@@ -630,7 +644,7 @@ function send(text, sticker){
     const r = checkMsg(text);
     if (r){
       S.warn = r;
-      S.filterLog.unshift({tag:r.type, label:'Blocked', text:mask(text), where:where(), who:'SkyFox', why:r.type === 'mean' ? 'Unkind word' : r.short, t:'Today, ' + clock()});
+      S.filterLog.unshift({tag:r.type, label:'Blocked', text:mask(text), where:where(), who:'SkyFox', why:whyOf(r), t:'Today, ' + clock()});
       renderWarn(); return;
     }
   }
@@ -702,19 +716,37 @@ function topicWord(t){
 }
 function brain(text, who, k){
   const t = text.toLowerCase().trim(), p = PERSONA[who] || PERSONA.panda, fk = k + ':' + who;
-  if (/^(hi|hello|hey|hiya|yo|sup|good (morning|afternoon|evening))\b/.test(t)) return p.hi + ' ' + fresh(fk + 'ask', p.ask);
+  const me = S.nick || 'SkyFox';
+  const nm = text.match(/\b(?:my name is|my name's|i'm called|im called|call me)\s+([a-z][\w-]{1,15})/i);
+  if (nm){
+    const first = !S.nick; S.nick = nm[1][0].toUpperCase() + nm[1].slice(1);
+    return fresh(fk + 'nm', [`nice to meet you, ${S.nick}! 👋`, `${S.nick}! that's such a cool name`, `hi ${S.nick}! I'm ${P[who].name}`]) + (first ? ' (good job using a nickname, real names stay secret here 🔒)' : '');
+  }
+  if (/what('?s| is) my name/.test(t)) return S.nick ? `your name is ${S.nick}! I remembered 😎` : `you're SkyFox! unless you have a nickname? tell me!`;
+  if (/^(what|wat|huh|hm+|what\?+|what do (you|u) mean|i don'?t get it|that makes no sense|what are (you|u) (saying|talking about)|that'?s random|why would you say that)[?!. ]*$/.test(t))
+    return fresh(fk + 'cf', ['sorry, I got mixed up 😅 what were you saying?', 'oops, my brain glitched. can you say it again?', 'haha sorry, I wasn\'t paying attention. what\'s up?']);
+  if (/\b(you'?re|ur|you are|u r) (so )?(bad|weird|annoying|boring|not funny|confusing)\b|bad (bot|answer|response)/.test(t))
+    return fresh(fk + 'sorry', ['sorry 😅 I\'ll try to be better! what do you want to talk about?', 'oops, my bad. ask me anything!', 'ok ok I\'ll stop being weird lol. what\'s up?']);
+  const like = t.match(/\bi (?:really |kinda |also )?(?:like|love|enjoy|adore) ([a-z' ]{2,30})/);
+  const have = t.match(/\bi (?:have|got) ((?:a |an |two |some )?[a-z' ]{2,25})/);
+  const made = t.match(/\bi (?:made|built|drew|painted|finished|wrote) (?:a |an |my )?([a-z' ]{2,25})/);
+  const ph = m => m[1].trim().split(/\s+/).slice(0, 3).join(' ').replace(/\b(and|but|so|because|too)$/, '').trim();
+  if (/^(hi|hello|hey|hiya|yo|sup|good (morning|afternoon|evening))\b/.test(t) && !like && !have) return p.hi.replace('SkyFox', me) + ' ' + fresh(fk + 'ask', p.ask);
   if (/how are (you|u)|how r u|how('s| is) it going/.test(t)) return fresh(fk + 'hru', ['I\'m good! just building stuff. how are you?','great!! I finished my homework early','kinda tired but happy. you?']);
   if (/(who are (you|u)|what('?s| is) (your|ur) name|about (you|yourself))/.test(t)) return p.me + '!';
   const fav = t.match(/fav(ou?rite)? (\w+)/);
   if (fav && /\?|what|whats/.test(t)) return `my favourite ${fav[2]} is ${FAV[fav[2]] || 'hmm... too hard to pick'}! what's yours?`;
   const math = mathAnswer(t); if (math) return math;
+  if (made) return fresh(fk + 'made', [`wow, you made ${ph(made)}? that's awesome!`, `no way! I wanna see your ${ph(made)}`, `${ph(made)}?! you're so talented, ${me}`]);
+  if (like) return fresh(fk + 'like', [`you like ${ph(like)}? me too!!`, `ooh ${ph(like)} is awesome. what's your favourite thing about it?`, `${ph(like)}! good choice, ${me}`]);
+  if (have) return fresh(fk + 'have', [`you have ${ph(have)}? lucky!`, `cool! tell me about your ${ph(have).replace(/^(a|an|two|some) /, '')}`, `I wish I had ${ph(have)} too`]);
   for (const tp of TOPICS) if (tp.re.test(t)) return fresh(fk + tp.re.source, tp.lines);
   if (/^(haha|lol|lmao|😂)/.test(t)) return pick(p.laugh);
   if (SHORT.test(t) || t.length < 5) return fresh(fk + 'ask', p.ask);
   const w = topicWord(t);
   if (/\?$|^(what|how|why|can|do|does|is|are|will|should|which|where|when)\b/.test(t))
     return fresh(fk + 'q', ['good question! what do you think?', 'hmm I\'m not sure, maybe ask Coach Maya?', w ? `I don't know much about ${w}, can you teach me?` : 'ooh I wanna know too', 'I think so!']);
-  if (w) return fresh(fk + 'w', [`wait, ${w}? tell me more!`, `${w} sounds so cool`, `I\'ve never tried ${w} before`, `haha I love ${w}`, `ooh ${w}! ${pick(p.ask)}`]);
+  return fresh(fk + 'gen', ['oh cool! tell me more', 'haha nice', 'really? that\'s awesome', 'ooh, what happened next?', `that's so cool, ${me}!`, pick(p.ask)]);
   return fresh(fk + 'ask', p.ask);
 }
 /* ---------- Silly mode: bots think in funny, upside-down ways ---------- */
@@ -725,9 +757,10 @@ function silly(text, who, k){
   if (m) return fresh(fk + 'm', [`${m[1]} ${m[2]} ${m[3]} = ${pick(['BANANA','purple','two llamas','a million and 3','7. it\'s always 7'])}. I checked with my cat 🐱`, `easy, it's ${+m[1] + +m[3] + 1000}. I counted my toes twice`, `that equals a pizza 🍕 everything equals pizza if you believe`]);
   if (/^(hi|hello|hey|yo|sup)\b/.test(t)) return fresh(fk + 'h', ['hello! I just woke up. it\'s 3 o\'clock in banana time','HI! did you know my shoe is named Gerald?','greetings, earthling 👽 (just kidding I\'m a panda. or am I)']);
   if (/\?$/.test(t)) return fresh(fk + 'q', ['yes. no. maybe. BANANA 🍌','the answer is inside a sandwich somewhere 🥪','only a duck would know that 🦆 go ask a duck','I asked my pet rock and it said nothing, so... yes?']);
-  if (w) return fresh(fk + 'w', [`${w}?? I think ${w} is secretly a potato wearing a hat 🥔🎩`, `my grandma says ${w} only works on Tuesdays`, `I tried ${w} once and my shoes started singing 🎶`, `${w} is my second favourite thing after ${pick(['socks','clouds','spaghetti','the number 4'])}`, `wait, is ${w} a type of cheese? 🧀`, `${w} sounds like something a dragon eats for breakfast 🐉`, `if you say ${w} backwards three times a llama appears`]);
+  if (false) return fresh(fk + 'w', [`${w}?? I think ${w} is secretly a potato wearing a hat 🥔🎩`, `my grandma says ${w} only works on Tuesdays`, `I tried ${w} once and my shoes started singing 🎶`, `${w} is my second favourite thing after ${pick(['socks','clouds','spaghetti','the number 4'])}`, `wait, is ${w} a type of cheese? 🧀`, `${w} sounds like something a dragon eats for breakfast 🐉`, `if you say ${w} backwards three times a llama appears`]);
   return fresh(fk + 'f', [`fun fact: ${pick(SILLY_FACTS)}`, 'I agree, because penguins can\'t fly and neither can my homework', 'hold on, my sandwich is calling me 📞🥪', 'that\'s exactly what my pet rock said', 'I have no idea but I\'m going to nod like I do']);
 }
+const NOSILLY = /my name|call me|what|huh|who are|how are|mean|bad|weird|\?$/i;
 const SERIOUS = /\b(sad|upset|lonely|scared|worried|crying|bad day|hurt|help|rules?|report|mod|moderator)\b/i;
 const CHIME = ['same!!','haha yes','+1','that\'s what I was gonna say','lol'];
 let replyTimer = [];
@@ -752,7 +785,7 @@ function fakeReply(text, sticker){
     who = mention || (/\b(rule|rules|mod|moderator|help me|report)\b/i.test(text) ? c.mod : pick(c.members));
   }
   if (Math.random() < .45 && mine){ const e = pick(['❤️','⭐','👍','😂']); mine.r[e] = (mine.r[e] || 0) + 1; renderMsgs(); }
-  const answer = sticker ? pick(['haha ' + text, text + text, 'love that sticker', pick(PERSONA[who]?.laugh || ['lol'])]) : (S.silly && Math.random() < .65 && !SERIOUS.test(text) ? silly(text, who, k) : brain(text, who, k));
+  const answer = sticker ? pick(['haha ' + text, text + text, 'love that sticker', pick(PERSONA[who]?.laugh || ['lol'])]) : (S.silly && Math.random() < .35 && !SERIOUS.test(text) && !NOSILLY.test(text) ? silly(text, who, k) : brain(text, who, k));
   say(k, who, answer, 600, () => {
     if (cur.type === 'club' && Math.random() < .35){
       const other = pick(club(cur.club).members.filter(m => m !== who));
@@ -831,6 +864,8 @@ const HATS = [
   {id:'flower', name:'Flower'}, {id:'headphones', name:'Headphones'}, {id:'bow', name:'Bow'},
   {id:'crown', name:'Crown', pass:true}, {id:'wizard', name:'Wizard hat', pass:true}
 ];
+const PRICE = {hat:{beanie:0, party:30, cap:25, flower:20, headphones:40, bow:20}, color:15, scarf:10};
+const priceOf = (k, v) => k === 'hat' ? (PRICE.hat[v] ?? 0) : PRICE[k];
 const SCARVES = ['none','#E8553F','#2A7FC4','#F5B521','#1F8F57','#EC6FAE','#8E5BD8','#FFFFFF'];
 const LOOKS = {
   panda:{color:'#1E2A3A', hat:'headphones', scarf:'#EC6FAE'}, whale:{color:'#2A7FC4', hat:'cap', scarf:'none'},
@@ -879,8 +914,9 @@ function islandSide(){
     <div class="side-body"><div><div class="group-label">Places</div><div class="nav-list">
     ${Object.entries(ZONES).map(([id, z]) => `<button class="nav-item zone-item ${S.zone === id ? 'on' : ''}" data-act="zone" data-id="${id}"><span style="font-size:18px">${z.icon}</span>${z.name}${S.open[id] ? '' : `<span class="lock">${ICON.lock} Pass</span>`}</button>`).join('')}
     </div></div>
-    <div><div class="group-label">My penguin</div><div class="nav-list"><button class="nav-item" data-act="customize"><span style="font-size:18px">🎨</span>Design my penguin</button></div></div>
+    <div><div class="group-label">My penguin</div><div class="nav-list"><button class="nav-item" data-act="customize"><span style="font-size:18px">🛍️</span>Penguin shop</button></div></div>
     <div><div class="group-label">Minigames</div><div class="nav-list"><button class="nav-item" data-act="play-game"><span style="font-size:18px">🌰</span>Acorn Catch</button></div></div>
+    <div class="nav-list"><span class="coins" style="align-self:flex-start">🪙 ${S.coins} coins</span></div>
     </div>${foot}`;
 }
 function islandMembers(){
@@ -912,12 +948,13 @@ function renderIsland(){
     <div class="chat-head">
       <button class="icon-btn menu-btn" data-act="drawer" aria-label="Open places">${ICON.menu}</button>
       <div class="grow"><h3><span style="font-size:20px">${z.icon}</span> ${z.name}</h3><p>${esc(z.about)}. Click anywhere to waddle there.</p></div>
-      <button class="btn" data-act="customize">🎨 My penguin</button>
+      <span class="coins">🪙 ${S.coins}</span>
+      <button class="btn" data-act="customize">🛍️ Shop</button>
       ${S.member ? '' : '<button class="btn" data-act="pass">⭐ Island Pass</button>'}
       <button class="btn primary" data-act="play-game">🌰 Acorn Catch</button>
     </div>
     <div class="scene ${S.zone}" id="scene" aria-label="${esc(z.name)}. Click to walk."></div>
-    <p class="isl-note">Click anywhere to waddle. Type below to talk in a speech bubble.</p>
+    <p class="isl-note">Click anywhere to waddle. Earn coins in Acorn Catch and spend them in the shop. Coins are pretend and can't be bought with real money.</p>
     <div class="composer" style="padding-top:8px"><div id="warnBox"></div>
       <form class="compose-row" id="islandForm" autocomplete="off">
         <input id="islandInput" maxlength="120" placeholder="Say something in a bubble…" aria-label="Say something">
@@ -949,14 +986,14 @@ function islandSay(text){
   const r = checkMsg(text);
   if (r){
     S.warn = r; renderWarn();
-    S.filterLog.unshift({tag:r.type, label:'Blocked', text:mask(text), where:'Treehouse Island · ' + ZONES[S.zone].name, who:'SkyFox', why:r.type === 'mean' ? 'Unkind word' : r.short, t:'Today, ' + clock()});
+    S.filterLog.unshift({tag:r.type, label:'Blocked', text:mask(text), where:'Treehouse Island · ' + ZONES[S.zone].name, who:'SkyFox', why:whyOf(r), t:'Today, ' + clock()});
     return;
   }
   S.warn = null; renderWarn(); $('#islandInput').value = ''; S.sentNow++;
   bubble('me', text);
   const z = ZONES[S.zone];
   const near = z.bots.slice().sort((a, b) => Math.hypot(POS[a].x - POS.me.x, POS[a].y - POS.me.y) - Math.hypot(POS[b].x - POS.me.x, POS[b].y - POS.me.y))[0];
-  const ans = S.silly && Math.random() < .65 && !SERIOUS.test(text) ? silly(text, near, 'island') : brain(text, near, 'island');
+  const ans = S.silly && Math.random() < .35 && !SERIOUS.test(text) && !NOSILLY.test(text) ? silly(text, near, 'island') : brain(text, near, 'island');
   setTimeout(() => placeAv(near, Math.min(92, POS.me.x + (POS.me.x > 50 ? -12 : 12)), POS.me.y, true), 300);
   setTimeout(() => bubble(near, ans), 1500);
 }
@@ -970,22 +1007,39 @@ function zoneClick(id){
 /* ---------- Penguin designer ---------- */
 function customize(){
   S.draft = {...S.look};
-  const sw = (list, key, f) => list.map(v => f(v)).join('');
-  modal(`<h2>🎨 Design your penguin</h2>
+  const tag = (k, v) => S.owned.has(k + ':' + v) ? '' : S.member ? `<span class="price">Free</span>` : `<span class="price">🪙${priceOf(k, v)}</span>`;
+  modal(`<h2>🛍️ Penguin shop</h2>
+    <div style="display:flex;justify-content:space-between;align-items:center"><p>${S.member ? 'Island Pass: everything is free! ⭐' : 'Tap something to try it on. Things with a price cost coins.'}</p><span class="coins" id="shopCoins">🪙 ${S.coins}</span></div>
     <div style="display:grid;place-items:center;padding:6px;border-radius:16px;background:var(--surface-2)" id="pPreview">${penguinSVG(S.draft, 110)}</div>
     <div class="group-label" style="padding:0">Colour</div>
-    <div class="swatches">${sw(PCOLORS, 'color', c => `<button class="sw ${S.draft.color === c ? 'on' : ''}" data-act="look" data-k="color" data-v="${c}" style="background:${c}" aria-label="Colour ${c}"></button>`)}</div>
+    <div class="swatches">${PCOLORS.map(c => `<button class="sw ${S.draft.color === c ? 'on' : ''}" data-act="look" data-k="color" data-v="${c}" style="background:${c}" aria-label="Colour ${c}">${tag('color', c)}</button>`).join('')}</div>
     <div class="group-label" style="padding:0">Hat</div>
-    <div class="swatches">${sw(HATS, 'hat', h => { const locked = h.pass && !S.member; return `<button class="hat-opt ${S.draft.hat === h.id ? 'on' : ''}" data-act="look" data-k="hat" data-v="${h.id}" ${locked ? 'data-locked="1"' : ''} title="${h.name}${locked ? ' (Island Pass)' : ''}">${penguinSVG({color:'#C9D3DC', hat:h.id, scarf:'none'}, 34)}<span>${h.name}${locked ? ' 🔒' : ''}</span></button>`; })}</div>
+    <div class="swatches">${HATS.map(h => { const locked = h.pass && !S.member; return `<button class="hat-opt ${S.draft.hat === h.id ? 'on' : ''}" data-act="look" data-k="hat" data-v="${h.id}" ${locked ? 'data-locked="1"' : ''} title="${h.name}">${penguinSVG({color:'#C9D3DC', hat:h.id, scarf:'none'}, 34)}<span>${h.name}${locked ? ' 🔒' : ''}</span>${h.pass ? '' : tag('hat', h.id)}</button>`; }).join('')}</div>
     <div class="group-label" style="padding:0">Scarf</div>
-    <div class="swatches">${sw(SCARVES, 'scarf', c => `<button class="sw ${S.draft.scarf === c ? 'on' : ''}" data-act="look" data-k="scarf" data-v="${c}" style="background:${c === 'none' ? 'repeating-linear-gradient(45deg,var(--surface),var(--surface) 4px,var(--line) 4px,var(--line) 8px)' : c}" aria-label="${c === 'none' ? 'No scarf' : 'Scarf ' + c}"></button>`)}</div>
-    <div class="modal-foot"><button class="btn" data-act="modal-close">Cancel</button><button class="btn primary" data-act="look-save">Save my penguin</button></div>`);
+    <div class="swatches">${SCARVES.map(c => `<button class="sw ${S.draft.scarf === c ? 'on' : ''}" data-act="look" data-k="scarf" data-v="${c}" style="background:${c === 'none' ? 'repeating-linear-gradient(45deg,var(--surface),var(--surface) 4px,var(--line) 4px,var(--line) 8px)' : c}" aria-label="${c === 'none' ? 'No scarf' : 'Scarf ' + c}">${tag('scarf', c)}</button>`).join('')}</div>
+    <div class="err" id="shopMsg" style="text-align:left"></div>
+    <div class="modal-foot"><button class="btn" data-act="modal-close">Cancel</button><button class="btn primary" id="shopSave" data-act="look-save">Wear it!</button></div>`);
+  shopCheck();
 }
 function setLook(b){
   if (b.dataset.locked){ toast('That hat comes with the Island Pass'); return; }
   S.draft[b.dataset.k] = b.dataset.v;
   $('#pPreview').innerHTML = penguinSVG(S.draft, 110);
   b.parentElement.querySelectorAll('.on').forEach(x => x.classList.remove('on')); b.classList.add('on');
+  shopCheck();
+}
+function shopCost(){ if (S.member) return 0; return ['color','hat','scarf'].reduce((n, k) => n + (S.owned.has(k + ':' + S.draft[k]) || (k === 'hat' && HATS.find(h => h.id === S.draft.hat)?.pass) ? 0 : priceOf(k, S.draft[k])), 0); }
+function shopCheck(){
+  const cost = shopCost(), btn = $('#shopSave'), msg = $('#shopMsg');
+  if (!btn) return;
+  btn.textContent = cost ? `Buy & wear for 🪙 ${cost}` : S.member ? 'Wear it! (free with Island Pass)' : 'Wear it!';
+  btn.disabled = cost > S.coins;
+  msg.textContent = cost > S.coins ? `You need ${cost - S.coins} more coins. Play Acorn Catch to earn them!` : '';
+}
+function shopSave(){
+  const cost = shopCost(); if (cost > S.coins) return;
+  S.coins -= cost; ['color','hat','scarf'].forEach(k => S.owned.add(k + ':' + S.draft[k]));
+  S.look = {...S.draft}; saveGame(); closeModal(); toast(cost ? `Bought for ${cost} coins. Looking good, penguin!` : 'Looking good, penguin!'); renderKid();
 }
 
 /* ---------- Island Pass: grown-up gate + pretend checkout (no card details, no real money) ---------- */
@@ -1008,6 +1062,7 @@ function passOffer(){
     <p><b>For grown-ups.</b> The Island Pass unlocks the whole island for your child:</p>
     <ul style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:14px">
       <li>Every place: Sunny Beach and Snowy Mountain</li>
+      <li>Everything in the penguin shop is free</li>
       <li>Special penguin hats: the crown and the wizard hat</li>
       <li>A gold ⭐ Member badge on their name</li>
     </ul>
@@ -1016,7 +1071,7 @@ function passOffer(){
     <div class="modal-foot"><button class="btn" data-act="modal-close">Not now</button><button class="btn primary" data-act="pass-buy">Unlock Island Pass (demo, free)</button></div>`);
 }
 function passBuy(){
-  S.member = true; Object.keys(ZONES).forEach(z => S.open[z] = true);
+  S.member = true; Object.keys(ZONES).forEach(z => S.open[z] = true); saveGame();
   closeModal(); toast('Island Pass unlocked! The whole island is open.'); renderKid();
   if (AV.me) bubble('me', 'I got the Island Pass! ⭐');
 }
@@ -1028,7 +1083,7 @@ function startGame(){
   const wrap = document.createElement('div'); wrap.className = 'game-wrap'; wrap.id = 'gameWrap';
   wrap.innerHTML = `<div class="game" role="dialog" aria-modal="true" aria-label="Acorn Catch">
     <h2>🌰 Acorn Catch</h2>
-    <p>Move the basket with your mouse, finger or arrow keys. 🌰 = 1 point, ⭐ = 5 points. Dodge the 🐛 bugs!</p>
+    <p>Move the basket with your mouse, finger or arrow keys. 🌰 = 1 coin, ⭐ = 5 coins. Dodge the 🐛 bugs!</p>
     <div class="hud"><span id="gScore">Score 0</span><span id="gLives">❤️❤️❤️</span><span id="gTime">⏱ 30</span></div>
     <canvas id="gCanvas" width="360" height="480"></canvas>
     <div class="modal-foot" id="gFoot"><span style="margin-right:auto;font-size:13px;color:var(--muted)">Best: ${S.best}</span><button class="btn" data-act="game-close">Stop playing</button></div></div>`;
@@ -1075,12 +1130,13 @@ function tick(now){
 }
 function endGame(){
   G.over = true;
-  const record = G.score > S.best; if (record) S.best = G.score;
+  const record = G.score > S.best; if (record) S.best = G.score; S.coins += G.score;
   const ctx = G.ctx; ctx.fillStyle = 'rgba(255,255,255,.88)'; ctx.fillRect(0, 150, 360, 170);
   ctx.fillStyle = '#15302D'; ctx.font = '700 28px system-ui'; ctx.fillText(G.lives <= 0 ? 'Bugged out!' : 'Time\'s up!', 180, 200);
-  ctx.font = '600 22px system-ui'; ctx.fillText(`Score: ${G.score}`, 180, 245);
-  ctx.font = '16px system-ui'; ctx.fillText(record ? '🏆 New best score!' : `Best: ${S.best}`, 180, 282);
+  ctx.font = '600 22px system-ui'; ctx.fillText(`You earned 🪙 ${G.score} coins`, 180, 245);
+  ctx.font = '16px system-ui'; ctx.fillText(`${record ? '🏆 New best! · ' : ''}You have ${S.coins} coins`, 180, 282);
   $('#gFoot').innerHTML = `<button class="btn" data-act="game-close">Back to the island</button><button class="btn primary" data-act="play-game">Play again</button>`;
+  if (S.cur.type === 'island'){ islandSide(); const c = document.querySelector('.chat-head .coins'); if (c) c.textContent = '🪙 ' + S.coins; }
   if (record && AV.me) bubble('me', `new best score: ${G.score}! 🏆`);
 }
 function stopGame(){
@@ -1130,6 +1186,7 @@ function renderParent(){
           <p class="desc">Every club has a trained, ID-checked moderator.</p>
           <div>${CLUBS.map(c => `<div class="row"><span class="av" style="background:${tint(c.c, 25)};border-radius:14px">${c.icon}</span><div class="grow"><b>${esc(c.name)}</b><div class="sub">${c.joined && c.allowed ? 'Joined' : c.allowed ? 'Allowed, not joined' : 'Not allowed'} · ${esc(P[c.mod].name)}</div></div><button class="switch" role="switch" aria-checked="${c.allowed}" aria-label="Allow ${esc(c.name)}" data-act="p-club" data-id="${c.id}"></button></div>`).join('')}</div>
         </section>
+        ${saveCardHTML()}
       </div>
     </div></div>`;
   $('#limitSel').addEventListener('change', e => { S.settings.limit = +e.target.value; renderTop(); renderParent(); toast(`Daily limit set to ${S.settings.limit} minutes`); });
@@ -1152,9 +1209,12 @@ document.addEventListener('click', e => {
     case 'pass': passGate(); break;
     case 'customize': customize(); break;
     case 'look': setLook(b); break;
-    case 'look-save': S.look = {...S.draft}; closeModal(); toast('Looking good, penguin!'); renderKid(); break;
+    case 'look-save': shopSave(); break;
     case 'gate-check': gateCheck(); break;
     case 'pass-buy': passBuy(); break;
+    case 'cloud-in': cloudSignIn(); break;
+    case 'cloud-out': cloudSignOut(); break;
+    case 'p-reset': S.coins = 20; S.owned = new Set(['hat:none','hat:beanie','color:#1E2A3A','color:#2A7FC4','color:#FF8A3D','scarf:none','scarf:#2A7FC4']); S.look = {color:'#FF8A3D', hat:'beanie', scarf:'#2A7FC4'}; S.best = 0; S.member = false; S.open = {plaza:true}; S.zone = 'plaza'; saveGame(); renderParent(); toast('Island progress reset'); break;
     case 'game-close': stopGame(); break;
     case 'club': closeModal(); go({type:'club', club:id, ch:S.lastCh[id] || club(id).chs[0][0]}); break;
     case 'channel': S.lastCh[S.cur.club] = id; go({type:'club', club:S.cur.club, ch:id}); break;
@@ -1213,6 +1273,83 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#modalWrap').hidden) closeModal(); });
 
+/* ---------- Saving: this browser (always) + Firebase cloud backup (when set up) ---------- */
+// GROWN-UPS: paste your Firebase web app config between the braces to turn on cloud saves, e.g.
+// const FIREBASE_CONFIG = { apiKey: "...", authDomain: "...", projectId: "...", appId: "..." };
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAyhsgt77Sm9t_m7yUHYqKrk3OIR0kVNd4",
+  authDomain: "treehouse-island.firebaseapp.com",
+  projectId: "treehouse-island",
+  storageBucket: "treehouse-island.firebasestorage.app",
+  messagingSenderId: "204835133692",
+  appId: "1:204835133692:web:a125ec6c138ce358e25f79"
+};
+const SAVE_KEY = 'treehouse-save-v1';
+const CLOUD = {ready:false, user:null};
+const snapshot = () => ({coins:S.coins, owned:[...S.owned], look:S.look, best:S.best, member:!!S.member, open:S.open, silly:S.silly});
+function applySave(d){
+  if (!d) return;
+  if (typeof d.coins === 'number') S.coins = d.coins;
+  if (Array.isArray(d.owned)) S.owned = new Set(d.owned);
+  if (d.look && d.look.color) S.look = d.look;
+  if (typeof d.best === 'number') S.best = d.best;
+  S.member = !!d.member; if (d.open) S.open = d.open;
+  if (typeof d.silly === 'boolean') S.silly = d.silly;
+}
+function saveLocal(){
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(snapshot()));
+    if (S.nick) localStorage.setItem(SAVE_KEY + '-nick', S.nick);
+  } catch (e) {}
+}
+let lastCloud = '';
+async function saveCloud(){
+  if (!CLOUD.user) return;
+  const data = JSON.stringify(snapshot()); if (data === lastCloud) return; lastCloud = data;
+  try { await CLOUD.fs.setDoc(CLOUD.fs.doc(CLOUD.db, 'saves', CLOUD.user.uid), {...snapshot(), updatedAt:Date.now()}); }
+  catch (e) { console.warn('Cloud save failed', e); lastCloud = ''; }
+}
+function saveGame(){ saveLocal(); saveCloud(); }
+async function initCloud(){
+  if (!FIREBASE_CONFIG) return;
+  try {
+    const base = 'https://www.gstatic.com/firebasejs/13.0.0/';
+    const [app, auth, fs] = await Promise.all([import(base + 'firebase-app.js'), import(base + 'firebase-auth.js'), import(base + 'firebase-firestore.js')]);
+    const a = app.initializeApp(FIREBASE_CONFIG);
+    Object.assign(CLOUD, {auth:auth.getAuth(a), A:auth, db:fs.getFirestore(a), fs, ready:true});
+    auth.onAuthStateChanged(CLOUD.auth, async u => {
+      CLOUD.user = u;
+      if (u){
+        try {
+          const snap = await fs.getDoc(fs.doc(CLOUD.db, 'saves', u.uid));
+          if (snap.exists()){ applySave(snap.data()); lastCloud = JSON.stringify(snapshot()); toast('Cloud save loaded'); }
+          else await saveCloud();
+        } catch (e) { console.warn('Cloud load failed', e); toast('Couldn\'t reach the cloud save. Progress still saves in this browser.'); }
+      }
+      renderAll();
+    });
+    if (S.view === 'parent') renderParent();
+  } catch (e) { console.warn('Cloud save unavailable', e); }
+}
+async function cloudSignIn(){
+  try { await CLOUD.A.signInWithPopup(CLOUD.auth, new CLOUD.A.GoogleAuthProvider()); }
+  catch (e) { toast('Sign-in didn\'t finish. Please try again.'); }
+}
+async function cloudSignOut(){ await CLOUD.A.signOut(CLOUD.auth); toast('Signed out. Progress still saves in this browser.'); }
+function saveCardHTML(){
+  let status;
+  if (!FIREBASE_CONFIG) status = `<div class="row"><div class="grow"><b>Cloud backup is off</b><div class="sub">Progress saves in this browser only. Add your Firebase settings to back it up and use it on any device.</div></div></div>`;
+  else if (!CLOUD.ready) status = `<div class="row"><div class="grow"><b>Connecting to cloud backup…</b><div class="sub">If this doesn't change, check the Firebase settings.</div></div></div>`;
+  else if (!CLOUD.user) status = `<div class="row"><div class="grow"><b>Cloud backup is ready</b><div class="sub">Sign in with the grown-up's Google account to back up progress.</div></div><button class="btn primary" data-act="cloud-in">Sign in with Google</button></div>`;
+  else status = `<div class="row"><div class="grow"><b>Backed up to the cloud ✓</b><div class="sub">Signed in as ${esc(CLOUD.user.email || 'grown-up')}</div></div><button class="btn" data-act="cloud-out">Sign out</button></div>`;
+  return `<section class="card"><h2>Saving</h2><p class="desc">Saves coins, shop items, the penguin's look and best score. Chats and nicknames are never uploaded.</p><div>${status}
+    <div class="row"><div class="grow"><b>Island progress</b><div class="sub">Reset coins, shop items and the Island Pass</div></div><button class="btn" data-act="p-reset">Start over</button></div></div></section>`;
+}
+try { applySave(JSON.parse(localStorage.getItem(SAVE_KEY) || 'null')); S.nick = localStorage.getItem(SAVE_KEY + '-nick') || S.nick; } catch (e) {}
+setInterval(saveGame, 3000);
+addEventListener('pagehide', saveLocal);
+addEventListener('visibilitychange', () => { if (document.hidden) saveGame(); });
+initCloud();
 renderAll();
 </script>
 
