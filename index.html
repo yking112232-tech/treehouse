@@ -247,6 +247,8 @@ select{border:1px solid var(--line);background:var(--surface);border-radius:9px;
 .coins{display:inline-flex;align-items:center;gap:6px;background:var(--sun-soft);color:var(--ink);padding:6px 12px;border-radius:99px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
 .scene{position:relative;flex:1;min-height:260px;overflow:hidden;cursor:pointer;margin:12px 18px 0;border-radius:18px;user-select:none;-webkit-user-select:none;touch-action:manipulation;isolation:isolate}
 .island .chat-head h3{white-space:nowrap}
+.island .chat-head{flex-wrap:wrap;row-gap:8px}
+.island .chat-head .grow{min-width:180px}
 .scene.plaza{background:linear-gradient(#BFE6FF 0 34%,#9ED98F 34% 100%)}
 .scene.beach{background:linear-gradient(#BDE8FF 0 26%,#3FA9D9 26% 44%,#F4DDA0 44% 100%)}
 .scene.snow{background:linear-gradient(#CFE0F2 0 34%,#F4F8FC 34% 100%)}
@@ -277,6 +279,51 @@ select{border:1px solid var(--line);background:var(--surface);border-radius:9px;
 .hat-opt{display:flex;flex-direction:column;align-items:center;gap:2px;border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:4px 6px 6px;font-size:11px;min-width:64px}
 .hat-opt.on{border-color:var(--leaf);background:var(--leaf-soft)}
 .hat-opt[data-locked]{opacity:.55}
+.scene.cave{background:radial-gradient(ellipse at 50% 70%,#55447A 0,#2C2344 55%,#16111F 100%)}
+.scene.candy{background:linear-gradient(#FFD9EE 0 34%,#FFB7DA 34% 36.5%,#FFE9B0 36.5% 100%)}
+.scene.volcano{background:linear-gradient(#FFB98A 0 36%,#8E5A44 36% 100%)}
+.treasure{border:0;background:none;padding:0;font-size:22px;opacity:.72;cursor:pointer;pointer-events:auto;filter:drop-shadow(0 0 3px rgba(255,255,255,.6))}
+.treasure:hover{opacity:1;transform:translate(-50%,-100%) scale(1.25)}
+.scene.party::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:5000;background:repeating-conic-gradient(from 0deg at 50% -10%,rgba(255,90,170,.16) 0 9deg,rgba(80,200,255,.16) 9deg 18deg,rgba(255,220,70,.16) 18deg 27deg);animation:lights 3s linear infinite alternate}
+@keyframes lights{from{filter:hue-rotate(0deg)}to{filter:hue-rotate(160deg)}}
+.scene.party .ava:not(.walking) .body svg,.scene.party .ava.pet .body{animation:dance .42s ease-in-out infinite alternate}
+@keyframes dance{from{transform:translateY(0) rotate(-6deg)}to{transform:translateY(-7px) rotate(6deg)}}
+.bunting{position:absolute;top:4px;left:0;right:0;white-space:nowrap;overflow:hidden;font-size:22px;letter-spacing:6px;text-align:center;pointer-events:none;z-index:4000}
+@media (prefers-reduced-motion:reduce){.scene.party::after,.scene.party .ava .body svg{animation:none}}
+.decor.click{pointer-events:auto;cursor:pointer;border:0;background:none;padding:0}
+.furn.click{pointer-events:auto;cursor:pointer}
+.decor.boing{animation:boing .5s ease}
+@keyframes boing{0%{transform:translate(-50%,-100%) scale(1)}30%{transform:translate(-50%,-100%) scale(1.25,.8)}60%{transform:translate(-50%,-100%) scale(.9,1.15)}100%{transform:translate(-50%,-100%) scale(1)}}
+.scene.aiming{cursor:crosshair}
+.emotes{display:flex;gap:6px;flex-wrap:wrap;padding:10px 18px 0}
+.emo-btn{display:flex;align-items:center;gap:6px;border:1.5px solid var(--line);background:var(--surface);border-radius:99px;padding:5px 12px 5px 9px;font-size:17px}
+.emo-btn span{font-size:13px;font-weight:500}
+.emo-btn:hover{border-color:var(--leaf)}
+.emo-btn.on{border-color:var(--leaf);background:var(--leaf-soft)}
+.ava.e-jump .body{animation:hop .5s ease-out 2}
+@keyframes hop{0%,100%{transform:translateY(0)}45%{transform:translateY(-26px)}}
+.ava.e-wave .body svg{animation:wiggle .18s ease-in-out 6 alternate;transform-origin:50% 90%}
+@keyframes wiggle{from{transform:rotate(-12deg)}to{transform:rotate(12deg)}}
+.ava.e-dance .body svg{animation:dance .32s ease-in-out infinite alternate}
+.emo-pop{position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);font-size:26px;white-space:nowrap;animation:floatup 1.6s ease-out forwards;pointer-events:none}
+@keyframes floatup{from{opacity:0;transform:translate(-50%,8px)}20%{opacity:1}to{opacity:0;transform:translate(-50%,-30px)}}
+.snowball{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:#fff;box-shadow:0 0 0 1.5px #BFD7EA,0 3px 6px rgba(0,0,0,.2);transition:left .5s ease-out,top .5s cubic-bezier(.3,-.6,.6,1);z-index:6000;pointer-events:none;font-size:22px;line-height:16px;text-align:center}
+.snowball.splat{background:none;box-shadow:none;transform:scale(1.4);transition:transform .2s}
+.stamp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.stamp{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;padding:10px 8px;border:1.5px dashed var(--line);border-radius:14px;opacity:.6}
+.stamp.got{border-style:solid;border-color:var(--leaf);background:var(--leaf-soft);opacity:1}
+.stamp .st-e{font-size:30px}
+.stamp b{font-size:13px}
+.stamp small{font-size:11px;color:var(--muted);line-height:1.3}
+@media (prefers-reduced-motion:reduce){.ava .body,.ava .body svg,.decor.boing,.emo-pop{animation:none!important}}
+.scene.hut{background:linear-gradient(#E8C597 0 42%,#A9743F 42% 44.5%,#D7A56A 44.5% 100%)}
+.furn{pointer-events:none}
+.furn.edit{pointer-events:auto;cursor:grab;outline:2px dashed rgba(255,255,255,.8);outline-offset:2px;border-radius:8px;touch-action:none}
+.furn-x{position:absolute;top:-8px;right:-10px;width:22px;height:22px;border-radius:50%;border:0;background:#CF4430;color:#fff;font:700 14px/22px system-ui;padding:0}
+.catalog{display:flex;gap:8px;overflow-x:auto;padding:10px 18px 2px}
+.catalog .hat-opt{flex:none}
+.shop-preview{display:flex;justify-content:center;align-items:flex-end;gap:4px;padding:6px;border-radius:16px;background:var(--surface-2)}
+.ava.pet .body{filter:drop-shadow(0 3px 2px rgba(0,0,0,.18))}
 .sw{position:relative}
 .price{position:absolute;right:-8px;bottom:-8px;font-size:10px;font-weight:600;background:var(--sun-soft);color:var(--ink);border-radius:8px;padding:0 4px;border:1px solid var(--line);white-space:nowrap}
 .hat-opt .price{position:static;margin-top:2px}
@@ -447,6 +494,7 @@ const TIPS = [
   ['Feeling weird about a message?', 'press the flag to report it. You won\'t get in trouble for reporting.']
 ];
 
+const BASE_OWNED = ['hat:none','hat:beanie','color:#1E2A3A','color:#2A7FC4','color:#FF8A3D','scarf:none','scarf:#2A7FC4','glasses:none','back:none','pet:none','furn:couch','furn:plant'];
 const S = {
   view:'kid', unlocked:false,
   cur:{type:'club', club:'mc', ch:'general-chat'},
@@ -459,7 +507,7 @@ const S = {
     {tag:'hidden', label:'Hidden from SkyFox', text:'hey whats ur snap? add me', where:'Block Builders · #general-chat', who:'newuser_77', why:'Asked to move to another app', t:'Today, 4:04 PM'},
     {tag:'private', label:'Blocked', text:'my school is Green•••••', where:'Homework Help · #science', who:'SkyFox', why:'School name', t:'Mon, 5:26 PM'}
   ],
-  reports:[], silly:false, look:{color:'#FF8A3D', hat:'beanie', scarf:'#2A7FC4'}, best:0, coins:20, owned:new Set(['hat:none','hat:beanie','color:#1E2A3A','color:#2A7FC4','color:#FF8A3D','scarf:none','scarf:#2A7FC4']), zone:'plaza', open:{plaza:true}, tip:0, tipHidden:false, warn:null, reactOpen:null, typing:null
+  reports:[], silly:false, look:{color:'#FF8A3D', hat:'beanie', scarf:'#2A7FC4'}, best:0, coins:20, owned:new Set(BASE_OWNED), hut:[{item:'couch', x:30, y:70}, {item:'plant', x:82, y:66}], bestFish:0, bestSled:0, found:new Set(), party:false, stamps:new Set(), visited:new Set(), tapped:new Set(), lastGift:null, sound:true, aiming:false, zone:'plaza', open:{plaza:true}, tip:0, tipHidden:false, warn:null, reactOpen:null, typing:null
 };
 
 const keyOf = c => c.type === 'island' ? 'island' : c.type === 'dm' ? 'dm:' + c.id : c.club + ':' + c.ch;
@@ -552,7 +600,7 @@ function renderMembers(){
 }
 function renderChat(){
   if (S.cur.type === 'island') return renderIsland();
-  stopIsland();
+  stopIsland(); if (S.party){ S.party = false; partyStop(); }
   const c = S.cur;
   let title, topic;
   if (c.type === 'club'){ const cl = club(c.club); title = `<span class="hash">#</span>${c.ch}`; topic = cl.chs.find(x => x[0] === c.ch)[1]; }
@@ -851,6 +899,8 @@ const ZONES = {
   plaza:{name:'Treetop Plaza', icon:'🌳', pass:false, about:'The big square in the middle of the island',
     decor:[['🌳',8,40,64],['🌳',92,42,70],['🏡',50,38,74],['⛲',28,70,52],['🌷',70,86,26],['🌼',12,90,26],['🪵',80,66,34]], bots:['panda','nova','bean'],
     lines:['race you to the fountain!','I love this plaza','who wants to play Acorn Catch?','nice hat!!','I just changed my colour, do you like it?']},
+  hut:{name:'My Hut', icon:'🛖', pass:false, room:true, about:'Your own cozy hut. Decorate it however you like',
+    decor:[['🪟',28,30,48],['🪟',72,30,48]], bots:[], lines:[]},
   beach:{name:'Sunny Beach', icon:'🏖️', pass:true, about:'Sand, waves and crabs',
     decor:[['🌴',10,52,70],['🌴',88,50,64],['⛵',62,34,40],['🦀',30,80,30],['🐚',74,88,24],['⛱️',46,62,52]], bots:['whale','koi','waddles'],
     lines:['the water is warm!','I built a sandcastle','a crab waved at me 🦀','let\'s look for shells','penguins are great swimmers 🌊']},
@@ -858,14 +908,42 @@ const ZONES = {
     decor:[['🏔️',24,40,90],['🏔️',72,38,76],['⛄',40,74,48],['🌲',8,62,56],['🌲',92,66,60],['🛷',70,86,34]], bots:['waddles','pebble','nova'],
     lines:['*belly slides past* WHEEE','brrr... just kidding, penguins love the cold','race you down the hill!','I found a shiny pebble ✨','wanna build a snow fort?']}
 };
+Object.assign(ZONES, {
+  cave:{name:'Spooky Cave', icon:'🦇', pass:false, about:'A dark, glowy cave. Spooky but friendly!',
+    decor:[['🦇',20,24,30],['🦇',74,18,26],['🕸️',92,14,46],['🕸️',8,12,40],['🍄',14,82,34],['🍄',86,76,30],['💎',62,64,28],['🕯️',36,58,30],['🪨',72,90,46]], bots:['bean','koi','pebble'],
+    lines:['boo! hehe did I scare you?','these mushrooms glow!','I heard there\'s treasure in here...','the bats are friendly, I promise 🦇','echo... echo... echo...']},
+  candy:{name:'Candy Forest', icon:'🍭', pass:true, about:'Lollipop trees and cupcake hills',
+    decor:[['🍭',10,54,64],['🍭',88,50,70],['🍬',30,84,28],['🧁',66,86,40],['🍩',82,70,36],['🍦',46,60,44],['🍫',20,68,32]], bots:['nova','panda','waddles'],
+    lines:['everything here looks yummy','I licked a tree. it tasted like strawberry','don\'t eat too much candy lol','the cupcake hill is the best','sprinkles everywhere!!']},
+  volcano:{name:'Volcano Peak', icon:'🌋', pass:true, about:'A sleepy volcano with toasty warm rocks',
+    decor:[['🌋',50,42,120],['🔥',20,80,30],['🔥',80,84,26],['🪨',12,66,44],['🪨',90,62,40],['🌵',70,72,40]], bots:['whale','bean','pebble'],
+    lines:['it\'s so warm up here!','the volcano is sleeping, shhh','penguins on a volcano?! wild','I can see the whole island from here','the rocks are toasty 🔥']}
+});
+const TREASURES = [
+  {id:'key', e:'🗝️', n:'old key', zone:'plaza', x:5, y:95, hint:'Treetop Plaza, way down in the bottom-left corner'},
+  {id:'map', e:'📜', n:'map piece', zone:'plaza', x:60, y:41, hint:'Treetop Plaza, hiding right next to the house'},
+  {id:'compass', e:'🧭', n:'compass', zone:'hut', x:94, y:95, hint:'In your own hut, in the bottom-right corner'},
+  {id:'crystal', e:'🔮', n:'crystal ball', zone:'cave', x:50, y:95, hint:'Spooky Cave, on the floor in the middle'},
+  {id:'anchor', e:'⚓', n:'tiny anchor', zone:'beach', x:96, y:62, hint:'Sunny Beach, at the right edge of the sand'},
+  {id:'mitten', e:'🧤', n:'lost mitten', zone:'snow', x:4, y:56, hint:'Snowy Mountain, by the trees on the left'},
+  {id:'ribbon', e:'🎀', n:'candy ribbon', zone:'candy', x:58, y:96, hint:'Candy Forest, at the very bottom'},
+  {id:'feather', e:'🪶', n:'fire feather', zone:'volcano', x:94, y:94, hint:'Volcano Peak, by the toasty rocks on the right'}
+];
 const PCOLORS = ['#1E2A3A','#2A7FC4','#7FCBEA','#1F8F57','#46C07F','#F5B521','#FF8A3D','#E8553F','#EC6FAE','#8E5BD8','#8A5A34','#9AA5B1'];
 const HATS = [
   {id:'none', name:'No hat'}, {id:'beanie', name:'Beanie'}, {id:'party', name:'Party hat'}, {id:'cap', name:'Cap'},
   {id:'flower', name:'Flower'}, {id:'headphones', name:'Headphones'}, {id:'bow', name:'Bow'},
-  {id:'crown', name:'Crown', pass:true}, {id:'wizard', name:'Wizard hat', pass:true}
+  {id:'crown', name:'Crown', pass:true}, {id:'wizard', name:'Wizard hat', pass:true}, {id:'explorer', name:'Explorer hat', prize:true}
 ];
-const PRICE = {hat:{beanie:0, party:30, cap:25, flower:20, headphones:40, bow:20}, color:15, scarf:10};
-const priceOf = (k, v) => k === 'hat' ? (PRICE.hat[v] ?? 0) : PRICE[k];
+const PRICE = {hat:{beanie:0, party:30, cap:25, flower:20, headphones:40, bow:20}, color:15, scarf:10, glasses:25, pet:50};
+const priceOf = (k, v) => v === 'none' || v === undefined ? 0 : k === 'hat' ? (PRICE.hat[v] ?? 0) : k === 'back' ? (v === 'backpack' ? 30 : 35) : (PRICE[k] ?? 0);
+const GLASSES = [{id:'none', name:'No glasses'}, {id:'sun', name:'Sunglasses'}, {id:'round', name:'Round glasses'}, {id:'heart', name:'Heart glasses'}];
+const BACKS = [{id:'none', name:'Nothing'}, {id:'cape-red', name:'Red cape'}, {id:'cape-purple', name:'Purple cape'}, {id:'cape-blue', name:'Blue cape'}, {id:'backpack', name:'Backpack'}];
+const PETS = {none:{e:'', n:'No pet'}, seal:{e:'🦭', n:'Baby seal'}, bunny:{e:'🐰', n:'Snow bunny'}, owl:{e:'🦉', n:'Tiny owl'}, turtle:{e:'🐢', n:'Turtle'}, chick:{e:'🐥', n:'Chick'}, crab:{e:'🦀', n:'Crab'}};
+const FURN = {bed:{e:'🛏️', n:'Bed', p:30, s:72}, couch:{e:'🛋️', n:'Couch', p:30, s:66}, chair:{e:'🪑', n:'Chair', p:15, s:46}, tv:{e:'📺', n:'TV', p:35, s:52},
+  plant:{e:'🪴', n:'Plant', p:10, s:46}, books:{e:'📚', n:'Books', p:15, s:40}, teddy:{e:'🧸', n:'Teddy', p:15, s:40}, guitar:{e:'🎸', n:'Guitar', p:20, s:48},
+  piano:{e:'🎹', n:'Keyboard', p:40, s:52}, painting:{e:'🖼️', n:'Painting', p:20, s:46}, clock:{e:'🕰️', n:'Clock', p:15, s:42}, tree:{e:'🎄', n:'Tree', p:25, s:64}, gift:{e:'🎁', n:'Present', p:10, s:38}, trophy:{e:'🏆', n:'Trophy', p:30, s:40}};
+const SLOTS = ['color','hat','glasses','back','scarf','pet'];
 const SCARVES = ['none','#E8553F','#2A7FC4','#F5B521','#1F8F57','#EC6FAE','#8E5BD8','#FFFFFF'];
 const LOOKS = {
   panda:{color:'#1E2A3A', hat:'headphones', scarf:'#EC6FAE'}, whale:{color:'#2A7FC4', hat:'cap', scarf:'none'},
@@ -884,21 +962,34 @@ function hatSVG(h, c){
     case 'bow': return `<g transform="translate(30 11)"><path d="M0 0 L-10 -6 L-10 6 Z M0 0 L10 -6 L10 6 Z" fill="#EC6FAE"/><circle r="3" fill="#D04E92"/></g>`;
     case 'crown': return `<path d="M17 18 L17 6 L23.5 12 L30 3 L36.5 12 L43 6 L43 18 Z" fill="#F5B521" stroke="#C98E0A" stroke-width="1"/><circle cx="30" cy="13" r="2" fill="#E8553F"/>`;
     case 'wizard': return `<ellipse cx="30" cy="18" rx="19" ry="4" fill="#4B3BA8"/><path d="M19 18 L33 -10 L41 18 Z" fill="#5A4BD3"/><path d="M30 6 l1.5 3 3.2.4-2.3 2.2.6 3.2-3-1.6-3 1.6.6-3.2-2.3-2.2 3.2-.4z" fill="#F5B521"/>`;
+    case 'explorer': return `<ellipse cx="30" cy="17" rx="23" ry="4.6" fill="#B98E55"/><path d="M17 17 Q18 2 30 2 Q42 2 43 17 Z" fill="#D8B47E"/><rect x="17.6" y="11.5" width="24.8" height="3.6" fill="#7A4E2A"/>`;
+    default: return '';
+  }
+}
+function glassesSVG(g){
+  switch (g){
+    case 'sun': return `<rect x="17" y="20.3" width="12" height="7.4" rx="3.2" fill="#14171C"/><rect x="31" y="20.3" width="12" height="7.4" rx="3.2" fill="#14171C"/><path d="M29 23.2 h2" stroke="#14171C" stroke-width="1.8"/><path d="M19 22.3 l3 0" stroke="#fff" stroke-width="1.2" opacity=".7" stroke-linecap="round"/><path d="M33 22.3 l3 0" stroke="#fff" stroke-width="1.2" opacity=".7" stroke-linecap="round"/>`;
+    case 'round': return `<circle cx="23.5" cy="24" r="5.6" fill="none" stroke="#8A5A34" stroke-width="1.8"/><circle cx="36.5" cy="24" r="5.6" fill="none" stroke="#8A5A34" stroke-width="1.8"/><path d="M29.1 23.4 h1.8" stroke="#8A5A34" stroke-width="1.8"/>`;
+    case 'heart': { const h = (x) => `<path d="M${x} 27.8 C${x - 7} 23 ${x - 5} 18 ${x} 21 C${x + 5} 18 ${x + 7} 23 ${x} 27.8 Z" fill="#EC6FAE" opacity=".92"/>`; return h(23.5) + h(36.5) + `<path d="M29 23 h2" stroke="#D04E92" stroke-width="1.6"/>`; }
     default: return '';
   }
 }
 function penguinSVG(look, w){
   const c = look.color, dark = shade(c, .78);
+  const capeCol = {'cape-red':'#D9472F', 'cape-purple':'#6C4BD3', 'cape-blue':'#2A7FC4'}[look.back];
+  const behind = capeCol ? `<path d="M12 27 Q30 19 48 27 L56 60 Q30 67 4 60 Z" fill="${capeCol}"/><path d="M12 27 Q30 19 48 27" fill="none" stroke="${shade(capeCol, .72)}" stroke-width="2.4"/>`
+    : look.back === 'backpack' ? `<rect x="6" y="29" width="48" height="25" rx="9" fill="#B5702F"/>` : '';
+  const straps = look.back === 'backpack' ? `<path d="M19.5 29 L17.5 52 M40.5 29 L42.5 52" stroke="#8A5A34" stroke-width="3" stroke-linecap="round"/>` : '';
   const scarf = look.scarf && look.scarf !== 'none' ? `<path d="M13 37 Q30 44 47 37 L47 42 Q30 49 13 42 Z" fill="${look.scarf}" stroke="rgba(0,0,0,.12)"/><rect x="38" y="41" width="6" height="13" rx="2.5" fill="${look.scarf}" stroke="rgba(0,0,0,.12)"/>` : '';
-  return `<svg width="${w}" height="${Math.round(w * 76 / 60)}" viewBox="0 -12 60 76" aria-hidden="true">
-    <ellipse cx="30" cy="62" rx="17" ry="2.6" fill="rgba(0,0,0,.15)"/>
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${Math.round(w * 76 / 60)}" viewBox="0 -12 60 76" aria-hidden="true">
+    <ellipse cx="30" cy="62" rx="17" ry="2.6" fill="rgba(0,0,0,.15)"/>${behind}
     <ellipse cx="22" cy="60" rx="7" ry="3.2" fill="#F59A23"/><ellipse cx="38" cy="60" rx="7" ry="3.2" fill="#F59A23"/>
     <ellipse cx="9.5" cy="40" rx="5" ry="12" transform="rotate(18 9.5 40)" fill="${dark}"/><ellipse cx="50.5" cy="40" rx="5" ry="12" transform="rotate(-18 50.5 40)" fill="${dark}"/>
     <ellipse cx="30" cy="35" rx="20" ry="25" fill="${c}"/>
-    <ellipse cx="30" cy="43" rx="13" ry="15.5" fill="#FFFFFF"/>
+    <ellipse cx="30" cy="43" rx="13" ry="15.5" fill="#FFFFFF"/>${straps}
     <circle cx="23.5" cy="24" r="4.3" fill="#fff"/><circle cx="36.5" cy="24" r="4.3" fill="#fff"/>
     <circle cx="24.3" cy="24.6" r="2.2" fill="#1A1A1A"/><circle cx="37.3" cy="24.6" r="2.2" fill="#1A1A1A"/>
-    <circle cx="25" cy="23.6" r=".8" fill="#fff"/><circle cx="38" cy="23.6" r=".8" fill="#fff"/>
+    <circle cx="25" cy="23.6" r=".8" fill="#fff"/><circle cx="38" cy="23.6" r=".8" fill="#fff"/>${glassesSVG(look.glasses)}
     <circle cx="18" cy="31" r="2.6" fill="#FF9DB5" opacity=".7"/><circle cx="42" cy="31" r="2.6" fill="#FF9DB5" opacity=".7"/>
     <path d="M26 29.5 L34 29.5 L30 34.5 Z" fill="#F59A23"/>
     ${scarf}${hatSVG(look.hat, c)}</svg>`;
@@ -912,10 +1003,12 @@ function islandSide(){
   const foot = `<div class="side-foot"><div class="me-av" style="background:var(--surface)">${penguinSVG(S.look, 26)}</div><div><b>${P.me.name}</b><span>● On Treehouse Island</span></div></div>`;
   $('#side').innerHTML = `<div class="side-head"><h2>Treehouse Island</h2><div class="modline">${ICON.shield} Same safety filter as the clubs</div></div>
     <div class="side-body"><div><div class="group-label">Places</div><div class="nav-list">
-    ${Object.entries(ZONES).map(([id, z]) => `<button class="nav-item zone-item ${S.zone === id ? 'on' : ''}" data-act="zone" data-id="${id}"><span style="font-size:18px">${z.icon}</span>${z.name}${S.open[id] ? '' : `<span class="lock">${ICON.lock} Pass</span>`}</button>`).join('')}
+    ${Object.entries(ZONES).map(([id, z]) => `<button class="nav-item zone-item ${S.zone === id ? 'on' : ''}" data-act="zone" data-id="${id}"><span style="font-size:18px">${z.icon}</span>${z.name}${S.open[id] || !z.pass ? '' : `<span class="lock">${ICON.lock} Pass</span>`}</button>`).join('')}
     </div></div>
     <div><div class="group-label">My penguin</div><div class="nav-list"><button class="nav-item" data-act="customize"><span style="font-size:18px">🛍️</span>Penguin shop</button></div></div>
-    <div><div class="group-label">Minigames</div><div class="nav-list"><button class="nav-item" data-act="play-game"><span style="font-size:18px">🌰</span>Acorn Catch</button></div></div>
+    <div><div class="group-label">Fun stuff</div><div class="nav-list"><button class="nav-item" data-act="stamps"><span style="font-size:18px">🏅</span>Stamp book · ${S.stamps.size}/${STAMPS.length}</button><button class="nav-item" data-act="sound"><span style="font-size:18px">${S.sound ? '🔊' : '🔇'}</span>Sounds ${S.sound ? 'on' : 'off'}</button></div></div>
+    <div><div class="group-label">Treasure hunt</div><div class="nav-list"><button class="nav-item" data-act="hint"><span style="font-size:18px">🗺️</span>${S.found.size}/${TREASURES.length} found · Get a hint</button></div></div>
+    <div><div class="group-label">Minigames</div><div class="nav-list"><button class="nav-item" data-act="play-game"><span style="font-size:18px">🌰</span>Acorn Catch</button><button class="nav-item" data-act="play-fish"><span style="font-size:18px">🎣</span>Frosty Fishing</button><button class="nav-item" data-act="play-sled"><span style="font-size:18px">🛷</span>Sled Dash</button></div></div>
     <div class="nav-list"><span class="coins" style="align-self:flex-start">🪙 ${S.coins} coins</span></div>
     </div>${foot}`;
 }
@@ -927,6 +1020,7 @@ function islandMembers(){
 }
 function placeAv(id, x, y, walk){
   const el = AV[id]; if (!el) return;
+  if (id === 'me' && AV.pet){ const left = POS.me && x < POS.me.x; setTimeout(() => placeAv('pet', Math.min(96, Math.max(4, x + (left ? 7 : -7))), Math.min(97, y + 1.5), walk), walk ? 350 : 0); }
   const old = POS[id] || {x, y};
   if (walk && Math.abs(x - old.x) > .5) el.querySelector('.body').style.transform = x < old.x ? 'scaleX(-1)' : '';
   el.style.transitionDuration = walk ? Math.max(.3, Math.hypot(x - old.x, y - old.y) / 22) + 's' : '0s';
@@ -944,42 +1038,85 @@ function bubble(id, text){
 function renderIsland(){
   stopIsland();
   const z = ZONES[S.zone];
+  const today = new Date().toISOString().slice(0, 10);
+  if (S.lastGift !== today){ S.lastGift = today; S.coins += 15; saveGame(); setTimeout(() => { toast('🎁 Daily gift: +15 coins! Come back tomorrow for another one.'); sfx('coin'); }, 900); }
+  S.visited.add(S.zone); if (['plaza','hut','cave'].every(v => S.visited.has(v))) stamp('explorer');
   $('#chat').innerHTML = `<div class="island">
     <div class="chat-head">
       <button class="icon-btn menu-btn" data-act="drawer" aria-label="Open places">${ICON.menu}</button>
       <div class="grow"><h3><span style="font-size:20px">${z.icon}</span> ${z.name}</h3><p>${esc(z.about)}. Click anywhere to waddle there.</p></div>
       <span class="coins">🪙 ${S.coins}</span>
+      ${z.room ? `<button class="btn ${S.hutEdit ? 'primary' : ''}" data-act="hut-edit">${S.hutEdit ? '✓ Done decorating' : '🛋️ Decorate'}</button>` : ''}
       <button class="btn" data-act="customize">🛍️ Shop</button>
       ${S.member ? '' : '<button class="btn" data-act="pass">⭐ Island Pass</button>'}
-      <button class="btn primary" data-act="play-game">🌰 Acorn Catch</button>
+      <button class="btn ${S.party ? 'primary' : ''}" data-act="party">${S.party ? '🔇 End party' : '🎉 Party!'}</button>
+      <button class="btn primary" data-act="games">🎮 Games</button>
     </div>
-    <div class="scene ${S.zone}" id="scene" aria-label="${esc(z.name)}. Click to walk."></div>
-    <p class="isl-note">Click anywhere to waddle. Earn coins in Acorn Catch and spend them in the shop. Coins are pretend and can't be bought with real money.</p>
+    <div class="scene ${S.zone} ${S.party ? 'party' : ''}" id="scene" aria-label="${esc(z.name)}. Click to walk."></div>
+    ${z.room && S.hutEdit ? `<div class="catalog">${Object.entries(FURN).map(([id, f]) => { const own = S.owned.has('furn:' + id); return `<button class="hat-opt" data-act="furn-add" data-id="${id}" title="${esc(f.n)}"><span style="font-size:28px;line-height:34px">${f.e}</span><span>${esc(f.n)}</span>${own ? '' : `<span class="price">${S.member ? 'Free' : '🪙' + f.p}</span>`}</button>`; }).join('')}</div>` : ''}
+    <div class="emotes" role="group" aria-label="Emotes">
+      <button class="emo-btn" data-act="emote" data-id="wave">👋<span>Wave</span></button>
+      <button class="emo-btn" data-act="emote" data-id="jump">⬆️<span>Jump</span></button>
+      <button class="emo-btn" data-act="emote" data-id="dance">💃<span>Dance</span></button>
+      <button class="emo-btn" data-act="emote" data-id="love">❤️<span>Love</span></button>
+      <button class="emo-btn" data-act="emote" data-id="laugh">😂<span>Laugh</span></button>
+      <button class="emo-btn ${S.aiming ? 'on' : ''}" data-act="aim">❄️<span>${S.aiming ? 'Tap to throw!' : 'Snowball'}</span></button>
+    </div>
+    <p class="isl-note">Tap anywhere to waddle, and tap things on the island to see what they do. Coins are pretend and can't be bought with real money.</p>
     <div class="composer" style="padding-top:8px"><div id="warnBox"></div>
       <form class="compose-row" id="islandForm" autocomplete="off">
         <input id="islandInput" maxlength="120" placeholder="Say something in a bubble…" aria-label="Say something">
         <button class="send" type="submit">Say</button>
       </form></div></div>`;
   const sc = $('#scene');
-  sc.innerHTML = z.decor.map(([e, x, y, s]) => `<div class="decor" style="left:${x}%;top:${y}%;font-size:${s}px;z-index:${y * 10}">${e}</div>`).join('');
+  sc.innerHTML = z.decor.map(([e, x, y, s]) => `<div class="decor click" data-e="${e}" style="left:${x}%;top:${y}%;font-size:${s}px;z-index:${y * 10}">${e}</div>`).join('');
+  sc.querySelectorAll('.decor.click').forEach(d => d.addEventListener('click', ev => { ev.stopPropagation(); if (S.aiming) return throwSnow(ev, sc); tapThing(d, d.dataset.e); }));
   for (const k in AV) delete AV[k];
+  if (S.party) sc.insertAdjacentHTML('beforeend', `<div class="bunting">${'🎈🎊🎉🪩'.repeat(6)}</div>`);
+  TREASURES.filter(t => t.zone === S.zone && !S.found.has(t.id)).forEach(t => {
+    sc.insertAdjacentHTML('beforeend', `<button class="decor treasure" data-act="treasure" data-id="${t.id}" style="left:${t.x}%;top:${t.y}%;z-index:${t.y * 10}" aria-label="Something shiny">${t.e}</button>`);
+  });
+  if (z.room) (S.hut || []).forEach((f, i) => {
+    const it = FURN[f.item]; if (!it) return;
+    const d = document.createElement('div'); d.className = 'decor furn' + (S.hutEdit ? ' edit' : ''); d.dataset.i = i;
+    d.style.cssText = `left:${f.x}%;top:${f.y}%;font-size:${it.s}px;z-index:${Math.round(f.y * 10)}`;
+    d.innerHTML = it.e + (S.hutEdit ? `<button class="furn-x" data-act="furn-del" data-id="${i}" aria-label="Put away ${esc(it.n)}">×</button>` : '');
+    sc.appendChild(d);
+    if (!S.hutEdit){ d.classList.add('click'); d.addEventListener('click', ev => { ev.stopPropagation(); tapThing(d, it.e); }); }
+    if (S.hutEdit) d.addEventListener('pointerdown', e => {
+      if (e.target.closest('.furn-x')) return;
+      e.preventDefault(); e.stopPropagation(); d.setPointerCapture(e.pointerId);
+      const mv = ev => { const r = sc.getBoundingClientRect(); f.x = Math.min(96, Math.max(4, (ev.clientX - r.left) / r.width * 100)); f.y = Math.min(98, Math.max(40, (ev.clientY - r.top) / r.height * 100)); d.style.left = f.x + '%'; d.style.top = f.y + '%'; d.style.zIndex = Math.round(f.y * 10); };
+      const up = () => { d.removeEventListener('pointermove', mv); d.removeEventListener('pointerup', up); saveGame(); };
+      d.addEventListener('pointermove', mv); d.addEventListener('pointerup', up);
+    });
+  });
   ['me', ...z.bots].forEach(id => {
     const d = document.createElement('div'); d.className = 'ava' + (id === 'me' ? ' me' : '');
     d.innerHTML = `<span class="body">${penguinSVG(lookOf(id), 50)}</span><span class="nm">${id === 'me' && S.member ? '⭐ ' : ''}${esc(P[id].name)}</span>`;
     sc.appendChild(d); AV[id] = d; delete POS[id];
     placeAv(id, id === 'me' ? 50 : rnd(12, 88), id === 'me' ? 84 : rnd(58, 90), false);
   });
+  if (S.look.pet && S.look.pet !== 'none'){
+    const d = document.createElement('div'); d.className = 'ava pet';
+    d.innerHTML = `<span class="body" style="font-size:30px;line-height:1">${PETS[S.look.pet].e}</span>`;
+    sc.appendChild(d); AV.pet = d; delete POS.pet; placeAv('pet', 43, 85.5, false);
+  }
   sc.addEventListener('click', e => {
+    if (S.hutEdit) return;
+    if (S.aiming) return throwSnow(e, sc);
     const r = sc.getBoundingClientRect();
     placeAv('me', Math.min(95, Math.max(5, (e.clientX - r.left) / r.width * 100)), Math.min(96, Math.max(50, (e.clientY - r.top) / r.height * 100)), true);
   });
   $('#islandForm').addEventListener('submit', e => { e.preventDefault(); islandSay($('#islandInput').value); });
   islandTimer = setInterval(() => {
     if (!document.body.contains(sc)){ stopIsland(); return; }
+    if (!z.bots.length) return;
     placeAv(pick(z.bots), rnd(10, 90), rnd(56, 92), true);
-    if (Math.random() < .3) bubble(pick(z.bots), fresh('isl:' + S.zone, z.lines));
+    if (Math.random() < .3) bubble(pick(z.bots), S.party ? fresh('party', PARTY_LINES) : fresh('isl:' + S.zone, z.lines));
   }, 2600);
-  setTimeout(() => bubble(z.bots[0], S.zone === 'plaza' ? 'hi SkyFox! cool penguin!' : `you made it to ${z.name}!!`), 600);
+  if (z.room) setTimeout(() => bubble('me', S.hutEdit ? 'drag things to move them!' : 'home sweet home 🏠'), 500);
+  else setTimeout(() => bubble(z.bots[0], S.zone === 'plaza' ? 'hi SkyFox! cool penguin!' : `you made it to ${z.name}!!`), 600);
 }
 function islandSay(text){
   text = (text || '').trim(); if (!text) return;
@@ -990,15 +1127,16 @@ function islandSay(text){
     return;
   }
   S.warn = null; renderWarn(); $('#islandInput').value = ''; S.sentNow++;
-  bubble('me', text);
+  bubble('me', text); sfx('pop'); stamp('hello');
   const z = ZONES[S.zone];
+  if (!z.bots.length) return;
   const near = z.bots.slice().sort((a, b) => Math.hypot(POS[a].x - POS.me.x, POS[a].y - POS.me.y) - Math.hypot(POS[b].x - POS.me.x, POS[b].y - POS.me.y))[0];
   const ans = S.silly && Math.random() < .35 && !SERIOUS.test(text) && !NOSILLY.test(text) ? silly(text, near, 'island') : brain(text, near, 'island');
   setTimeout(() => placeAv(near, Math.min(92, POS.me.x + (POS.me.x > 50 ? -12 : 12)), POS.me.y, true), 300);
   setTimeout(() => bubble(near, ans), 1500);
 }
 function zoneClick(id){
-  if (S.open[id]){ S.zone = id; closeDrawer(); renderKid(); return; }
+  if (S.open[id] || !ZONES[id].pass){ S.hutEdit = false; S.zone = id; closeDrawer(); renderKid(); return; }
   const z = ZONES[id];
   modal(`<h2>${z.icon} ${z.name}</h2><p>${esc(z.about)}. This place comes with the <b>Island Pass</b>. Ask a grown-up to unlock it!</p>
     <div class="modal-foot"><button class="btn" data-act="modal-close">Not now</button><button class="btn primary" data-act="pass">⭐ Island Pass</button></div>`);
@@ -1006,29 +1144,38 @@ function zoneClick(id){
 
 /* ---------- Penguin designer ---------- */
 function customize(){
-  S.draft = {...S.look};
-  const tag = (k, v) => S.owned.has(k + ':' + v) ? '' : S.member ? `<span class="price">Free</span>` : `<span class="price">🪙${priceOf(k, v)}</span>`;
+  S.draft = {glasses:'none', back:'none', pet:'none', ...S.look};
+  const tag = (k, v) => { const pr = priceOf(k, v); return S.owned.has(k + ':' + v) || !pr ? '' : S.member ? `<span class="price">Free</span>` : `<span class="price">🪙${pr}</span>`; };
+  const opt = (k, id, name, art) => `<button class="hat-opt ${S.draft[k] === id ? 'on' : ''}" data-act="look" data-k="${k}" data-v="${id}" title="${esc(name)}">${art}<span>${esc(name)}</span>${tag(k, id)}</button>`;
+  const dummy = extra => penguinSVG({color:'#C9D3DC', hat:'none', scarf:'none', ...extra}, 34);
   modal(`<h2>🛍️ Penguin shop</h2>
-    <div style="display:flex;justify-content:space-between;align-items:center"><p>${S.member ? 'Island Pass: everything is free! ⭐' : 'Tap something to try it on. Things with a price cost coins.'}</p><span class="coins" id="shopCoins">🪙 ${S.coins}</span></div>
-    <div style="display:grid;place-items:center;padding:6px;border-radius:16px;background:var(--surface-2)" id="pPreview">${penguinSVG(S.draft, 110)}</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><p>${S.member ? 'Island Pass: everything is free! ⭐' : 'Tap something to try it on. Things with a price cost coins.'}</p><span class="coins" id="shopCoins">🪙 ${S.coins}</span></div>
+    <div class="shop-preview" id="pPreview">${previewHTML(S.draft)}</div>
     <div class="group-label" style="padding:0">Colour</div>
     <div class="swatches">${PCOLORS.map(c => `<button class="sw ${S.draft.color === c ? 'on' : ''}" data-act="look" data-k="color" data-v="${c}" style="background:${c}" aria-label="Colour ${c}">${tag('color', c)}</button>`).join('')}</div>
     <div class="group-label" style="padding:0">Hat</div>
-    <div class="swatches">${HATS.map(h => { const locked = h.pass && !S.member; return `<button class="hat-opt ${S.draft.hat === h.id ? 'on' : ''}" data-act="look" data-k="hat" data-v="${h.id}" ${locked ? 'data-locked="1"' : ''} title="${h.name}">${penguinSVG({color:'#C9D3DC', hat:h.id, scarf:'none'}, 34)}<span>${h.name}${locked ? ' 🔒' : ''}</span>${h.pass ? '' : tag('hat', h.id)}</button>`; }).join('')}</div>
+    <div class="swatches">${HATS.map(h => { const locked = h.prize ? (S.owned.has('hat:' + h.id) ? '' : 'prize') : h.pass && !S.member ? 'pass' : ''; return `<button class="hat-opt ${S.draft.hat === h.id ? 'on' : ''}" data-act="look" data-k="hat" data-v="${h.id}" ${locked ? `data-locked="${locked}"` : ''} title="${h.name}">${dummy({hat:h.id})}<span>${h.name}${locked === 'prize' ? ' 🗺️' : locked ? ' 🔒' : ''}</span>${h.pass || h.prize ? '' : tag('hat', h.id)}</button>`; }).join('')}</div>
+    <div class="group-label" style="padding:0">Glasses</div>
+    <div class="swatches">${GLASSES.map(g => opt('glasses', g.id, g.name, dummy({glasses:g.id}))).join('')}</div>
+    <div class="group-label" style="padding:0">Capes and backpacks</div>
+    <div class="swatches">${BACKS.map(g => opt('back', g.id, g.name, dummy({back:g.id}))).join('')}</div>
     <div class="group-label" style="padding:0">Scarf</div>
     <div class="swatches">${SCARVES.map(c => `<button class="sw ${S.draft.scarf === c ? 'on' : ''}" data-act="look" data-k="scarf" data-v="${c}" style="background:${c === 'none' ? 'repeating-linear-gradient(45deg,var(--surface),var(--surface) 4px,var(--line) 4px,var(--line) 8px)' : c}" aria-label="${c === 'none' ? 'No scarf' : 'Scarf ' + c}">${tag('scarf', c)}</button>`).join('')}</div>
+    <div class="group-label" style="padding:0">Pet (follows you around!)</div>
+    <div class="swatches">${Object.entries(PETS).map(([id, pt]) => opt('pet', id, pt.n, `<span style="font-size:30px;line-height:40px;height:40px">${pt.e || '🚫'}</span>`)).join('')}</div>
     <div class="err" id="shopMsg" style="text-align:left"></div>
     <div class="modal-foot"><button class="btn" data-act="modal-close">Cancel</button><button class="btn primary" id="shopSave" data-act="look-save">Wear it!</button></div>`);
   shopCheck();
 }
+function previewHTML(look){ return penguinSVG(look, 110) + (look.pet && look.pet !== 'none' ? `<span style="font-size:44px;align-self:flex-end">${PETS[look.pet].e}</span>` : ''); }
 function setLook(b){
-  if (b.dataset.locked){ toast('That hat comes with the Island Pass'); return; }
+  if (b.dataset.locked){ toast(b.dataset.locked === 'prize' ? 'Find all 8 hidden treasures to win the Explorer hat! 🗺️' : 'That hat comes with the Island Pass'); return; }
   S.draft[b.dataset.k] = b.dataset.v;
-  $('#pPreview').innerHTML = penguinSVG(S.draft, 110);
+  $('#pPreview').innerHTML = previewHTML(S.draft);
   b.parentElement.querySelectorAll('.on').forEach(x => x.classList.remove('on')); b.classList.add('on');
   shopCheck();
 }
-function shopCost(){ if (S.member) return 0; return ['color','hat','scarf'].reduce((n, k) => n + (S.owned.has(k + ':' + S.draft[k]) || (k === 'hat' && HATS.find(h => h.id === S.draft.hat)?.pass) ? 0 : priceOf(k, S.draft[k])), 0); }
+function shopCost(){ if (S.member) return 0; return SLOTS.reduce((n, k) => n + (S.owned.has(k + ':' + S.draft[k]) || (k === 'hat' && HATS.find(h => h.id === S.draft.hat)?.pass) ? 0 : priceOf(k, S.draft[k])), 0); }
 function shopCheck(){
   const cost = shopCost(), btn = $('#shopSave'), msg = $('#shopMsg');
   if (!btn) return;
@@ -1038,7 +1185,8 @@ function shopCheck(){
 }
 function shopSave(){
   const cost = shopCost(); if (cost > S.coins) return;
-  S.coins -= cost; ['color','hat','scarf'].forEach(k => S.owned.add(k + ':' + S.draft[k]));
+  if (cost) stamp('shopper');
+  S.coins -= cost; SLOTS.forEach(k => S.owned.add(k + ':' + S.draft[k]));
   S.look = {...S.draft}; saveGame(); closeModal(); toast(cost ? `Bought for ${cost} coins. Looking good, penguin!` : 'Looking good, penguin!'); renderKid();
 }
 
@@ -1061,8 +1209,8 @@ function passOffer(){
   modal(`<h2>⭐ Treehouse Island Pass</h2>
     <p><b>For grown-ups.</b> The Island Pass unlocks the whole island for your child:</p>
     <ul style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:14px">
-      <li>Every place: Sunny Beach and Snowy Mountain</li>
-      <li>Everything in the penguin shop is free</li>
+      <li>Every place: Sunny Beach, Snowy Mountain, Candy Forest and Volcano Peak</li>
+      <li>Everything in the penguin shop and the hut catalog is free</li>
       <li>Special penguin hats: the crown and the wizard hat</li>
       <li>A gold ⭐ Member badge on their name</li>
     </ul>
@@ -1074,6 +1222,333 @@ function passBuy(){
   S.member = true; Object.keys(ZONES).forEach(z => S.open[z] = true); saveGame();
   closeModal(); toast('Island Pass unlocked! The whole island is open.'); renderKid();
   if (AV.me) bubble('me', 'I got the Island Pass! ⭐');
+}
+
+/* ---------- Sounds, emotes, snowballs, tappable things, stamps ---------- */
+function audio(){ try { const AC = window.AudioContext || window.webkitAudioContext; PARTY.ctx = PARTY.ctx || new AC(); PARTY.ctx.resume(); return PARTY.ctx; } catch (e) { return null; } }
+function sfx(kind){
+  if (!S.sound) return; const c = audio(); if (!c) return; const t = c.currentTime + .01;
+  const seq = {pop:[[880, 0, .07, 'square', .04]], coin:[[988, 0, .08, 'square', .04], [1319, .08, .16, 'square', .04]],
+    jump:[[392, 0, .1, 'triangle', .12], [587, .06, .14, 'triangle', .1]], boing:[[196, 0, .25, 'triangle', .14], [294, .05, .22, 'sine', .07]],
+    stamp:[[523, 0, .1, 'square', .04], [659, .1, .1, 'square', .04], [784, .2, .1, 'square', .04], [1047, .3, .25, 'square', .045]],
+    whoosh:[[660, 0, .12, 'sine', .06], [330, .1, .14, 'sine', .05]], love:[[784, 0, .12, 'sine', .08], [988, .12, .2, 'sine', .08]]}[kind] || [];
+  seq.forEach(([f, d, len, type, vol]) => tone(f, t + d, len, type, vol));
+  if (kind === 'note'){ const scale = [523, 587, 659, 784, 880, 1047]; tone(pick(scale), t, .35, 'triangle', .12); }
+}
+const EMOJI = {wave:'👋', jump:'⬆️', dance:'💃', love:'❤️', laugh:'😂'};
+function emote(id, kind){
+  const el = AV[id]; if (!el) return;
+  el.classList.remove('e-wave', 'e-jump', 'e-dance'); void el.offsetWidth;
+  if (kind === 'wave' || kind === 'jump' || kind === 'dance') el.classList.add('e-' + kind);
+  clearTimeout(el._e); el._e = setTimeout(() => el.classList.remove('e-wave', 'e-jump', 'e-dance'), kind === 'dance' ? 2600 : 1100);
+  el.querySelector('.emo-pop')?.remove();
+  const b = document.createElement('div'); b.className = 'emo-pop'; b.textContent = kind === 'love' ? '❤️❤️❤️' : kind === 'laugh' ? '😂 haha' : EMOJI[kind]; el.appendChild(b);
+  setTimeout(() => b.remove(), 1600);
+}
+function myEmote(kind){
+  emote('me', kind); sfx(kind === 'jump' ? 'jump' : kind === 'love' ? 'love' : 'pop'); if (kind === 'dance') stamp('dance');
+  if (AV.pet) emote('pet', kind === 'dance' ? 'dance' : 'jump');
+  const z = ZONES[S.zone]; if (!z.bots.length || !POS.me) return;
+  const near = z.bots.filter(b => POS[b] && Math.hypot(POS[b].x - POS.me.x, POS[b].y - POS.me.y) < 35);
+  near.forEach((b, i) => { if (Math.random() < .7) setTimeout(() => { emote(b, kind); if (i === 0 && Math.random() < .5) bubble(b, {wave:'hi hi!! 👋', jump:'boing boing!', dance:'dance party!! 🕺', love:'aww ❤️', laugh:'hahaha 😂'}[kind]); }, 400 + i * 250); });
+}
+function throwSnow(e, sc){
+  S.aiming = false; document.querySelector('[data-act="aim"]')?.classList.remove('on');
+  const lbl = document.querySelector('[data-act="aim"] span'); if (lbl) lbl.textContent = 'Snowball';
+  sc.classList.remove('aiming');
+  const r = sc.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * 100, y = (e.clientY - r.top) / r.height * 100;
+  flySnow(sc, POS.me.x, POS.me.y - 8, x, y);
+  emote('me', 'jump'); sfx('whoosh'); stamp('snowball');
+  const z = ZONES[S.zone];
+  const hit = z.bots.find(b => POS[b] && Math.hypot(POS[b].x - x, POS[b].y - 6 - y) < 9);
+  if (hit) setTimeout(() => {
+    emote(hit, 'jump'); bubble(hit, pick(['hey! hehe ❄️', 'you got me! 😆', 'snowball fight!!', 'brrr that was cold lol']));
+    if (Math.random() < .6) setTimeout(() => { if (POS[hit] && POS.me) { flySnow(sc, POS[hit].x, POS[hit].y - 8, POS.me.x, POS.me.y - 6); setTimeout(() => { emote('me', 'jump'); bubble('me', 'ahh! 😂'); }, 520); } }, 900);
+  }, 520);
+}
+function flySnow(sc, x1, y1, x2, y2){
+  const b = document.createElement('div'); b.className = 'snowball'; b.style.left = x1 + '%'; b.style.top = y1 + '%'; sc.appendChild(b);
+  requestAnimationFrame(() => requestAnimationFrame(() => { b.style.left = x2 + '%'; b.style.top = y2 + '%'; }));
+  setTimeout(() => { b.classList.add('splat'); b.textContent = '❄️'; }, 500);
+  setTimeout(() => b.remove(), 1100);
+}
+const TAPS = {'⛲':'splash! 💦', '🌳':'a bird tweeted 🐦', '🏡':'knock knock! nobody home', '🌷':'it smells nice 🌸', '🌼':'a bee buzzed by 🐝', '🪵':'a beetle crawled out 🐞',
+  '🌴':'a coconut fell! 🥥', '⛵':'ahoy! ⚓', '🦀':'the crab waved its claw', '🐚':'I can hear the sea 🌊', '⛱️':'nice and shady ⛱️',
+  '🏔️':'echo... echo...', '⛄':'the snowman winked at me', '🌲':'snow fell off the branches ❄️', '🛷':'wheee! 🛷',
+  '🦇':'the bat did a loop-de-loop', '🕸️':'a tiny spider said hi 🕷️', '🍄':'it glows brighter! ✨', '💎':'so sparkly 💎', '🕯️':'spooky glow 👻', '🪨':'something squeaked under it',
+  '🍭':'tastes like strawberry 🍓', '🍬':'yum, minty', '🧁':'sprinkles everywhere', '🍩':'a donut... for me? 🍩', '🍦':'brain freeze! 🥶', '🍫':'chocolate! 🍫',
+  '🌋':'RUMBLE RUMBLE 🌋', '🔥':'toasty warm 🔥', '🌵':'ouch, pointy! 🌵', '🪟':'nice view outside',
+  '🛏️':'zzz... nap time 😴', '🛋️':'so comfy', '🪑':'*sits down*', '📺':'cartoon time! 📺', '🪴':'I watered the plant 💧', '📚':'reading a good book 📖', '🧸':'big teddy hug 🧸',
+  '🎸':'🎸 strum strum!', '🎹':'🎶 plink plonk', '🖼️':'beautiful art 🖼️', '🕰️':'tick tock 🕰️', '🎄':'so festive! 🎄', '🎁':'it\'s empty... or is it?', '🏆':'I\'m a champion! 🏆'};
+function tapThing(d, e){
+  d.classList.remove('boing'); void d.offsetWidth; d.classList.add('boing');
+  sfx(e === '🎸' || e === '🎹' ? 'note' : 'boing');
+  bubble('me', TAPS[e] || 'ooh!');
+  const today = new Date().toISOString().slice(0, 10), key = today + S.zone + e;
+  if (!S.tapped.has(key) && Math.random() < .25){
+    S.tapped.add(key); S.coins += 2; setTimeout(() => { toast(`You found 2 coins near the ${e}! 🪙`); sfx('coin'); islandSide(); const c = document.querySelector('.chat-head .coins'); if (c) c.textContent = '🪙 ' + S.coins; }, 400);
+  }
+}
+const STAMPS = [
+  {id:'hello', e:'💬', n:'Say hi', d:'Say something to another penguin'},
+  {id:'dance', e:'💃', n:'Dancer', d:'Use the dance emote'},
+  {id:'snowball', e:'❄️', n:'Snowball thrower', d:'Throw a snowball'},
+  {id:'party', e:'🎉', n:'Party starter', d:'Throw an island party'},
+  {id:'explorer', e:'🧭', n:'Explorer', d:'Visit the Plaza, your Hut and the Spooky Cave'},
+  {id:'decorate', e:'🛋️', n:'Interior designer', d:'Put 5 things in your hut'},
+  {id:'shopper', e:'🛍️', n:'Shopper', d:'Buy something in the penguin shop'},
+  {id:'acorn', e:'🌰', n:'Acorn ace', d:'Score 20 or more in Acorn Catch'},
+  {id:'fisher', e:'🎣', n:'Top fisher', d:'Earn 10 or more coins in Frosty Fishing'},
+  {id:'sled', e:'🛷', n:'Speedy sledder', d:'Reach the finish line in Sled Dash'},
+  {id:'treasure1', e:'🗝️', n:'Treasure finder', d:'Find a hidden treasure'},
+  {id:'alltreasure', e:'🗺️', n:'Treasure master', d:'Find all 8 hidden treasures'}
+];
+function stamp(id){
+  if (!S.stamps || S.stamps.has(id)) return;
+  const st = STAMPS.find(x => x.id === id); if (!st) return;
+  S.stamps.add(id); S.coins += 15; saveGame();
+  setTimeout(() => {
+    sfx('stamp'); toast(`🏅 New stamp: ${st.e} ${st.n}! +15 coins`);
+    if (S.cur.type === 'island'){ islandSide(); const c = document.querySelector('.chat-head .coins'); if (c) c.textContent = '🪙 ' + S.coins; }
+  }, 700);
+}
+function stampBook(){
+  modal(`<h2>🏅 Stamp book</h2><p>Collect stamps by playing. Each new stamp gives you 15 coins! You have ${S.stamps.size} of ${STAMPS.length}.</p>
+    <div class="stamp-grid">${STAMPS.map(st => { const got = S.stamps.has(st.id); return `<div class="stamp ${got ? 'got' : ''}"><span class="st-e">${got ? st.e : '❔'}</span><b>${esc(st.n)}</b><small>${esc(st.d)}</small></div>`; }).join('')}</div>
+    <div class="modal-foot"><button class="btn primary" data-act="modal-close">Keep playing</button></div>`);
+}
+
+/* ---------- My Hut ---------- */
+function furnAdd(id){
+  const f = FURN[id], own = S.owned.has('furn:' + id) || S.member;
+  if (!own){
+    if (S.coins < f.p){ toast(`You need ${f.p - S.coins} more coins for the ${f.n}. Play a game to earn them!`); return; }
+    S.coins -= f.p; toast(`Bought the ${f.n} for ${f.p} coins!`);
+  }
+  S.owned.add('furn:' + id);
+  (S.hut ||= []).push({item:id, x:rnd(30, 70), y:rnd(62, 84)}); sfx('pop'); if (S.hut.length >= 5) stamp('decorate');
+  saveGame(); renderKid();
+}
+function gamesMenu(){
+  modal(`<h2>🎮 Minigames</h2><p>Play to earn coins for the shop and your hut.</p>
+    <button class="club-card" data-act="play-game" style="text-align:left;background:var(--surface);cursor:pointer"><div class="ic" style="background:var(--leaf-soft)">🌰</div><div><b>Acorn Catch</b><div class="sub">Catch falling acorns, dodge the bugs</div></div><span class="btn primary">Play</span></button>
+    <button class="club-card" data-act="play-fish" style="text-align:left;background:var(--surface);cursor:pointer"><div class="ic" style="background:#D6EEFA">🎣</div><div><b>Frosty Fishing</b><div class="sub">Drop your line through the ice and reel in fish</div></div><span class="btn primary">Play</span></button>
+    <button class="club-card" data-act="play-sled" style="text-align:left;background:var(--surface);cursor:pointer"><div class="ic" style="background:#EAF2FA">🛷</div><div><b>Sled Dash</b><div class="sub">Race down Snowy Mountain, dodge the trees</div></div><span class="btn primary">Play</span></button>
+    <div class="modal-foot"><button class="btn" data-act="modal-close">Close</button></div>`);
+}
+
+/* ---------- Minigame: Frosty Fishing (move the hook, drop the line, avoid crabs) ---------- */
+const FISH = [{e:'🐟', v:2, w:44}, {e:'🐠', v:3, w:26}, {e:'🐡', v:5, w:12}, {e:'🐙', v:8, w:6}, {e:'🦀', v:0, w:12, bad:true}];
+function startFish(){
+  closeModal(); stopGame();
+  const wrap = document.createElement('div'); wrap.className = 'game-wrap'; wrap.id = 'gameWrap';
+  wrap.innerHTML = `<div class="game" role="dialog" aria-modal="true" aria-label="Frosty Fishing">
+    <h2>🎣 Frosty Fishing</h2>
+    <p>Move with your mouse, finger or arrow keys. Click or press Space to drop the line. 🐟 2 · 🐠 3 · 🐡 5 · 🐙 8 coins. Crabs 🦀 steal your bait!</p>
+    <div class="hud"><span id="gScore">🪙 0</span><span id="gLives">🪱🪱🪱🪱</span><span id="gTime">⏱ 45</span></div>
+    <canvas id="gCanvas" width="360" height="480" style="background:#BFE3F7;cursor:pointer"></canvas>
+    <div class="modal-foot" id="gFoot"><button class="btn" data-act="game-close">Stop fishing</button></div></div>`;
+  document.body.appendChild(wrap);
+  const cv = $('#gCanvas'), img = new Image();
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(penguinSVG(S.look, 60));
+  G = {fish:true, cv, ctx:cv.getContext('2d'), img, x:180, hy:96, state:'idle', caught:null, items:[], score:0, lives:4, end:performance.now() + 45000, last:performance.now(), keys:{}, over:false, raf:0};
+  for (let i = 0; i < 6; i++) G.items.push(newFish(true));
+  const move = e => { const r = cv.getBoundingClientRect(); G.x = Math.max(20, Math.min(340, (e.clientX - r.left) / r.width * 360)); };
+  cv.addEventListener('pointermove', move);
+  cv.addEventListener('pointerdown', e => { move(e); drop(); });
+  G.kd = e => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight'){ G.keys[e.key] = true; e.preventDefault(); } if (e.key === ' '){ drop(); e.preventDefault(); } };
+  G.ku = e => { G.keys[e.key] = false; };
+  addEventListener('keydown', G.kd); addEventListener('keyup', G.ku);
+  G.raf = requestAnimationFrame(fishTick);
+}
+function newFish(anywhere){
+  let r = Math.random() * 100, t = FISH[0];
+  for (const f of FISH){ if ((r -= f.w) <= 0){ t = f; break; } }
+  const dir = Math.random() < .5 ? 1 : -1;
+  return {...t, x:anywhere ? rnd(20, 340) : (dir > 0 ? -20 : 380), y:rnd(190, 450), sp:dir * rnd(40, 105) * (t.v >= 5 ? 1.35 : 1)};
+}
+function drop(){ if (G && G.fish && !G.over && G.state === 'idle') G.state = 'down'; }
+function fishTick(now){
+  if (!G || G.over || !G.fish) return;
+  const dt = Math.min(50, now - G.last) / 1000; G.last = now;
+  const left = Math.max(0, (G.end - now) / 1000);
+  if (G.state === 'idle'){ if (G.keys.ArrowLeft) G.x = Math.max(20, G.x - 260 * dt); if (G.keys.ArrowRight) G.x = Math.min(340, G.x + 260 * dt); }
+  if (G.state === 'down'){ G.hy += 280 * dt; if (G.hy >= 465) G.state = 'up'; }
+  if (G.state === 'up'){
+    G.hy -= 330 * dt;
+    if (G.hy <= 96){ G.hy = 96; G.state = 'idle'; if (G.caught){ G.score += G.caught.v; G.caught = null; } }
+  }
+  for (const f of G.items){ f.x += f.sp * dt; }
+  if (G.state === 'down' && !G.caught){
+    const hit = G.items.find(f => Math.abs(f.x - G.x) < 20 && Math.abs(f.y - G.hy) < 18);
+    if (hit){
+      G.items.splice(G.items.indexOf(hit), 1); G.items.push(newFish(false)); G.state = 'up';
+      if (hit.bad) G.lives--; else G.caught = hit;
+    }
+  }
+  G.items = G.items.map(f => (f.x < -40 || f.x > 400) ? newFish(false) : f);
+  const ctx = G.ctx;
+  const sky = ctx.createLinearGradient(0, 0, 0, 100); sky.addColorStop(0, '#DDF0FB'); sky.addColorStop(1, '#F7FBFE');
+  ctx.fillStyle = sky; ctx.fillRect(0, 0, 360, 100);
+  const sea = ctx.createLinearGradient(0, 100, 0, 480); sea.addColorStop(0, '#5BB7E5'); sea.addColorStop(1, '#1E5F95');
+  ctx.fillStyle = sea; ctx.fillRect(0, 100, 360, 380);
+  ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 92, 360, 14); ctx.fillStyle = '#CFE8F6'; ctx.fillRect(0, 104, 360, 4);
+  ctx.fillStyle = '#2C6E9E'; ctx.beginPath(); ctx.ellipse(G.x, 99, 24, 6, 0, 0, Math.PI * 2); ctx.fill();
+  if (G.img.complete) ctx.drawImage(G.img, Math.max(0, Math.min(300, G.x - 64)), 20, 52, 66);
+  ctx.strokeStyle = '#1D2B3A'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(G.x, 60); ctx.lineTo(G.x, G.hy); ctx.stroke();
+  ctx.strokeStyle = '#6B7785'; ctx.lineWidth = 2.6; ctx.beginPath(); ctx.arc(G.x - 4, G.hy, 5, 0, Math.PI); ctx.stroke();
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '30px serif';
+  for (const f of G.items){ ctx.save(); ctx.translate(f.x, f.y); if (f.sp > 0) ctx.scale(-1, 1); ctx.fillText(f.e, 0, 0); ctx.restore(); }
+  if (G.caught){ ctx.font = '30px serif'; ctx.fillText(G.caught.e, G.x, G.hy + 14); }
+  $('#gScore').textContent = '🪙 ' + G.score;
+  $('#gLives').textContent = '🪱'.repeat(Math.max(0, G.lives)) || '—';
+  $('#gTime').textContent = '⏱ ' + Math.ceil(left);
+  if (left <= 0 || G.lives <= 0) return fishEnd();
+  G.raf = requestAnimationFrame(fishTick);
+}
+function fishEnd(){
+  G.over = true; S.coins += G.score; if (G.score >= 10) stamp('fisher'); const rec = G.score > (S.bestFish || 0); if (rec) S.bestFish = G.score; saveGame();
+  const ctx = G.ctx; ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.fillRect(0, 160, 360, 160);
+  ctx.fillStyle = '#15302D'; ctx.font = '700 28px system-ui'; ctx.fillText(G.lives <= 0 ? 'Out of bait!' : 'Time\'s up!', 180, 205);
+  ctx.font = '600 22px system-ui'; ctx.fillText(`You earned 🪙 ${G.score} coins`, 180, 248);
+  ctx.font = '16px system-ui'; ctx.fillText(`${rec ? '🏆 New best! · ' : ''}You have ${S.coins} coins`, 180, 285);
+  $('#gFoot').innerHTML = `<button class="btn" data-act="game-close">Back to the island</button><button class="btn primary" data-act="play-fish">Fish again</button>`;
+  if (S.cur.type === 'island'){ islandSide(); const c = document.querySelector('.chat-head .coins'); if (c) c.textContent = '🪙 ' + S.coins; }
+}
+
+/* ---------- Island party: lights, dancing and a tune made by the game itself ---------- */
+const PARTY_LINES = ['PARTY TIME!! 🎉','look at my dance moves 🕺','this song is so catchy','woohoo! best party ever','everybody dance! 💃','I love the lights 🪩'];
+const PARTY = {ctx:null, timer:null, step:0, next:0};
+const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+const CHORDS = [[60,64,67],[57,60,64],[53,57,60],[55,59,62]];
+const LEAD = [72,74,76,79,76,74,72,67, 72,72,74,76,74,72,69,67, 69,72,76,77,76,72,69,72, 71,74,79,77,76,74,72,71];
+function tone(f, t, d, type, vol){
+  const c = PARTY.ctx, o = c.createOscillator(), g = c.createGain();
+  o.type = type; o.frequency.value = f; g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+  o.connect(g).connect(c.destination); o.start(t); o.stop(t + d + .03);
+}
+function tick8(t){
+  const c = PARTY.ctx, n = Math.floor(c.sampleRate * .04), b = c.createBuffer(1, n, c.sampleRate), d = b.getChannelData(0);
+  for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
+  const src = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+  src.buffer = b; f.type = 'highpass'; f.frequency.value = 6500; g.gain.value = .06; src.connect(f).connect(g).connect(c.destination); src.start(t);
+}
+function partySched(){
+  const c = PARTY.ctx, e8 = 60 / 116 / 2;
+  while (PARTY.next < c.currentTime + .25){
+    const st = PARTY.step, ch = CHORDS[Math.floor(st / 8) % 4], t = PARTY.next;
+    if (st % 4 === 0) tone(mtof(ch[0] - 24), t, e8 * 1.9, 'triangle', .2);
+    if (st % 4 === 2) tone(mtof(ch[0] - 12), t, e8 * .9, 'triangle', .12);
+    tone(mtof(LEAD[st % LEAD.length]), t, e8 * .85, 'square', .035);
+    if (st % 8 === 0) ch.forEach(m => tone(mtof(m), t, e8 * 3.5, 'sine', .04));
+    if (st % 2 === 1) tick8(t);
+    PARTY.next += e8; PARTY.step++;
+  }
+}
+function partyStart(){
+  try { const AC = window.AudioContext || window.webkitAudioContext; PARTY.ctx = PARTY.ctx || new AC(); PARTY.ctx.resume(); } catch (e) { return; }
+  clearInterval(PARTY.timer); PARTY.step = 0; PARTY.next = PARTY.ctx.currentTime + .06; PARTY.timer = setInterval(partySched, 60);
+}
+function partyStop(){ clearInterval(PARTY.timer); PARTY.timer = null; }
+function partyToggle(){
+  S.party = !S.party;
+  if (S.party){ partyStart(); stamp('party'); } else partyStop();
+  renderIsland();
+  if (S.party) setTimeout(() => { bubble('me', 'let\'s party! 🎉'); }, 300);
+}
+
+/* ---------- Treasure hunt ---------- */
+function findTreasure(id){
+  const t = TREASURES.find(x => x.id === id); if (!t || S.found.has(id)) return;
+  S.found.add(id); S.coins += 10; sfx('coin'); stamp('treasure1');
+  document.querySelector(`.treasure[data-id="${id}"]`)?.remove();
+  bubble('me', `I found a ${t.n}! ${t.e}`);
+  if (S.found.size === TREASURES.length){
+    S.coins += 50; S.owned.add('hat:explorer'); stamp('alltreasure'); saveGame();
+    modal(`<h2>🗺️ You found all the treasure!</h2><p>Amazing exploring! You won <b>50 bonus coins</b> and the <b>Explorer hat</b>. Find it in the 🛍️ Shop.</p>
+      <div style="display:grid;place-items:center;padding:6px;border-radius:16px;background:var(--surface-2)">${penguinSVG({...S.look, hat:'explorer'}, 110)}</div>
+      <div class="modal-foot"><button class="btn primary" data-act="customize">Try it on</button></div>`);
+  } else { toast(`You found a ${t.n}! +10 coins (${S.found.size}/${TREASURES.length})`); saveGame(); }
+  islandSide(); const c = document.querySelector('.chat-head .coins'); if (c) c.textContent = '🪙 ' + S.coins;
+}
+function treasureHint(){
+  const t = TREASURES.find(x => !S.found.has(x.id));
+  if (!t){ toast('You already found every treasure! 🏆'); return; }
+  const z = ZONES[t.zone], needPass = z.pass && !S.open[t.zone];
+  toast(`Hint: ${t.hint}${needPass ? ' (that place needs the Island Pass)' : ''}`);
+}
+
+/* ---------- Minigame: Sled Dash (steer down the mountain) ---------- */
+const SLED = [{e:'🌲', bad:true, w:30}, {e:'🪨', bad:true, w:16}, {e:'⛄', bad:true, w:10}, {e:'❄️', v:1, w:32}, {e:'🎁', v:5, w:12}];
+function startSled(){
+  closeModal(); stopGame();
+  const wrap = document.createElement('div'); wrap.className = 'game-wrap'; wrap.id = 'gameWrap';
+  wrap.innerHTML = `<div class="game" role="dialog" aria-modal="true" aria-label="Sled Dash">
+    <h2>🛷 Sled Dash</h2>
+    <p>Steer with your mouse, finger or arrow keys. Grab ❄️ (1 coin) and 🎁 (5 coins). Dodge trees, rocks and snowmen! Reach the bottom for a bonus.</p>
+    <div class="hud"><span id="gScore">🪙 0</span><span id="gLives">❤️❤️❤️</span><span id="gTime">🏁 0%</span></div>
+    <canvas id="gCanvas" width="360" height="480" style="background:#F4F9FD;cursor:none"></canvas>
+    <div class="modal-foot" id="gFoot"><button class="btn" data-act="game-close">Stop sledding</button></div></div>`;
+  document.body.appendChild(wrap);
+  const cv = $('#gCanvas'), img = new Image();
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(penguinSVG(S.look, 46));
+  G = {sled:true, cv, ctx:cv.getContext('2d'), img, x:180, items:[], score:0, lives:3, dist:0, goal:2600, speed:150, hurt:0, spawn:0, last:performance.now(), keys:{}, over:false, raf:0, trail:[]};
+  const move = e => { const r = cv.getBoundingClientRect(); G.tx = Math.max(24, Math.min(336, (e.clientX - r.left) / r.width * 360)); };
+  cv.addEventListener('pointermove', move); cv.addEventListener('pointerdown', move);
+  G.kd = e => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight'){ G.keys[e.key] = true; G.tx = null; e.preventDefault(); } };
+  G.ku = e => { G.keys[e.key] = false; };
+  addEventListener('keydown', G.kd); addEventListener('keyup', G.ku);
+  G.raf = requestAnimationFrame(sledTick);
+}
+function sledTick(now){
+  if (!G || G.over || !G.sled) return;
+  const dt = Math.min(50, now - G.last) / 1000; G.last = now;
+  if (G.keys.ArrowLeft) G.x = Math.max(24, G.x - 300 * dt);
+  if (G.keys.ArrowRight) G.x = Math.min(336, G.x + 300 * dt);
+  if (G.tx != null) G.x += (G.tx - G.x) * Math.min(1, dt * 8);
+  G.speed = Math.min(330, G.speed + 9 * dt); G.dist += G.speed * dt * .25; G.hurt = Math.max(0, G.hurt - dt);
+  G.spawn -= dt;
+  if (G.spawn <= 0 && G.dist < G.goal - 60){
+    let r = Math.random() * 100, t = SLED[0]; for (const o of SLED){ if ((r -= o.w) <= 0){ t = o; break; } }
+    G.items.push({...t, x:rnd(24, 336), y:510}); G.spawn = rnd(.32, .62) * 150 / G.speed;
+  }
+  for (const it of G.items){
+    it.y -= G.speed * dt;
+    if (!it.hit && Math.abs(it.y - 118) < 22 && Math.abs(it.x - G.x) < 24){
+      if (it.bad){ if (G.hurt <= 0){ G.lives--; G.hurt = 1.2; G.speed *= .6; it.hit = true; } }
+      else { it.hit = true; G.score += it.v; }
+    }
+  }
+  G.items = G.items.filter(it => it.y > -40 && !(it.hit && !it.bad));
+  G.trail.push(G.x); if (G.trail.length > 40) G.trail.shift();
+  const ctx = G.ctx; ctx.fillStyle = '#F4F9FD'; ctx.fillRect(0, 0, 360, 480);
+  ctx.fillStyle = '#E3EEF7'; for (let i = 0; i < 8; i++){ const y = (i * 70 - (G.dist * 4) % 70 + 480) % 480; ctx.fillRect(0, y, 360, 2); }
+  ctx.strokeStyle = '#C9DBEA'; ctx.lineWidth = 3; ctx.beginPath();
+  G.trail.forEach((tx, i) => { const y = 118 - (G.trail.length - i) * 3; i ? ctx.lineTo(tx, y) : ctx.moveTo(tx, y); }); ctx.stroke();
+  const left = G.goal - G.dist;
+  if (left < 520){ const fy = 118 + left; ctx.fillStyle = '#1D2B3A'; for (let i = 0; i < 18; i++){ ctx.fillRect(i * 20, fy, 10, 8); ctx.fillRect(i * 20 + 10, fy + 8, 10, 8); } }
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '32px serif';
+  for (const it of G.items) if (!it.hit || it.bad) ctx.fillText(it.e, it.x, it.y);
+  ctx.globalAlpha = G.hurt > 0 && Math.floor(G.hurt * 10) % 2 ? .35 : 1;
+  ctx.fillStyle = '#B5702F'; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(G.x - 24, 122, 48, 12, 6) : ctx.rect(G.x - 24, 122, 48, 12); ctx.fill();
+  ctx.strokeStyle = '#7A4E2A'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(G.x - 26, 138); ctx.lineTo(G.x + 22, 138); ctx.quadraticCurveTo(G.x + 30, 138, G.x + 28, 128); ctx.stroke();
+  if (G.img.complete) ctx.drawImage(G.img, G.x - 23, 70, 46, 58);
+  ctx.globalAlpha = 1;
+  $('#gScore').textContent = '🪙 ' + G.score;
+  $('#gLives').textContent = '❤️'.repeat(Math.max(0, G.lives)) + '🤍'.repeat(3 - Math.max(0, G.lives));
+  $('#gTime').textContent = '🏁 ' + Math.min(100, Math.round(G.dist / G.goal * 100)) + '%';
+  if (G.dist >= G.goal + 30 || G.lives <= 0) return sledEnd();
+  G.raf = requestAnimationFrame(sledTick);
+}
+function sledEnd(){
+  G.over = true; const won = G.lives > 0, bonus = won ? 15 : 0, total = G.score + bonus; if (won) stamp('sled');
+  S.coins += total; const rec = total > (S.bestSled || 0); if (rec) S.bestSled = total; saveGame();
+  const ctx = G.ctx; ctx.fillStyle = 'rgba(255,255,255,.92)'; ctx.fillRect(0, 160, 360, 170);
+  ctx.fillStyle = '#15302D'; ctx.font = '700 28px system-ui'; ctx.fillText(won ? '🏁 You made it!' : 'Crash! 💥', 180, 205);
+  ctx.font = '600 20px system-ui'; ctx.fillText(`You earned 🪙 ${total} coins${bonus ? ' (+15 finish bonus)' : ''}`, 180, 250);
+  ctx.font = '16px system-ui'; ctx.fillText(`${rec ? '🏆 New best! · ' : ''}You have ${S.coins} coins`, 180, 290);
+  $('#gFoot').innerHTML = `<button class="btn" data-act="game-close">Back to the island</button><button class="btn primary" data-act="play-sled">Race again</button>`;
+  if (S.cur.type === 'island'){ islandSide(); const c = document.querySelector('.chat-head .coins'); if (c) c.textContent = '🪙 ' + S.coins; }
 }
 
 /* ---------- Minigame: Acorn Catch (just for fun, beat your best score) ---------- */
@@ -1137,6 +1612,7 @@ function endGame(){
   ctx.font = '16px system-ui'; ctx.fillText(`${record ? '🏆 New best! · ' : ''}You have ${S.coins} coins`, 180, 282);
   $('#gFoot').innerHTML = `<button class="btn" data-act="game-close">Back to the island</button><button class="btn primary" data-act="play-game">Play again</button>`;
   if (S.cur.type === 'island'){ islandSide(); const c = document.querySelector('.chat-head .coins'); if (c) c.textContent = '🪙 ' + S.coins; }
+  if (G.score >= 20) stamp('acorn');
   if (record && AV.me) bubble('me', `new best score: ${G.score}! 🏆`);
 }
 function stopGame(){
@@ -1206,6 +1682,19 @@ document.addEventListener('click', e => {
     case 'island': go({type:'island'}); break;
     case 'zone': zoneClick(id); break;
     case 'play-game': startGame(); break;
+    case 'play-fish': startFish(); break;
+    case 'play-sled': startSled(); break;
+    case 'emote': myEmote(id); break;
+    case 'aim': S.aiming = !S.aiming; b.classList.toggle('on', S.aiming); b.querySelector('span').textContent = S.aiming ? 'Tap to throw!' : 'Snowball'; $('#scene')?.classList.toggle('aiming', S.aiming); if (S.aiming) sfx('pop'); break;
+    case 'stamps': stampBook(); break;
+    case 'sound': S.sound = !S.sound; saveGame(); islandSide(); if (S.sound) sfx('pop'); break;
+    case 'party': partyToggle(); break;
+    case 'treasure': findTreasure(id); break;
+    case 'hint': treasureHint(); break;
+    case 'games': gamesMenu(); break;
+    case 'hut-edit': S.hutEdit = !S.hutEdit; renderKid(); break;
+    case 'furn-add': furnAdd(id); break;
+    case 'furn-del': S.hut.splice(+id, 1); saveGame(); renderKid(); break;
     case 'pass': passGate(); break;
     case 'customize': customize(); break;
     case 'look': setLook(b); break;
@@ -1214,7 +1703,7 @@ document.addEventListener('click', e => {
     case 'pass-buy': passBuy(); break;
     case 'cloud-in': cloudSignIn(); break;
     case 'cloud-out': cloudSignOut(); break;
-    case 'p-reset': S.coins = 20; S.owned = new Set(['hat:none','hat:beanie','color:#1E2A3A','color:#2A7FC4','color:#FF8A3D','scarf:none','scarf:#2A7FC4']); S.look = {color:'#FF8A3D', hat:'beanie', scarf:'#2A7FC4'}; S.best = 0; S.member = false; S.open = {plaza:true}; S.zone = 'plaza'; saveGame(); renderParent(); toast('Island progress reset'); break;
+    case 'p-reset': S.coins = 20; S.owned = new Set(BASE_OWNED); S.hut = [{item:'couch', x:30, y:70}, {item:'plant', x:82, y:66}]; S.bestFish = 0; S.bestSled = 0; S.found = new Set(); S.stamps = new Set(); S.visited = new Set(); S.lastGift = null; S.look = {color:'#FF8A3D', hat:'beanie', scarf:'#2A7FC4', glasses:'none', back:'none', pet:'none'}; S.best = 0; S.member = false; S.open = {plaza:true}; S.zone = 'plaza'; saveGame(); renderParent(); toast('Island progress reset'); break;
     case 'game-close': stopGame(); break;
     case 'club': closeModal(); go({type:'club', club:id, ch:S.lastCh[id] || club(id).chs[0][0]}); break;
     case 'channel': S.lastCh[S.cur.club] = id; go({type:'club', club:S.cur.club, ch:id}); break;
@@ -1286,11 +1775,19 @@ const FIREBASE_CONFIG = {
 };
 const SAVE_KEY = 'treehouse-save-v1';
 const CLOUD = {ready:false, user:null};
-const snapshot = () => ({coins:S.coins, owned:[...S.owned], look:S.look, best:S.best, member:!!S.member, open:S.open, silly:S.silly});
+const snapshot = () => ({coins:S.coins, owned:[...S.owned], look:S.look, best:S.best, bestFish:S.bestFish || 0, bestSled:S.bestSled || 0, found:[...S.found], stamps:[...S.stamps], visited:[...S.visited], lastGift:S.lastGift, sound:S.sound, hut:S.hut || [], member:!!S.member, open:S.open, silly:S.silly});
 function applySave(d){
   if (!d) return;
   if (typeof d.coins === 'number') S.coins = d.coins;
-  if (Array.isArray(d.owned)) S.owned = new Set(d.owned);
+  if (Array.isArray(d.owned)) S.owned = new Set([...BASE_OWNED, ...d.owned]);
+  if (Array.isArray(d.hut)) S.hut = d.hut;
+  if (typeof d.bestFish === 'number') S.bestFish = d.bestFish;
+  if (typeof d.bestSled === 'number') S.bestSled = d.bestSled;
+  if (Array.isArray(d.found)) S.found = new Set(d.found);
+  if (Array.isArray(d.stamps)) S.stamps = new Set(d.stamps);
+  if (Array.isArray(d.visited)) S.visited = new Set(d.visited);
+  if (d.lastGift) S.lastGift = d.lastGift;
+  if (typeof d.sound === 'boolean') S.sound = d.sound;
   if (d.look && d.look.color) S.look = d.look;
   if (typeof d.best === 'number') S.best = d.best;
   S.member = !!d.member; if (d.open) S.open = d.open;
