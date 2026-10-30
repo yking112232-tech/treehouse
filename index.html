@@ -371,6 +371,24 @@ select{border:1px solid var(--line);background:var(--surface);border-radius:9px;
 .food:active{transform:scale(.92)}
 .shack-btns{display:flex;justify-content:space-between;gap:8px}
 @media (prefers-reduced-motion:reduce){.ambience span,.waves,.qbadge{animation:none!important}}
+.packs{display:flex;flex-direction:column;gap:8px}
+.pack-card{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1.5px solid var(--line);border-radius:14px;background:linear-gradient(90deg,var(--sun-soft),transparent)}
+.pack-card>div{flex:1;min-width:0}
+.pack-card small{display:block;color:var(--muted);font-size:12px}
+.pack-card.owned{background:var(--leaf-soft)}
+.pack-card.bundle{border-color:var(--sun);background:linear-gradient(90deg,#FFE7A3,var(--sun-soft))}
+.pk-art{flex:none}
+.event-banner{margin:10px 18px 0;padding:8px 12px;border-radius:12px;background:linear-gradient(90deg,#FFE7A3,#FFC6DD);color:#3A2410;font-size:13.5px}
+.diya{border:0;background:none;padding:0;font-size:26px;cursor:pointer;pointer-events:auto;filter:grayscale(1) brightness(.75);opacity:.75}
+.diya.lit{filter:drop-shadow(0 0 8px #FFB13B) drop-shadow(0 0 16px #FF8A3D);opacity:1;animation:flicker 1.2s ease-in-out infinite alternate}
+@keyframes flicker{from{filter:drop-shadow(0 0 6px #FFB13B)}to{filter:drop-shadow(0 0 14px #FFB13B) drop-shadow(0 0 22px #FF8A3D)}}
+.lantern{animation:sway 3s ease-in-out infinite alternate;transform-origin:50% 0}
+@keyframes sway{from{transform:translate(-50%,-100%) rotate(-6deg)}to{transform:translate(-50%,-100%) rotate(6deg)}}
+.fw{position:absolute;width:0;height:0}
+.fw i{position:absolute;left:0;top:0;width:5px;height:5px;border-radius:50%;background:var(--c);box-shadow:0 0 6px var(--c);opacity:0;animation:burst 3.6s ease-out infinite}
+@keyframes burst{0%{opacity:0;transform:rotate(var(--a)) translateX(0)}8%{opacity:1}45%{opacity:1;transform:rotate(var(--a)) translateX(46px)}60%,100%{opacity:0;transform:rotate(var(--a)) translateX(54px)}}
+@media (prefers-reduced-motion:reduce){.fw i,.lantern,.diya.lit{animation:none!important}}
+@media (max-width:520px){.event-banner{margin:8px 12px 0;font-size:12.5px}}
 .scene.hut{background:linear-gradient(#E8C597 0 42%,#A9743F 42% 44.5%,#D7A56A 44.5% 100%)}
 .furn{pointer-events:none}
 .furn.edit{pointer-events:auto;cursor:grab;outline:2px dashed rgba(255,255,255,.8);outline-offset:2px;border-radius:8px;touch-action:none}
@@ -577,7 +595,7 @@ const S = {
     {tag:'hidden', label:'Hidden from SkyFox', text:'hey whats ur snap? add me', where:'Block Builders · #general-chat', who:'newuser_77', why:'Asked to move to another app', t:'Today, 4:04 PM'},
     {tag:'private', label:'Blocked', text:'my school is Green•••••', where:'Homework Help · #science', who:'SkyFox', why:'School name', t:'Mon, 5:26 PM'}
   ],
-  reports:[], silly:false, look:{color:'#FF8A3D', hat:'beanie', scarf:'#2A7FC4'}, best:0, coins:20, owned:new Set(BASE_OWNED), hut:[{item:'couch', x:30, y:70}, {item:'plant', x:82, y:66}], bestFish:0, bestSled:0, found:new Set(), party:false, stamps:new Set(), visited:new Set(), quests:{}, flags:{}, fishCaught:0, served:0, bestPairs:0, bestSnack:0, tapped:new Set(), lastGift:null, sound:true, aiming:false, zone:'plaza', open:{plaza:true}, tip:0, tipHidden:false, warn:null, reactOpen:null, typing:null
+  reports:[], silly:false, look:{color:'#FF8A3D', hat:'beanie', scarf:'#2A7FC4'}, best:0, coins:20, owned:new Set(BASE_OWNED), hut:[{item:'couch', x:30, y:70}, {item:'plant', x:82, y:66}], bestFish:0, bestSled:0, found:new Set(), party:false, stamps:new Set(), visited:new Set(), quests:{}, flags:{}, packs:new Set(), diyas:new Set(), fishCaught:0, served:0, bestPairs:0, bestSnack:0, tapped:new Set(), lastGift:null, sound:true, aiming:false, zone:'plaza', open:{plaza:true}, tip:0, tipHidden:false, warn:null, reactOpen:null, typing:null
 };
 
 const keyOf = c => c.type === 'island' ? 'island' : c.type === 'dm' ? 'dm:' + c.id : c.club + ':' + c.ch;
@@ -1003,12 +1021,12 @@ const PCOLORS = ['#1E2A3A','#2A7FC4','#7FCBEA','#1F8F57','#46C07F','#F5B521','#F
 const HATS = [
   {id:'none', name:'No hat'}, {id:'beanie', name:'Beanie'}, {id:'party', name:'Party hat'}, {id:'cap', name:'Cap'},
   {id:'flower', name:'Flower'}, {id:'headphones', name:'Headphones'}, {id:'bow', name:'Bow'},
-  {id:'crown', name:'Crown', pass:true}, {id:'wizard', name:'Wizard hat', pass:true}, {id:'explorer', name:'Explorer hat', prize:true}
+  {id:'crown', name:'Crown', pass:true}, {id:'wizard', name:'Wizard hat', pass:true}, {id:'explorer', name:'Explorer hat', prize:true}, {id:'astro', name:'Space helmet', pack:'space'}, {id:'pirate', name:'Pirate hat', pack:'pirate'}, {id:'sparkle', name:'Sparkle crown', pack:'festival'}
 ];
 const PRICE = {hat:{beanie:0, party:30, cap:25, flower:20, headphones:40, bow:20}, color:15, scarf:10, glasses:25, pet:50};
 const priceOf = (k, v) => v === 'none' || v === undefined ? 0 : k === 'hat' ? (PRICE.hat[v] ?? 0) : k === 'back' ? (v === 'backpack' ? 30 : 35) : (PRICE[k] ?? 0);
-const GLASSES = [{id:'none', name:'No glasses'}, {id:'sun', name:'Sunglasses'}, {id:'round', name:'Round glasses'}, {id:'heart', name:'Heart glasses'}];
-const BACKS = [{id:'none', name:'Nothing'}, {id:'cape-red', name:'Red cape'}, {id:'cape-purple', name:'Purple cape'}, {id:'cape-blue', name:'Blue cape'}, {id:'backpack', name:'Backpack'}];
+const GLASSES = [{id:'none', name:'No glasses'}, {id:'sun', name:'Sunglasses'}, {id:'round', name:'Round glasses'}, {id:'heart', name:'Heart glasses'}, {id:'patch', name:'Eye patch', pack:'pirate'}];
+const BACKS = [{id:'none', name:'Nothing'}, {id:'cape-red', name:'Red cape'}, {id:'cape-purple', name:'Purple cape'}, {id:'cape-blue', name:'Blue cape'}, {id:'backpack', name:'Backpack'}, {id:'jetpack', name:'Jetpack', pack:'space'}, {id:'cape-gold', name:'Gold cape', pack:'festival'}];
 const PETS = {none:{e:'', n:'No pet'}, seal:{e:'🦭', n:'Baby seal'}, bunny:{e:'🐰', n:'Snow bunny'}, owl:{e:'🦉', n:'Tiny owl'}, turtle:{e:'🐢', n:'Turtle'}, chick:{e:'🐥', n:'Chick'}, crab:{e:'🦀', n:'Crab'}};
 const FURN = {bed:{e:'🛏️', n:'Bed', p:30, s:72}, couch:{e:'🛋️', n:'Couch', p:30, s:66}, chair:{e:'🪑', n:'Chair', p:15, s:46}, tv:{e:'📺', n:'TV', p:35, s:52},
   plant:{e:'🪴', n:'Plant', p:10, s:46}, books:{e:'📚', n:'Books', p:15, s:40}, teddy:{e:'🧸', n:'Teddy', p:15, s:40}, guitar:{e:'🎸', n:'Guitar', p:20, s:48},
@@ -1032,6 +1050,9 @@ function hatSVG(h, c){
     case 'bow': return `<g transform="translate(30 11)"><path d="M0 0 L-10 -6 L-10 6 Z M0 0 L10 -6 L10 6 Z" fill="#EC6FAE"/><circle r="3" fill="#D04E92"/></g>`;
     case 'crown': return `<path d="M17 18 L17 6 L23.5 12 L30 3 L36.5 12 L43 6 L43 18 Z" fill="#F5B521" stroke="#C98E0A" stroke-width="1"/><circle cx="30" cy="13" r="2" fill="#E8553F"/>`;
     case 'wizard': return `<ellipse cx="30" cy="18" rx="19" ry="4" fill="#4B3BA8"/><path d="M19 18 L33 -10 L41 18 Z" fill="#5A4BD3"/><path d="M30 6 l1.5 3 3.2.4-2.3 2.2.6 3.2-3-1.6-3 1.6.6-3.2-2.3-2.2 3.2-.4z" fill="#F5B521"/>`;
+    case 'astro': return `<circle cx="30" cy="27" r="23" fill="#BFE6FF" fill-opacity=".28" stroke="#DCEBF5" stroke-width="2.5"/><path d="M14 16 Q20 8 28 7" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".85"/><rect x="18" y="47" width="24" height="5" rx="2.5" fill="#9AA5B1"/>`;
+    case 'pirate': return `<path d="M12 18 Q30 -2 48 18 Q30 12 12 18 Z" fill="#1F232B"/><path d="M14 17 Q30 11 46 17" stroke="#E9A70F" stroke-width="2" fill="none"/><circle cx="30" cy="9" r="3" fill="#fff"/><path d="M27 13 l6 -3 M27 10 l6 3" stroke="#fff" stroke-width="1.2"/>`;
+    case 'sparkle': return `<path d="M18 18 L20 7 L25 13 L30 3 L35 13 L40 7 L42 18 Z" fill="#F5C64A" stroke="#C98E0A" stroke-width="1"/><circle cx="30" cy="12" r="2.2" fill="#EC6FAE"/><circle cx="22.5" cy="14" r="1.4" fill="#2A7FC4"/><circle cx="37.5" cy="14" r="1.4" fill="#1F8F57"/><path d="M44 4 l1 2.5 2.5 1 -2.5 1 -1 2.5 -1 -2.5 -2.5 -1 2.5 -1z" fill="#FFF3B0"/>`;
     case 'explorer': return `<ellipse cx="30" cy="17" rx="23" ry="4.6" fill="#B98E55"/><path d="M17 17 Q18 2 30 2 Q42 2 43 17 Z" fill="#D8B47E"/><rect x="17.6" y="11.5" width="24.8" height="3.6" fill="#7A4E2A"/>`;
     default: return '';
   }
@@ -1040,15 +1061,17 @@ function glassesSVG(g){
   switch (g){
     case 'sun': return `<rect x="17" y="20.3" width="12" height="7.4" rx="3.2" fill="#14171C"/><rect x="31" y="20.3" width="12" height="7.4" rx="3.2" fill="#14171C"/><path d="M29 23.2 h2" stroke="#14171C" stroke-width="1.8"/><path d="M19 22.3 l3 0" stroke="#fff" stroke-width="1.2" opacity=".7" stroke-linecap="round"/><path d="M33 22.3 l3 0" stroke="#fff" stroke-width="1.2" opacity=".7" stroke-linecap="round"/>`;
     case 'round': return `<circle cx="23.5" cy="24" r="5.6" fill="none" stroke="#8A5A34" stroke-width="1.8"/><circle cx="36.5" cy="24" r="5.6" fill="none" stroke="#8A5A34" stroke-width="1.8"/><path d="M29.1 23.4 h1.8" stroke="#8A5A34" stroke-width="1.8"/>`;
+    case 'patch': return `<path d="M12 18 L48 27" stroke="#1F232B" stroke-width="1.6"/><ellipse cx="36.5" cy="24" rx="5.6" ry="5" fill="#1F232B"/>`;
     case 'heart': { const h = (x) => `<path d="M${x} 27.8 C${x - 7} 23 ${x - 5} 18 ${x} 21 C${x + 5} 18 ${x + 7} 23 ${x} 27.8 Z" fill="#EC6FAE" opacity=".92"/>`; return h(23.5) + h(36.5) + `<path d="M29 23 h2" stroke="#D04E92" stroke-width="1.6"/>`; }
     default: return '';
   }
 }
 function penguinSVG(look, w){
   const c = look.color, dark = shade(c, .78);
-  const capeCol = {'cape-red':'#D9472F', 'cape-purple':'#6C4BD3', 'cape-blue':'#2A7FC4'}[look.back];
+  const capeCol = {'cape-red':'#D9472F', 'cape-purple':'#6C4BD3', 'cape-blue':'#2A7FC4', 'cape-gold':'#E9A70F'}[look.back];
   const behind = capeCol ? `<path d="M12 27 Q30 19 48 27 L56 60 Q30 67 4 60 Z" fill="${capeCol}"/><path d="M12 27 Q30 19 48 27" fill="none" stroke="${shade(capeCol, .72)}" stroke-width="2.4"/>`
-    : look.back === 'backpack' ? `<rect x="6" y="29" width="48" height="25" rx="9" fill="#B5702F"/>` : '';
+    : look.back === 'backpack' ? `<rect x="6" y="29" width="48" height="25" rx="9" fill="#B5702F"/>`
+    : look.back === 'jetpack' ? `<rect x="2" y="28" width="12" height="26" rx="5" fill="#9AA5B1"/><rect x="46" y="28" width="12" height="26" rx="5" fill="#9AA5B1"/><path d="M4 54 L8 64 L12 54 Z M48 54 L52 64 L56 54 Z" fill="#FF8A3D"/>` : '';
   const straps = look.back === 'backpack' ? `<path d="M19.5 29 L17.5 52 M40.5 29 L42.5 52" stroke="#8A5A34" stroke-width="3" stroke-linecap="round"/>` : '';
   const scarf = look.scarf && look.scarf !== 'none' ? `<path d="M13 37 Q30 44 47 37 L47 42 Q30 49 13 42 Z" fill="${look.scarf}" stroke="rgba(0,0,0,.12)"/><rect x="38" y="41" width="6" height="13" rx="2.5" fill="${look.scarf}" stroke="rgba(0,0,0,.12)"/>` : '';
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${Math.round(w * 76 / 60)}" viewBox="0 -12 60 76" aria-hidden="true">
@@ -1122,6 +1145,7 @@ function renderIsland(){
       <button class="btn ${S.party ? 'primary' : ''}" data-act="party">${S.party ? '🔇 End party' : '🎉 Party!'}</button>
       <button class="btn primary" data-act="games">🎮 Games</button>
     </div>
+    ${eventBanner()}
     <div class="scene ${S.zone} ${S.party ? 'party' : ''}" id="scene" aria-label="${esc(z.name)}. Click to walk."></div>
     ${z.room && S.hutEdit ? `<div class="catalog">${Object.entries(FURN).map(([id, f]) => { const own = S.owned.has('furn:' + id); return `<button class="hat-opt" data-act="furn-add" data-id="${id}" title="${esc(f.n)}"><span style="font-size:28px;line-height:34px">${f.e}</span><span>${esc(f.n)}</span>${own ? '' : `<span class="price">${S.member ? 'Free' : '🪙' + f.p}</span>`}</button>`; }).join('')}</div>` : ''}
     <div class="emotes" role="group" aria-label="Emotes">
@@ -1171,7 +1195,7 @@ function renderIsland(){
   QUESTS.filter(q => q.item && q.item.zone === S.zone && S.quests[q.id] === 'active' && !S.flags[q.id + 'Item']).forEach(q => {
     sc.insertAdjacentHTML('beforeend', `<button class="decor treasure quest-item" data-act="questitem" data-id="${q.id}" style="left:${q.item.x}%;top:${q.item.y}%;z-index:${q.item.y * 10}" aria-label="Lost item">${q.item.e}</button>`);
   });
-  addAmbience(sc, S.zone); questBadges();
+  addAmbience(sc, S.zone); eventDecor(sc); questBadges();
   if (S.look.pet && S.look.pet !== 'none'){
     const d = document.createElement('div'); d.className = 'ava pet';
     d.innerHTML = `<span class="body" style="font-size:30px;line-height:1">${PETS[S.look.pet].e}</span>`;
@@ -1221,19 +1245,22 @@ function zoneClick(id){
 function customize(){
   S.draft = {glasses:'none', back:'none', pet:'none', ...S.look};
   const tag = (k, v) => { const pr = priceOf(k, v); return S.owned.has(k + ':' + v) || !pr ? '' : S.member ? `<span class="price">Free</span>` : `<span class="price">🪙${pr}</span>`; };
-  const opt = (k, id, name, art) => `<button class="hat-opt ${S.draft[k] === id ? 'on' : ''}" data-act="look" data-k="${k}" data-v="${id}" title="${esc(name)}">${art}<span>${esc(name)}</span>${tag(k, id)}</button>`;
+  const opt = (k, id, name, art, pack) => { const lk = pack && !S.packs.has(pack); return `<button class="hat-opt ${S.draft[k] === id ? 'on' : ''}" data-act="look" data-k="${k}" data-v="${id}" ${lk ? `data-locked="pack:${pack}"` : ''} title="${esc(name)}">${art}<span>${esc(name)}${lk ? ' 📦' : ''}</span>${pack ? '' : tag(k, id)}</button>`; };
   const dummy = extra => penguinSVG({color:'#C9D3DC', hat:'none', scarf:'none', ...extra}, 34);
   modal(`<h2>🛍️ Penguin shop</h2>
     <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><p>${S.member ? 'Island Pass: everything is free! ⭐' : 'Tap something to try it on. Things with a price cost coins.'}</p><span class="coins" id="shopCoins">🪙 ${S.coins}</span></div>
     <div class="shop-preview" id="pPreview">${previewHTML(S.draft)}</div>
+    <div class="group-label" style="padding:0">Style packs</div>
+    ${S.member && S.packs.has('space') && S.packs.has('pirate') ? '' : `<div class="pack-card bundle"><span class="pk-art">${penguinSVG({color:'#FF8A3D', scarf:'#2A7FC4', hat:'crown', back:'cape-gold'}, 46)}</span><div><b>⭐ Everything bundle</b><small>Island Pass + Space pack + Pirate pack. Best value!</small></div><button class="btn primary" data-act="pack" data-id="bundle">₹249</button></div>`}
+    <div class="packs">${PACKS.map(pk => `<div class="pack-card ${S.packs.has(pk.id) ? 'owned' : ''}"><span class="pk-art">${penguinSVG({color:'#C9D3DC', scarf:'none', ...pk.look}, 46)}</span><div><b>${esc(pk.name)}</b><small>${esc(pk.has)}</small></div>${S.packs.has(pk.id) ? '<span class="q-tag">✅ Yours</span>' : pk.id === 'festival' ? '<span class="q-tag on">🪔 Diwali gift</span>' : `<button class="btn primary" data-act="pack" data-id="${pk.id}">${pk.price}</button>`}</div>`).join('')}</div>
     <div class="group-label" style="padding:0">Colour</div>
     <div class="swatches">${PCOLORS.map(c => `<button class="sw ${S.draft.color === c ? 'on' : ''}" data-act="look" data-k="color" data-v="${c}" style="background:${c}" aria-label="Colour ${c}">${tag('color', c)}</button>`).join('')}</div>
     <div class="group-label" style="padding:0">Hat</div>
-    <div class="swatches">${HATS.map(h => { const locked = h.prize ? (S.owned.has('hat:' + h.id) ? '' : 'prize') : h.pass && !S.member ? 'pass' : ''; return `<button class="hat-opt ${S.draft.hat === h.id ? 'on' : ''}" data-act="look" data-k="hat" data-v="${h.id}" ${locked ? `data-locked="${locked}"` : ''} title="${h.name}">${dummy({hat:h.id})}<span>${h.name}${locked === 'prize' ? ' 🗺️' : locked ? ' 🔒' : ''}</span>${h.pass || h.prize ? '' : tag('hat', h.id)}</button>`; }).join('')}</div>
+    <div class="swatches">${HATS.map(h => { const locked = h.pack ? (S.packs.has(h.pack) ? '' : 'pack:' + h.pack) : h.prize ? (S.owned.has('hat:' + h.id) ? '' : 'prize') : h.pass && !S.member ? 'pass' : ''; return `<button class="hat-opt ${S.draft.hat === h.id ? 'on' : ''}" data-act="look" data-k="hat" data-v="${h.id}" ${locked ? `data-locked="${locked}"` : ''} title="${h.name}">${dummy({hat:h.id})}<span>${h.name}${locked === 'prize' ? ' 🗺️' : locked.startsWith('pack') ? ' 📦' : locked ? ' 🔒' : ''}</span>${h.pass || h.prize || h.pack ? '' : tag('hat', h.id)}</button>`; }).join('')}</div>
     <div class="group-label" style="padding:0">Glasses</div>
-    <div class="swatches">${GLASSES.map(g => opt('glasses', g.id, g.name, dummy({glasses:g.id}))).join('')}</div>
+    <div class="swatches">${GLASSES.map(g => opt('glasses', g.id, g.name, dummy({glasses:g.id}), g.pack)).join('')}</div>
     <div class="group-label" style="padding:0">Capes and backpacks</div>
-    <div class="swatches">${BACKS.map(g => opt('back', g.id, g.name, dummy({back:g.id}))).join('')}</div>
+    <div class="swatches">${BACKS.map(g => opt('back', g.id, g.name, dummy({back:g.id}), g.pack)).join('')}</div>
     <div class="group-label" style="padding:0">Scarf</div>
     <div class="swatches">${SCARVES.map(c => `<button class="sw ${S.draft.scarf === c ? 'on' : ''}" data-act="look" data-k="scarf" data-v="${c}" style="background:${c === 'none' ? 'repeating-linear-gradient(45deg,var(--surface),var(--surface) 4px,var(--line) 4px,var(--line) 8px)' : c}" aria-label="${c === 'none' ? 'No scarf' : 'Scarf ' + c}">${tag('scarf', c)}</button>`).join('')}</div>
     <div class="group-label" style="padding:0">Pet (follows you around!)</div>
@@ -1244,13 +1271,14 @@ function customize(){
 }
 function previewHTML(look){ return penguinSVG(look, 110) + (look.pet && look.pet !== 'none' ? `<span style="font-size:44px;align-self:flex-end">${PETS[look.pet].e}</span>` : ''); }
 function setLook(b){
+  if (b.dataset.locked && b.dataset.locked.startsWith('pack:')){ const pk = PACKS.find(x => x.id === b.dataset.locked.slice(5)); toast(`That's part of the ${pk.name}. Find it under Style packs! 📦`); return; }
   if (b.dataset.locked){ toast(b.dataset.locked === 'prize' ? 'Find all 8 hidden treasures to win the Explorer hat! 🗺️' : 'That hat comes with the Island Pass'); return; }
   S.draft[b.dataset.k] = b.dataset.v;
   $('#pPreview').innerHTML = previewHTML(S.draft);
   b.parentElement.querySelectorAll('.on').forEach(x => x.classList.remove('on')); b.classList.add('on');
   shopCheck();
 }
-function shopCost(){ if (S.member) return 0; return SLOTS.reduce((n, k) => n + (S.owned.has(k + ':' + S.draft[k]) || (k === 'hat' && HATS.find(h => h.id === S.draft.hat)?.pass) ? 0 : priceOf(k, S.draft[k])), 0); }
+function shopCost(){ if (S.member) return 0; return SLOTS.reduce((n, k) => n + (S.owned.has(k + ':' + S.draft[k]) || [...HATS, ...GLASSES, ...BACKS].some(it => it.pack && it.id === S.draft[k]) || (k === 'hat' && HATS.find(h => h.id === S.draft.hat)?.pass) ? 0 : priceOf(k, S.draft[k])), 0); }
 function shopCheck(){
   const cost = shopCost(), btn = $('#shopSave'), msg = $('#shopMsg');
   if (!btn) return;
@@ -1266,7 +1294,8 @@ function shopSave(){
 }
 
 /* ---------- Island Pass: grown-up gate + pretend checkout (no card details, no real money) ---------- */
-function passGate(){
+function packGate(id){ S.gateFor = id; passGate(true); }
+function passGate(keep){ if (keep !== true) S.gateFor = null;
   const a = 11 + Math.floor(Math.random() * 9), b = 3 + Math.floor(Math.random() * 7);
   S.gate = a * b;
   modal(`<h2>Ask a grown-up 🔒</h2><p>This part is for grown-ups only. Grown-ups, please answer to continue.</p>
@@ -1276,9 +1305,9 @@ function passGate(){
   $('#gateAns').addEventListener('keydown', e => { if (e.key === 'Enter') gateCheck(); });
 }
 function gateCheck(){
-  if (+$('#gateAns').value === S.gate) return passOffer();
+  if (+$('#gateAns').value === S.gate) return S.gateFor ? packOffer(S.gateFor) : passOffer();
   $('#gateErr').textContent = 'That\'s not right. Please ask a grown-up to help.';
-  setTimeout(passGate, 1200);
+  setTimeout(() => passGate(true), 1200);
 }
 function passOffer(){
   modal(`<h2>⭐ Treehouse Island Pass</h2>
@@ -1291,7 +1320,7 @@ function passOffer(){
     </ul>
     <div class="safety-card" style="background:var(--grape-soft)"><b style="font-size:15px">How paying would work</b>
       In the real app, payment would go through the App Store or Google Play, using the account you already have. Nobody ever types card details into Treehouse. This prototype is a demo, so it never takes money.</div>
-    <div class="modal-foot"><button class="btn" data-act="modal-close">Not now</button><button class="btn primary" data-act="pass-buy">Unlock Island Pass (demo, free)</button></div>`);
+    <div class="modal-foot"><button class="btn" data-act="modal-close">Not now</button><button class="btn" data-act="pack" data-id="bundle">⭐ Everything bundle</button><button class="btn primary" data-act="pass-buy">Unlock Island Pass (demo, free)</button></div>`);
 }
 function passBuy(){
   S.member = true; Object.keys(ZONES).forEach(z => S.open[z] = true); saveGame();
@@ -1557,6 +1586,83 @@ function snackEnd(){
   G.over = true; clearInterval(G.timer); S.coins += G.score; if (G.served > (S.bestSnack || 0)) S.bestSnack = G.served; saveGame(); sfx('stamp');
   $('#gFoot').innerHTML = `<span style="margin-right:auto;font-weight:600">Closing time! You served ${G.served} snacks and earned 🪙 ${G.score}. Best: ${S.bestSnack}</span><button class="btn" data-act="game-close">Back</button><button class="btn primary" data-act="play-snack">Open again</button>`;
   if (S.cur.type === 'island'){ islandSide(); const c = document.querySelector('.chat-head .coins'); if (c) c.textContent = '🪙 ' + S.coins; }
+}
+
+/* ---------- Style packs (real app: Apple in-app purchase, bought by a grown-up) ---------- */
+const PACKS = [
+  {id:'space', name:'Space pack', price:'₹49', has:'Space helmet and Jetpack', look:{hat:'astro', back:'jetpack'}},
+  {id:'pirate', name:'Pirate pack', price:'₹49', has:'Pirate hat and Eye patch', look:{hat:'pirate', glasses:'patch'}},
+  {id:'festival', name:'Festival pack', price:'Free', has:'Sparkle crown and Gold cape', look:{hat:'sparkle', back:'cape-gold'}}
+];
+function packOffer(id){
+  if (id === 'bundle') return bundleOffer();
+  const pk = PACKS.find(x => x.id === id);
+  modal(`<h2>📦 ${esc(pk.name)}</h2><div style="display:grid;place-items:center;padding:6px;border-radius:16px;background:var(--surface-2)">${penguinSVG({...S.look, ...pk.look}, 110)}</div>
+    <p><b>For grown-ups.</b> Includes: ${esc(pk.has)}. Yours to keep forever.</p>
+    <div class="safety-card" style="background:var(--grape-soft)"><b style="font-size:15px">How paying would work</b>In the App Store app this costs ${pk.price}, paid through Apple by a grown-up. This website is a demo, so it never takes money.</div>
+    <div class="modal-foot"><button class="btn" data-act="modal-close">Not now</button><button class="btn primary" data-act="pack-buy" data-id="${id}">Unlock (demo, free)</button></div>`);
+}
+function bundleOffer(){
+  modal(`<h2>⭐ Everything bundle</h2><div style="display:grid;place-items:center;padding:6px;border-radius:16px;background:var(--surface-2)">${penguinSVG({...S.look, hat:'crown', back:'cape-gold'}, 110)}</div>
+    <p><b>For grown-ups.</b> One purchase that unlocks everything:</p>
+    <ul style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:14px">
+      <li>Island Pass: every place, a free shop, the crown and wizard hat</li>
+      <li>Space pack: space helmet and jetpack</li>
+      <li>Pirate pack: pirate hat and eye patch</li>
+    </ul>
+    <p><b>₹249</b> instead of ₹297 if bought separately. You save ₹48!</p>
+    <div class="safety-card" style="background:var(--grape-soft)"><b style="font-size:15px">How paying would work</b>In the App Store app this costs ₹249, paid through Apple by a grown-up. This website is a demo, so it never takes money.</div>
+    <div class="modal-foot"><button class="btn" data-act="modal-close">Not now</button><button class="btn primary" data-act="bundle-buy">Unlock everything (demo, free)</button></div>`);
+}
+function bundleBuy(){
+  S.member = true; Object.keys(ZONES).forEach(z => S.open[z] = true); ['space', 'pirate'].forEach(x => S.packs.add(x));
+  saveGame(); closeModal(); sfx('stamp'); toast('⭐ Everything unlocked! Enjoy the whole island.'); renderKid();
+}
+function packBuy(id){
+  S.packs.add(id); saveGame(); closeModal(); sfx('stamp');
+  const pk = PACKS.find(x => x.id === id); toast(`📦 ${pk.name} unlocked! Find it in the shop.`);
+  customize();
+}
+
+/* ---------- Diwali festival event ---------- */
+const EVENT = {name:'Diwali Festival', start:'2026-10-25', end:'2026-11-15'};
+const eventOn = () => { const t = new Date().toISOString().slice(0, 10); return t >= EVENT.start && t <= EVENT.end; };
+const DIYAS = [{id:'d1', zone:'plaza', x:18, y:82}, {id:'d2', zone:'plaza', x:78, y:74}, {id:'d3', zone:'hut', x:10, y:90}, {id:'d4', zone:'cave', x:28, y:88}, {id:'d5', zone:'cave', x:82, y:62}];
+const RANGOLI = `<svg width="96" height="54" viewBox="0 0 96 54" aria-hidden="true"><ellipse cx="48" cy="27" rx="46" ry="25" fill="#FFE08A"/><ellipse cx="48" cy="27" rx="36" ry="19" fill="#EC6FAE"/><ellipse cx="48" cy="27" rx="26" ry="13.5" fill="#2A7FC4"/><ellipse cx="48" cy="27" rx="16" ry="8.5" fill="#1F8F57"/><ellipse cx="48" cy="27" rx="7" ry="3.8" fill="#FF8A3D"/>${[0,45,90,135,180,225,270,315].map(a => `<ellipse cx="${48 + Math.cos(a * Math.PI / 180) * 41}" cy="${27 + Math.sin(a * Math.PI / 180) * 22}" rx="4" ry="2.4" fill="#fff"/>`).join('')}</svg>`;
+function eventDecor(sc){
+  if (!eventOn()) return;
+  const outdoor = !['hut', 'cave'].includes(S.zone);
+  if (S.zone === 'plaza'){
+    sc.insertAdjacentHTML('beforeend', `<div class="decor" style="left:58%;top:97%;z-index:900">${RANGOLI}</div>`);
+    [12, 30, 70, 88].forEach(x => sc.insertAdjacentHTML('beforeend', `<div class="decor lantern" style="left:${x}%;top:22%;font-size:30px;z-index:200">🏮</div>`));
+  }
+  DIYAS.filter(d => d.zone === S.zone).forEach(d => {
+    const lit = S.diyas.has(d.id);
+    sc.insertAdjacentHTML('beforeend', `<button class="decor diya ${lit ? 'lit' : ''}" data-act="diya" data-id="${d.id}" style="left:${d.x}%;top:${d.y}%;z-index:${d.y * 10}" aria-label="${lit ? 'Lit diya' : 'Unlit diya, tap to light'}">🪔</button>`);
+  });
+  if (outdoor){
+    let fw = '';
+    [[22, 14, 0], [64, 9, 1.3], [84, 20, 2.4]].forEach(([x, y, d]) => {
+      fw += `<div class="fw" style="left:${x}%;top:${y}%;animation-delay:${d}s">${Array.from({length:10}, (_, i) => `<i style="--a:${i * 36}deg;--c:${['#FFD34D', '#FF6FAE', '#7FD3FF', '#9BF07A'][i % 4]};animation-delay:${d}s"></i>`).join('')}</div>`;
+    });
+    sc.insertAdjacentHTML('beforeend', `<div class="ambience" aria-hidden="true">${fw}</div>`);
+  }
+}
+function eventBanner(){
+  if (!eventOn()) return '';
+  const n = S.diyas.size;
+  return `<div class="event-banner">🪔 <b>${EVENT.name}!</b> ${n >= DIYAS.length ? 'You lit every diya. Happy Diwali! ✨' : `Light ${DIYAS.length} diyas around the island: ${n}/${DIYAS.length} lit · Reward: Festival pack + 40 coins`}</div>`;
+}
+function lightDiya(id, el){
+  if (S.diyas.has(id)) return;
+  S.diyas.add(id); el.classList.add('lit'); sfx('coin'); bubble('me', pick(['it glows! ✨', 'so pretty 🪔', 'Happy Diwali! 🎆']));
+  if (S.diyas.size === DIYAS.length){
+    S.coins += 40; S.packs.add('festival'); saveGame(); sfx('stamp');
+    modal(`<h2>🪔 Happy Diwali!</h2><p>You lit all ${DIYAS.length} diyas! You got <b>40 coins</b> and the <b>Festival pack</b>: a Sparkle crown and a Gold cape.</p>
+      <div style="display:grid;place-items:center;padding:6px;border-radius:16px;background:var(--surface-2)">${penguinSVG({...S.look, hat:'sparkle', back:'cape-gold'}, 110)}</div>
+      <div class="modal-foot"><button class="btn primary" data-act="customize">Try it on</button></div>`);
+  } else { saveGame(); toast(`🪔 Diya lit! ${S.diyas.size}/${DIYAS.length}`); }
+  const bn = document.querySelector('.event-banner'); if (bn) bn.outerHTML = eventBanner();
 }
 
 /* ---------- My Hut ---------- */
@@ -1928,6 +2034,10 @@ document.addEventListener('click', e => {
     case 'play-fish': startFish(); break;
     case 'play-sled': startSled(); break;
     case 'play-pairs': startPairs(); break;
+    case 'pack': packGate(id); break;
+    case 'pack-buy': packBuy(id); break;
+    case 'bundle-buy': bundleBuy(); break;
+    case 'diya': lightDiya(id, b); break;
     case 'flip': flipCard(+id); break;
     case 'play-snack': startSnack(); break;
     case 'food': addFood(id); break;
@@ -1955,7 +2065,7 @@ document.addEventListener('click', e => {
     case 'pass-buy': passBuy(); break;
     case 'cloud-in': cloudSignIn(); break;
     case 'cloud-out': cloudSignOut(); break;
-    case 'p-reset': S.coins = 20; S.owned = new Set(BASE_OWNED); S.hut = [{item:'couch', x:30, y:70}, {item:'plant', x:82, y:66}]; S.bestFish = 0; S.bestSled = 0; S.found = new Set(); S.stamps = new Set(); S.visited = new Set(); S.lastGift = null; S.quests = {}; S.flags = {}; S.fishCaught = 0; S.served = 0; S.bestPairs = 0; S.bestSnack = 0; S.look = {color:'#FF8A3D', hat:'beanie', scarf:'#2A7FC4', glasses:'none', back:'none', pet:'none'}; S.best = 0; S.member = false; S.open = {plaza:true}; S.zone = 'plaza'; saveGame(); renderParent(); toast('Island progress reset'); break;
+    case 'p-reset': S.coins = 20; S.owned = new Set(BASE_OWNED); S.hut = [{item:'couch', x:30, y:70}, {item:'plant', x:82, y:66}]; S.bestFish = 0; S.bestSled = 0; S.found = new Set(); S.stamps = new Set(); S.visited = new Set(); S.lastGift = null; S.quests = {}; S.flags = {}; S.packs = new Set(); S.diyas = new Set(); S.fishCaught = 0; S.served = 0; S.bestPairs = 0; S.bestSnack = 0; S.look = {color:'#FF8A3D', hat:'beanie', scarf:'#2A7FC4', glasses:'none', back:'none', pet:'none'}; S.best = 0; S.member = false; S.open = {plaza:true}; S.zone = 'plaza'; saveGame(); renderParent(); toast('Island progress reset'); break;
     case 'game-close': stopGame(); break;
     case 'club': closeModal(); go({type:'club', club:id, ch:S.lastCh[id] || club(id).chs[0][0]}); break;
     case 'channel': S.lastCh[S.cur.club] = id; go({type:'club', club:S.cur.club, ch:id}); break;
@@ -2027,7 +2137,7 @@ const FIREBASE_CONFIG = {
 };
 const SAVE_KEY = 'treehouse-save-v1';
 const CLOUD = {ready:false, user:null};
-const snapshot = () => ({coins:S.coins, owned:[...S.owned], look:S.look, best:S.best, bestFish:S.bestFish || 0, bestSled:S.bestSled || 0, found:[...S.found], quests:S.quests, flags:S.flags, fishCaught:S.fishCaught || 0, served:S.served || 0, bestPairs:S.bestPairs || 0, bestSnack:S.bestSnack || 0, stamps:[...S.stamps], visited:[...S.visited], lastGift:S.lastGift, sound:S.sound, hut:S.hut || [], member:!!S.member, open:S.open, silly:S.silly});
+const snapshot = () => ({coins:S.coins, owned:[...S.owned], look:S.look, best:S.best, bestFish:S.bestFish || 0, bestSled:S.bestSled || 0, found:[...S.found], quests:S.quests, flags:S.flags, packs:[...S.packs], diyas:[...S.diyas], fishCaught:S.fishCaught || 0, served:S.served || 0, bestPairs:S.bestPairs || 0, bestSnack:S.bestSnack || 0, stamps:[...S.stamps], visited:[...S.visited], lastGift:S.lastGift, sound:S.sound, hut:S.hut || [], member:!!S.member, open:S.open, silly:S.silly});
 function applySave(d){
   if (!d) return;
   if (typeof d.coins === 'number') S.coins = d.coins;
@@ -2039,6 +2149,8 @@ function applySave(d){
   if (Array.isArray(d.stamps)) S.stamps = new Set(d.stamps);
   if (d.quests && typeof d.quests === 'object') S.quests = d.quests;
   if (d.flags && typeof d.flags === 'object') S.flags = d.flags;
+  if (Array.isArray(d.packs)) S.packs = new Set(d.packs);
+  if (Array.isArray(d.diyas)) S.diyas = new Set(d.diyas);
   ['fishCaught', 'served', 'bestPairs', 'bestSnack'].forEach(k => { if (typeof d[k] === 'number') S[k] = d[k]; });
   if (Array.isArray(d.visited)) S.visited = new Set(d.visited);
   if (d.lastGift) S.lastGift = d.lastGift;
@@ -2094,7 +2206,7 @@ function saveCardHTML(){
   else if (!CLOUD.ready) status = `<div class="row"><div class="grow"><b>Connecting to cloud backup…</b><div class="sub">If this doesn't change, check the Firebase settings.</div></div></div>`;
   else if (!CLOUD.user) status = `<div class="row"><div class="grow"><b>Cloud backup is ready</b><div class="sub">Sign in with the grown-up's Google account to back up progress.</div></div><button class="btn primary" data-act="cloud-in">Sign in with Google</button></div>`;
   else status = `<div class="row"><div class="grow"><b>Backed up to the cloud ✓</b><div class="sub">Signed in as ${esc(CLOUD.user.email || 'grown-up')}</div></div><button class="btn" data-act="cloud-out">Sign out</button></div>`;
-  return `<section class="card"><h2>Saving</h2><p class="desc">Saves coins, shop items, the penguin's look and best score. Chats and nicknames are never uploaded.</p><div>${status}
+  return `<section class="card"><h2>Saving</h2><p class="desc">Saves coins, shop items, the penguin's look and best score. Chats and nicknames are never uploaded. <a href="https://yking112232-tech.github.io/treehouse/privacy.html" target="_blank" rel="noopener">Privacy policy</a> · <a href="https://yking112232-tech.github.io/treehouse/terms.html" target="_blank" rel="noopener">Terms of service</a></p><div>${status}
     <div class="row"><div class="grow"><b>Island progress</b><div class="sub">Reset coins, shop items and the Island Pass</div></div><button class="btn" data-act="p-reset">Start over</button></div></div></section>`;
 }
 try { applySave(JSON.parse(localStorage.getItem(SAVE_KEY) || 'null')); S.nick = localStorage.getItem(SAVE_KEY + '-nick') || S.nick; } catch (e) {}
