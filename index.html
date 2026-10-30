@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Treehouse: a safe, moderated chat app for kids aged 8-12.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Treehouse">
+<meta name="theme-color" content="#1D3A38">
 <title>Treehouse Kids Chat</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -316,6 +319,58 @@ select{border:1px solid var(--line);background:var(--surface);border-radius:9px;
 .stamp b{font-size:13px}
 .stamp small{font-size:11px;color:var(--muted);line-height:1.3}
 @media (prefers-reduced-motion:reduce){.ava .body,.ava .body svg,.decor.boing,.emo-pop{animation:none!important}}
+.ava.npc{pointer-events:auto;cursor:pointer}
+.qbadge{position:absolute;top:-12px;right:-6px;min-width:22px;height:22px;border-radius:11px;background:#F5B521;color:#15302D;font:800 15px/22px var(--display);text-align:center;box-shadow:0 2px 4px rgba(0,0,0,.25);animation:qbob 1s ease-in-out infinite alternate}
+.qbadge.active{background:#fff;font-size:13px;animation:none}
+@keyframes qbob{from{transform:translateY(0)}to{transform:translateY(-4px)}}
+.q-head{display:flex;gap:12px;align-items:center}
+.q-head h2{margin:0}
+.q-av{display:grid;place-items:center;border-radius:50%;background:var(--surface-2);flex:none}
+.q-ask{padding:12px 14px;border-radius:14px;background:var(--sun-soft);font-size:15px}
+.q-prog{height:10px;border-radius:5px;background:var(--line);overflow:hidden}
+.q-prog i{display:block;height:100%;background:var(--leaf)}
+.q-list{display:flex;flex-direction:column;gap:8px}
+.q-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:12px}
+.q-row .grow{flex:1;min-width:0}
+.q-row .sub{font-size:12px;color:var(--muted)}
+.q-row.done{opacity:.65}
+.q-tag{font-size:12px;font-weight:600;white-space:nowrap}
+.q-tag.on{color:var(--grape)}
+.ambience{position:absolute;inset:0;pointer-events:none;z-index:3500;overflow:hidden}
+.ambience span{position:absolute}
+.flake{color:#fff;text-shadow:0 0 3px #8FB8D8;animation:fall linear infinite}
+@keyframes fall{from{transform:translate(0,0)}to{transform:translate(30px,560px)}}
+.firefly{width:6px;height:6px;border-radius:50%;background:#FFF59A;box-shadow:0 0 8px 3px rgba(255,240,120,.7);animation:glow ease-in-out infinite alternate}
+@keyframes glow{from{opacity:.15;transform:translate(0,0)}to{opacity:1;transform:translate(14px,-18px)}}
+.sparkle{font-size:16px;animation:twinkle ease-in-out infinite alternate}
+@keyframes twinkle{from{opacity:.1;transform:scale(.6)}to{opacity:1;transform:scale(1.15)}}
+.ember{width:5px;height:5px;border-radius:50%;background:#FF8A3D;box-shadow:0 0 6px 2px rgba(255,120,40,.6);animation:rise linear infinite}
+@keyframes rise{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translate(-12px,-220px)}}
+.cloud{font-size:48px;opacity:.9;animation:drift linear infinite}
+@keyframes drift{from{transform:translateX(-120vw)}to{transform:translateX(120vw)}}
+.waves{position:absolute;left:0;right:0;top:26%;height:18%;background:repeating-linear-gradient(90deg,rgba(255,255,255,.22) 0 36px,transparent 36px 90px);animation:waves 7s linear infinite}
+@keyframes waves{from{background-position:0 0}to{background-position:180px 0}}
+.star{color:#FFF6C8;font-size:12px;animation:twinkle 2.4s ease-in-out infinite alternate}
+.scene.night::before{content:"";position:absolute;inset:0;background:rgba(22,30,90,.38);pointer-events:none;z-index:3400}
+.pairs-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.mcard{aspect-ratio:1;border-radius:14px;border:2px solid var(--line);background:linear-gradient(135deg,#7FCBEA,#2A7FC4);font-size:30px;display:grid;place-items:center;transition:transform .15s}
+.mcard.up{background:var(--surface);border-color:var(--leaf)}
+.mcard.done{background:var(--leaf-soft);opacity:.75}
+.mcard:active{transform:scale(.94)}
+.shack{display:flex;flex-direction:column;gap:10px}
+.customer{display:flex;gap:10px;align-items:center;min-height:90px}
+.cust-av{flex:none}
+.order{background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:8px 12px;font-size:14px}
+.order-items{font-size:28px;margin-top:4px;letter-spacing:4px}
+.patience{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.patience i{display:block;height:100%;background:var(--leaf);transition:width .1s linear}
+.plate{min-height:56px;border-radius:999px;border:3px solid var(--line);background:var(--surface-2);display:grid;place-items:center;font-size:30px;letter-spacing:6px}
+.empty-plate{font-size:13px;color:var(--muted);letter-spacing:0}
+.pantry{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.food{font-size:30px;padding:8px 0;border-radius:14px;border:1.5px solid var(--line);background:var(--surface)}
+.food:active{transform:scale(.92)}
+.shack-btns{display:flex;justify-content:space-between;gap:8px}
+@media (prefers-reduced-motion:reduce){.ambience span,.waves,.qbadge{animation:none!important}}
 .scene.hut{background:linear-gradient(#E8C597 0 42%,#A9743F 42% 44.5%,#D7A56A 44.5% 100%)}
 .furn{pointer-events:none}
 .furn.edit{pointer-events:auto;cursor:grab;outline:2px dashed rgba(255,255,255,.8);outline-offset:2px;border-radius:8px;touch-action:none}
@@ -352,6 +407,20 @@ select{border:1px solid var(--line);background:var(--surface);border-radius:9px;
   .actions{opacity:1}
 }
 @media (max-width:520px){
+  .scene{min-height:380px;margin:10px 12px 0}
+  .ava .body svg{width:40px;height:auto}
+  .ava .nm{font-size:10px}
+  .bubble{font-size:12px;max-width:140px;padding:5px 8px}
+  .isl-note{display:none}
+  .emotes{padding:8px 12px 0;gap:4px}
+  .emo-btn{padding:4px 9px 4px 7px;font-size:15px}
+  .emo-btn span{font-size:12px}
+  .island .chat-head{padding:10px 12px}
+  .island .composer{padding:6px 12px 12px}
+  .game{padding:12px}
+  .mcard{font-size:24px}
+  .food{font-size:26px}
+
   .brand small{display:none}
   .seg button{padding:7px 9px;font-size:13px}
   .stats{grid-template-columns:minmax(0,1fr)}
@@ -361,6 +430,7 @@ select{border:1px solid var(--line);background:var(--surface);border-radius:9px;
 </style>
 </head>
 <body>
+
 
 <div class="shell">
   <header class="topbar">
@@ -507,7 +577,7 @@ const S = {
     {tag:'hidden', label:'Hidden from SkyFox', text:'hey whats ur snap? add me', where:'Block Builders · #general-chat', who:'newuser_77', why:'Asked to move to another app', t:'Today, 4:04 PM'},
     {tag:'private', label:'Blocked', text:'my school is Green•••••', where:'Homework Help · #science', who:'SkyFox', why:'School name', t:'Mon, 5:26 PM'}
   ],
-  reports:[], silly:false, look:{color:'#FF8A3D', hat:'beanie', scarf:'#2A7FC4'}, best:0, coins:20, owned:new Set(BASE_OWNED), hut:[{item:'couch', x:30, y:70}, {item:'plant', x:82, y:66}], bestFish:0, bestSled:0, found:new Set(), party:false, stamps:new Set(), visited:new Set(), tapped:new Set(), lastGift:null, sound:true, aiming:false, zone:'plaza', open:{plaza:true}, tip:0, tipHidden:false, warn:null, reactOpen:null, typing:null
+  reports:[], silly:false, look:{color:'#FF8A3D', hat:'beanie', scarf:'#2A7FC4'}, best:0, coins:20, owned:new Set(BASE_OWNED), hut:[{item:'couch', x:30, y:70}, {item:'plant', x:82, y:66}], bestFish:0, bestSled:0, found:new Set(), party:false, stamps:new Set(), visited:new Set(), quests:{}, flags:{}, fishCaught:0, served:0, bestPairs:0, bestSnack:0, tapped:new Set(), lastGift:null, sound:true, aiming:false, zone:'plaza', open:{plaza:true}, tip:0, tipHidden:false, warn:null, reactOpen:null, typing:null
 };
 
 const keyOf = c => c.type === 'island' ? 'island' : c.type === 'dm' ? 'dm:' + c.id : c.club + ':' + c.ch;
@@ -1006,9 +1076,9 @@ function islandSide(){
     ${Object.entries(ZONES).map(([id, z]) => `<button class="nav-item zone-item ${S.zone === id ? 'on' : ''}" data-act="zone" data-id="${id}"><span style="font-size:18px">${z.icon}</span>${z.name}${S.open[id] || !z.pass ? '' : `<span class="lock">${ICON.lock} Pass</span>`}</button>`).join('')}
     </div></div>
     <div><div class="group-label">My penguin</div><div class="nav-list"><button class="nav-item" data-act="customize"><span style="font-size:18px">🛍️</span>Penguin shop</button></div></div>
-    <div><div class="group-label">Fun stuff</div><div class="nav-list"><button class="nav-item" data-act="stamps"><span style="font-size:18px">🏅</span>Stamp book · ${S.stamps.size}/${STAMPS.length}</button><button class="nav-item" data-act="sound"><span style="font-size:18px">${S.sound ? '🔊' : '🔇'}</span>Sounds ${S.sound ? 'on' : 'off'}</button></div></div>
+    <div><div class="group-label">Fun stuff</div><div class="nav-list"><button class="nav-item" data-act="quests"><span style="font-size:18px">📜</span>Quests · ${QUESTS.filter(q => S.quests[q.id] === 'done').length}/${QUESTS.length} done</button><button class="nav-item" data-act="stamps"><span style="font-size:18px">🏅</span>Stamp book · ${S.stamps.size}/${STAMPS.length}</button><button class="nav-item" data-act="sound"><span style="font-size:18px">${S.sound ? '🔊' : '🔇'}</span>Sounds ${S.sound ? 'on' : 'off'}</button></div></div>
     <div><div class="group-label">Treasure hunt</div><div class="nav-list"><button class="nav-item" data-act="hint"><span style="font-size:18px">🗺️</span>${S.found.size}/${TREASURES.length} found · Get a hint</button></div></div>
-    <div><div class="group-label">Minigames</div><div class="nav-list"><button class="nav-item" data-act="play-game"><span style="font-size:18px">🌰</span>Acorn Catch</button><button class="nav-item" data-act="play-fish"><span style="font-size:18px">🎣</span>Frosty Fishing</button><button class="nav-item" data-act="play-sled"><span style="font-size:18px">🛷</span>Sled Dash</button></div></div>
+    <div><div class="group-label">Minigames</div><div class="nav-list"><button class="nav-item" data-act="play-game"><span style="font-size:18px">🌰</span>Acorn Catch</button><button class="nav-item" data-act="play-fish"><span style="font-size:18px">🎣</span>Frosty Fishing</button><button class="nav-item" data-act="play-sled"><span style="font-size:18px">🛷</span>Sled Dash</button><button class="nav-item" data-act="play-pairs"><span style="font-size:18px">🃏</span>Penguin Pairs</button><button class="nav-item" data-act="play-snack"><span style="font-size:18px">🥪</span>Snack Shack</button></div></div>
     <div class="nav-list"><span class="coins" style="align-self:flex-start">🪙 ${S.coins} coins</span></div>
     </div>${foot}`;
 }
@@ -1095,8 +1165,13 @@ function renderIsland(){
     const d = document.createElement('div'); d.className = 'ava' + (id === 'me' ? ' me' : '');
     d.innerHTML = `<span class="body">${penguinSVG(lookOf(id), 50)}</span><span class="nm">${id === 'me' && S.member ? '⭐ ' : ''}${esc(P[id].name)}</span>`;
     sc.appendChild(d); AV[id] = d; delete POS[id];
+    if (id !== 'me'){ d.classList.add('npc'); d.addEventListener('click', ev => { ev.stopPropagation(); if (S.aiming) return throwSnow(ev, sc); talkTo(id); }); }
     placeAv(id, id === 'me' ? 50 : rnd(12, 88), id === 'me' ? 84 : rnd(58, 90), false);
   });
+  QUESTS.filter(q => q.item && q.item.zone === S.zone && S.quests[q.id] === 'active' && !S.flags[q.id + 'Item']).forEach(q => {
+    sc.insertAdjacentHTML('beforeend', `<button class="decor treasure quest-item" data-act="questitem" data-id="${q.id}" style="left:${q.item.x}%;top:${q.item.y}%;z-index:${q.item.y * 10}" aria-label="Lost item">${q.item.e}</button>`);
+  });
+  addAmbience(sc, S.zone); questBadges();
   if (S.look.pet && S.look.pet !== 'none'){
     const d = document.createElement('div'); d.className = 'ava pet';
     d.innerHTML = `<span class="body" style="font-size:30px;line-height:1">${PETS[S.look.pet].e}</span>`;
@@ -1261,6 +1336,7 @@ function throwSnow(e, sc){
   emote('me', 'jump'); sfx('whoosh'); stamp('snowball');
   const z = ZONES[S.zone];
   const hit = z.bots.find(b => POS[b] && Math.hypot(POS[b].x - x, POS[b].y - 6 - y) < 9);
+  if (hit === 'panda') S.flags.hitPanda = true;
   if (hit) setTimeout(() => {
     emote(hit, 'jump'); bubble(hit, pick(['hey! hehe ❄️', 'you got me! 😆', 'snowball fight!!', 'brrr that was cold lol']));
     if (Math.random() < .6) setTimeout(() => { if (POS[hit] && POS.me) { flySnow(sc, POS[hit].x, POS[hit].y - 8, POS.me.x, POS.me.y - 6); setTimeout(() => { emote('me', 'jump'); bubble('me', 'ahh! 😂'); }, 520); } }, 900);
@@ -1318,6 +1394,171 @@ function stampBook(){
     <div class="modal-foot"><button class="btn primary" data-act="modal-close">Keep playing</button></div>`);
 }
 
+/* ---------- Quests: penguins ask for help ---------- */
+const QUESTS = [
+  {id:'scarf', who:'pebble', title:'Pebble\'s lost scarf', ask:'Oh no, I lost my favourite scarf in the Spooky Cave! Can you find it for me?', where:'Spooky Cave', reward:30, item:{e:'🧣', zone:'cave', x:22, y:64}, done:() => S.flags.scarfItem},
+  {id:'snowfight', who:'panda', title:'Snowball challenge', ask:'Bet you can\'t hit me with a snowball! 😜 I\'m in Treetop Plaza.', where:'Treetop Plaza', reward:20, done:() => S.flags.hitPanda},
+  {id:'cozy', who:'bean', title:'A cozy hut', ask:'I want to visit your hut! Can you put a bed and a plant in it?', where:'My Hut', reward:25, done:() => (S.hut || []).some(f => f.item === 'bed') && (S.hut || []).some(f => f.item === 'plant')},
+  {id:'party', who:'nova', title:'Spooky party', ask:'Let\'s throw a party in the Spooky Cave! It would be so fun 🎉', where:'Spooky Cave', reward:25, done:() => S.flags.caveParty},
+  {id:'fish', who:'waddles', title:'Fish for Waddles', ask:'I\'m sooo hungry. Can you catch 5 fish in Frosty Fishing?', where:'Frosty Fishing', reward:30, need:5, count:() => S.fishCaught || 0},
+  {id:'chef', who:'koi', title:'Snack helper', ask:'The Snack Shack is busy! Can you serve 5 snacks?', where:'Snack Shack', reward:30, need:5, count:() => S.served || 0},
+  {id:'pairs', who:'whale', title:'Memory master', ask:'Can you finish Penguin Pairs in 20 moves or less?', where:'Penguin Pairs', reward:30, done:() => S.flags.pairs20}
+];
+const questDone = q => q.need ? q.count() >= q.need : !!q.done();
+function questFor(id){ return QUESTS.find(q => q.who === id && S.quests[q.id] !== 'done'); }
+function questBadges(){
+  for (const id in AV){
+    if (id === 'me' || id === 'pet') continue;
+    const el = AV[id]; el.querySelector('.qbadge')?.remove();
+    const q = questFor(id); if (!q) continue;
+    const b = document.createElement('span'); b.className = 'qbadge' + (S.quests[q.id] === 'active' ? ' active' : '');
+    b.textContent = S.quests[q.id] === 'active' ? '…' : '!'; el.appendChild(b);
+  }
+}
+function talkTo(id){
+  const q = questFor(id);
+  if (!q){ bubble(id, pick(['hi friend! 👋', 'thanks for all your help!', 'nice outfit! 😎', 'wanna play a game?', 'the island is so fun today'])); emote(id, 'wave'); sfx('pop'); return; }
+  questCard(q);
+}
+function questCard(q){
+  const st = S.quests[q.id], who = P[q.who];
+  const prog = q.need ? `<div class="q-prog"><i style="width:${Math.min(100, q.count() / q.need * 100)}%"></i></div><p>${Math.min(q.need, q.count())} of ${q.need} done</p>` : '';
+  modal(`<div class="q-head"><span class="q-av">${penguinSVG(lookOf(q.who), 64)}</span><div><h2>${esc(q.title)}</h2><p>From <b>${esc(who.name)}</b> · Reward 🪙 ${q.reward}</p></div></div>
+    <div class="q-ask">“${esc(q.ask)}”</div>${st === 'active' ? prog : ''}
+    <p>📍 Where: ${esc(q.where)}</p>
+    <div class="modal-foot">${st === 'active' ? '<button class="btn primary" data-act="modal-close">I\'m on it!</button>' : `<button class="btn" data-act="modal-close">Not now</button><button class="btn primary" data-act="quest-accept" data-id="${q.id}">Accept quest</button>`}</div>`);
+}
+function questBoard(){
+  modal(`<h2>📜 Quests</h2><p>Penguins with a <b>!</b> over their head need help. Tap them, or accept quests here.</p>
+    <div class="q-list">${QUESTS.map(q => { const st = S.quests[q.id]; return `<div class="q-row ${st || ''}"><span class="q-av">${penguinSVG(lookOf(q.who), 36)}</span><div class="grow"><b>${esc(q.title)}</b><div class="sub">${esc(P[q.who].name)} · 📍 ${esc(q.where)} · 🪙 ${q.reward}${st === 'active' && q.need ? ` · ${Math.min(q.need, q.count())}/${q.need}` : ''}</div></div>${st === 'done' ? '<span class="q-tag">✅ Done</span>' : st === 'active' ? '<span class="q-tag on">In progress</span>' : `<button class="btn primary" data-act="quest-accept" data-id="${q.id}">Accept</button>`}</div>`; }).join('')}</div>
+    <div class="modal-foot"><button class="btn" data-act="modal-close">Close</button></div>`);
+}
+function acceptQuest(id){
+  const q = QUESTS.find(x => x.id === id); if (!q) return;
+  S.quests[id] = 'active';
+  if (q.id === 'fish') S.fishCaught = 0;
+  if (q.id === 'chef') S.served = 0;
+  saveGame(); closeModal(); sfx('pop'); toast(`📜 Quest started: ${q.title}`);
+  if (S.cur.type === 'island') renderIsland();
+  if (AV[q.who]) bubble(q.who, 'yay, thank you!! 💙');
+}
+function checkQuests(){
+  QUESTS.forEach(q => {
+    if (S.quests[q.id] !== 'active' || !questDone(q)) return;
+    S.quests[q.id] = 'done'; S.coins += q.reward; saveGame();
+    sfx('stamp'); toast(`🎉 Quest complete: ${q.title}! +${q.reward} coins`);
+    if (AV[q.who]) { bubble(q.who, 'you did it!! thank you so much! 💙'); emote(q.who, 'jump'); }
+    if (S.cur.type === 'island'){ islandSide(); questBadges(); const c = document.querySelector('.chat-head .coins'); if (c) c.textContent = '🪙 ' + S.coins; }
+  });
+}
+setInterval(checkQuests, 1200);
+
+/* ---------- Weather, day and night ---------- */
+function addAmbience(sc, zone){
+  const h = new Date().getHours(), night = (h >= 19 || h < 6) && !['hut', 'cave'].includes(zone);
+  sc.classList.toggle('night', night);
+  const R = (a, b) => (a + Math.random() * (b - a)).toFixed(1);
+  const kind = {snow:['flake', 26, '❄'], cave:['firefly', 14, ''], candy:['sparkle', 12, '✨'], volcano:['ember', 16, ''], plaza:['cloud', 3, '☁️'], beach:['cloud', 3, '☁️']}[zone];
+  let html = '';
+  if (kind) for (let i = 0; i < kind[1]; i++){
+    const cl = kind[0], top = cl === 'cloud' ? R(2, 20) : cl === 'flake' ? '-4' : R(10, 95);
+    html += `<span class="${cl}" style="left:${R(0, 100)}%;top:${top}%;animation-delay:-${R(0, 12)}s;animation-duration:${cl === 'cloud' ? R(50, 90) : cl === 'flake' ? R(6, 12) : R(3, 7)}s;${cl === 'flake' ? `font-size:${R(8, 16)}px;` : ''}">${kind[2]}</span>`;
+  }
+  if (zone === 'beach') html += '<div class="waves"></div>';
+  if (night) for (let i = 0; i < 14; i++) html += `<span class="star" style="left:${R(2, 98)}%;top:${R(2, 30)}%;animation-delay:-${R(0, 3)}s">✦</span>`;
+  sc.insertAdjacentHTML('beforeend', `<div class="ambience" aria-hidden="true">${html}</div>`);
+}
+
+/* ---------- Minigame: Penguin Pairs (memory) ---------- */
+function startPairs(){
+  closeModal(); stopGame();
+  const icons = ['🐟', '🦀', '🐚', '❄️', '🌰', '🍭', '🎁', '⭐'];
+  const deck = [...icons, ...icons].map(e => ({e, r:Math.random()})).sort((a, b) => a.r - b.r);
+  G = {pairs:true, deck, open:[], matched:0, moves:0, lock:false, over:false};
+  const wrap = document.createElement('div'); wrap.className = 'game-wrap'; wrap.id = 'gameWrap';
+  wrap.innerHTML = `<div class="game" role="dialog" aria-modal="true" aria-label="Penguin Pairs">
+    <h2>🃏 Penguin Pairs</h2><p>Flip two cards at a time and find all 8 pairs. Finish in 20 moves or less for a bonus!</p>
+    <div class="hud"><span id="pMoves">Moves: 0</span><span id="pPairs">Pairs: 0/8</span></div>
+    <div class="pairs-grid" id="pGrid"></div>
+    <div class="modal-foot" id="gFoot"><button class="btn" data-act="game-close">Stop playing</button></div></div>`;
+  document.body.appendChild(wrap); drawPairs();
+}
+function drawPairs(){
+  $('#pGrid').innerHTML = G.deck.map((c, i) => { const up = c.up || c.done; return `<button class="mcard ${up ? 'up' : ''} ${c.done ? 'done' : ''}" data-act="flip" data-id="${i}" aria-label="${up ? c.e : 'Hidden card'}">${up ? c.e : '🐧'}</button>`; }).join('');
+  $('#pMoves').textContent = 'Moves: ' + G.moves; $('#pPairs').textContent = `Pairs: ${G.matched}/8`;
+}
+function flipCard(i){
+  if (!G || !G.pairs || G.lock || G.over) return;
+  const c = G.deck[i]; if (!c || c.up || c.done) return;
+  c.up = true; G.open.push(c); sfx('pop');
+  if (G.open.length === 2){
+    G.moves++; const [a, b] = G.open;
+    if (a.e === b.e){ a.done = b.done = true; G.open = []; G.matched++; sfx('coin'); if (G.matched === 8) { drawPairs(); return pairsEnd(); } }
+    else { G.lock = true; const g = G; setTimeout(() => { if (G !== g) return; a.up = b.up = false; G.open = []; G.lock = false; drawPairs(); }, 850); }
+  }
+  drawPairs();
+}
+function pairsEnd(){
+  G.over = true; const bonus = G.moves <= 20 ? 15 : 0, total = 15 + bonus;
+  if (bonus) S.flags.pairs20 = true;
+  S.coins += total; if (!S.bestPairs || G.moves < S.bestPairs) S.bestPairs = G.moves; saveGame(); sfx('stamp');
+  $('#gFoot').innerHTML = `<span style="margin-right:auto;font-weight:600">🎉 All pairs in ${G.moves} moves! +${total} coins${bonus ? ' (bonus!)' : ''} · Best: ${S.bestPairs}</span><button class="btn" data-act="game-close">Back</button><button class="btn primary" data-act="play-pairs">Play again</button>`;
+  if (S.cur.type === 'island'){ islandSide(); const c = document.querySelector('.chat-head .coins'); if (c) c.textContent = '🪙 ' + S.coins; }
+}
+
+/* ---------- Minigame: Snack Shack (make the right snack) ---------- */
+const RECIPES = [{n:'Fish sandwich', items:['🍞', '🐟', '🥬']}, {n:'Cheese toast', items:['🍞', '🧀']}, {n:'Berry smoothie', items:['🍓', '🥛']},
+  {n:'Banana smoothie', items:['🍌', '🥛']}, {n:'Cookies and milk', items:['🍪', '🥛']}, {n:'Fruit cup', items:['🍓', '🍌']}, {n:'Super sandwich', items:['🍞', '🧀', '🐟', '🥬']}];
+const PANTRY = ['🍞', '🐟', '🥬', '🧀', '🍓', '🍌', '🥛', '🍪'];
+function startSnack(){
+  closeModal(); stopGame();
+  G = {snack:true, plate:[], score:0, served:0, end:Date.now() + 60000, over:false};
+  const wrap = document.createElement('div'); wrap.className = 'game-wrap'; wrap.id = 'gameWrap';
+  wrap.innerHTML = `<div class="game" role="dialog" aria-modal="true" aria-label="Snack Shack">
+    <h2>🥪 Snack Shack</h2><p>Tap the foods each penguin asks for, then press Serve. Be quick before they get too hungry!</p>
+    <div class="hud"><span id="gScore">🪙 0</span><span id="sServed">Served: 0</span><span id="gTime">⏱ 60</span></div>
+    <div class="shack"><div class="customer" id="sCust"></div><div class="patience"><i id="sPat"></i></div>
+      <div class="plate" id="sPlate" aria-label="Your plate"></div>
+      <div class="pantry">${PANTRY.map(e => `<button class="food" data-act="food" data-id="${e}" aria-label="Add ${e}">${e}</button>`).join('')}</div>
+      <div class="shack-btns"><button class="btn" data-act="plate-clear">🗑️ Clear</button><button class="btn primary" data-act="serve">🛎️ Serve</button></div></div>
+    <div class="modal-foot" id="gFoot"><button class="btn" data-act="game-close">Close the shack</button></div></div>`;
+  document.body.appendChild(wrap);
+  newCustomer();
+  G.timer = setInterval(snackTick, 100);
+}
+function newCustomer(){
+  const who = pick(['panda', 'whale', 'nova', 'bean', 'koi', 'waddles', 'pebble']);
+  G.order = pick(RECIPES); G.who = who; G.pat = G.patMax = Math.max(7, 13 - G.served * .5); G.plate = [];
+  $('#sCust').innerHTML = `<span class="cust-av">${penguinSVG(lookOf(who), 64)}</span><div class="order"><b>${esc(P[who].name)}:</b> “One ${esc(G.order.n.toLowerCase())}, please!”<div class="order-items">${G.order.items.join(' ')}</div></div>`;
+  drawPlate();
+}
+function drawPlate(){ $('#sPlate').innerHTML = G.plate.length ? G.plate.join(' ') : '<span class="empty-plate">Your plate is empty</span>'; }
+function snackTick(){
+  if (!G || !G.snack || G.over) return;
+  const left = Math.max(0, (G.end - Date.now()) / 1000);
+  G.pat -= .1;
+  if (G.pat <= 0){ toast(`${P[G.who].name} got too hungry and left 😢`); newCustomer(); }
+  $('#sPat').style.width = Math.max(0, G.pat / G.patMax * 100) + '%';
+  $('#sPat').style.background = G.pat / G.patMax < .3 ? 'var(--coral)' : 'var(--leaf)';
+  $('#gTime').textContent = '⏱ ' + Math.ceil(left);
+  if (left <= 0) snackEnd();
+}
+function addFood(e){ if (!G || !G.snack || G.over || G.plate.length >= 5) return; G.plate.push(e); sfx('pop'); drawPlate(); }
+function serve(){
+  if (!G || !G.snack || G.over) return;
+  const want = [...G.order.items].sort().join(), got = [...G.plate].sort().join();
+  if (want === got){
+    const tip = G.pat / G.patMax > .5 ? 2 : 0; G.score += 4 + tip; G.served++; S.served = (S.served || 0) + 1; sfx('coin');
+    toast(tip ? `Yum! Fast service: +${4 + tip} coins` : 'Yum! +4 coins');
+    $('#gScore').textContent = '🪙 ' + G.score; $('#sServed').textContent = 'Served: ' + G.served; newCustomer();
+  } else { G.plate = []; G.pat = Math.max(0.5, G.pat - 2); drawPlate(); sfx('boing'); toast('Hmm, that\'s not what they ordered. Try again!'); }
+}
+function snackEnd(){
+  G.over = true; clearInterval(G.timer); S.coins += G.score; if (G.served > (S.bestSnack || 0)) S.bestSnack = G.served; saveGame(); sfx('stamp');
+  $('#gFoot').innerHTML = `<span style="margin-right:auto;font-weight:600">Closing time! You served ${G.served} snacks and earned 🪙 ${G.score}. Best: ${S.bestSnack}</span><button class="btn" data-act="game-close">Back</button><button class="btn primary" data-act="play-snack">Open again</button>`;
+  if (S.cur.type === 'island'){ islandSide(); const c = document.querySelector('.chat-head .coins'); if (c) c.textContent = '🪙 ' + S.coins; }
+}
+
 /* ---------- My Hut ---------- */
 function furnAdd(id){
   const f = FURN[id], own = S.owned.has('furn:' + id) || S.member;
@@ -1334,6 +1575,8 @@ function gamesMenu(){
     <button class="club-card" data-act="play-game" style="text-align:left;background:var(--surface);cursor:pointer"><div class="ic" style="background:var(--leaf-soft)">🌰</div><div><b>Acorn Catch</b><div class="sub">Catch falling acorns, dodge the bugs</div></div><span class="btn primary">Play</span></button>
     <button class="club-card" data-act="play-fish" style="text-align:left;background:var(--surface);cursor:pointer"><div class="ic" style="background:#D6EEFA">🎣</div><div><b>Frosty Fishing</b><div class="sub">Drop your line through the ice and reel in fish</div></div><span class="btn primary">Play</span></button>
     <button class="club-card" data-act="play-sled" style="text-align:left;background:var(--surface);cursor:pointer"><div class="ic" style="background:#EAF2FA">🛷</div><div><b>Sled Dash</b><div class="sub">Race down Snowy Mountain, dodge the trees</div></div><span class="btn primary">Play</span></button>
+    <button class="club-card" data-act="play-pairs" style="text-align:left;background:var(--surface);cursor:pointer"><div class="ic" style="background:#F1E9FB">🃏</div><div><b>Penguin Pairs</b><div class="sub">Flip cards and find matching pairs</div></div><span class="btn primary">Play</span></button>
+    <button class="club-card" data-act="play-snack" style="text-align:left;background:var(--surface);cursor:pointer"><div class="ic" style="background:#FFF1D6">🥪</div><div><b>Snack Shack</b><div class="sub">Make snacks for hungry penguins</div></div><span class="btn primary">Play</span></button>
     <div class="modal-foot"><button class="btn" data-act="modal-close">Close</button></div>`);
 }
 
@@ -1376,7 +1619,7 @@ function fishTick(now){
   if (G.state === 'down'){ G.hy += 280 * dt; if (G.hy >= 465) G.state = 'up'; }
   if (G.state === 'up'){
     G.hy -= 330 * dt;
-    if (G.hy <= 96){ G.hy = 96; G.state = 'idle'; if (G.caught){ G.score += G.caught.v; G.caught = null; } }
+    if (G.hy <= 96){ G.hy = 96; G.state = 'idle'; if (G.caught){ G.score += G.caught.v; G.caught = null; S.fishCaught = (S.fishCaught || 0) + 1; } }
   }
   for (const f of G.items){ f.x += f.sp * dt; }
   if (G.state === 'down' && !G.caught){
@@ -1452,7 +1695,7 @@ function partyStart(){
 function partyStop(){ clearInterval(PARTY.timer); PARTY.timer = null; }
 function partyToggle(){
   S.party = !S.party;
-  if (S.party){ partyStart(); stamp('party'); } else partyStop();
+  if (S.party){ partyStart(); stamp('party'); if (S.zone === 'cave') S.flags.caveParty = true; } else partyStop();
   renderIsland();
   if (S.party) setTimeout(() => { bubble('me', 'let\'s party! 🎉'); }, 300);
 }
@@ -1616,7 +1859,7 @@ function endGame(){
   if (record && AV.me) bubble('me', `new best score: ${G.score}! 🏆`);
 }
 function stopGame(){
-  if (G){ cancelAnimationFrame(G.raf); removeEventListener('keydown', G.kd); removeEventListener('keyup', G.ku); G = null; }
+  if (G){ cancelAnimationFrame(G.raf); clearInterval(G.timer); removeEventListener('keydown', G.kd); removeEventListener('keyup', G.ku); G = null; }
   $('#gameWrap')?.remove();
 }
 
@@ -1684,6 +1927,15 @@ document.addEventListener('click', e => {
     case 'play-game': startGame(); break;
     case 'play-fish': startFish(); break;
     case 'play-sled': startSled(); break;
+    case 'play-pairs': startPairs(); break;
+    case 'flip': flipCard(+id); break;
+    case 'play-snack': startSnack(); break;
+    case 'food': addFood(id); break;
+    case 'plate-clear': if (G && G.snack){ G.plate = []; drawPlate(); } break;
+    case 'serve': serve(); break;
+    case 'quests': questBoard(); break;
+    case 'quest-accept': acceptQuest(id); break;
+    case 'questitem': S.flags[id + 'Item'] = true; b.remove(); sfx('coin'); bubble('me', 'found it! 🧣'); saveGame(); checkQuests(); break;
     case 'emote': myEmote(id); break;
     case 'aim': S.aiming = !S.aiming; b.classList.toggle('on', S.aiming); b.querySelector('span').textContent = S.aiming ? 'Tap to throw!' : 'Snowball'; $('#scene')?.classList.toggle('aiming', S.aiming); if (S.aiming) sfx('pop'); break;
     case 'stamps': stampBook(); break;
@@ -1703,7 +1955,7 @@ document.addEventListener('click', e => {
     case 'pass-buy': passBuy(); break;
     case 'cloud-in': cloudSignIn(); break;
     case 'cloud-out': cloudSignOut(); break;
-    case 'p-reset': S.coins = 20; S.owned = new Set(BASE_OWNED); S.hut = [{item:'couch', x:30, y:70}, {item:'plant', x:82, y:66}]; S.bestFish = 0; S.bestSled = 0; S.found = new Set(); S.stamps = new Set(); S.visited = new Set(); S.lastGift = null; S.look = {color:'#FF8A3D', hat:'beanie', scarf:'#2A7FC4', glasses:'none', back:'none', pet:'none'}; S.best = 0; S.member = false; S.open = {plaza:true}; S.zone = 'plaza'; saveGame(); renderParent(); toast('Island progress reset'); break;
+    case 'p-reset': S.coins = 20; S.owned = new Set(BASE_OWNED); S.hut = [{item:'couch', x:30, y:70}, {item:'plant', x:82, y:66}]; S.bestFish = 0; S.bestSled = 0; S.found = new Set(); S.stamps = new Set(); S.visited = new Set(); S.lastGift = null; S.quests = {}; S.flags = {}; S.fishCaught = 0; S.served = 0; S.bestPairs = 0; S.bestSnack = 0; S.look = {color:'#FF8A3D', hat:'beanie', scarf:'#2A7FC4', glasses:'none', back:'none', pet:'none'}; S.best = 0; S.member = false; S.open = {plaza:true}; S.zone = 'plaza'; saveGame(); renderParent(); toast('Island progress reset'); break;
     case 'game-close': stopGame(); break;
     case 'club': closeModal(); go({type:'club', club:id, ch:S.lastCh[id] || club(id).chs[0][0]}); break;
     case 'channel': S.lastCh[S.cur.club] = id; go({type:'club', club:S.cur.club, ch:id}); break;
@@ -1775,7 +2027,7 @@ const FIREBASE_CONFIG = {
 };
 const SAVE_KEY = 'treehouse-save-v1';
 const CLOUD = {ready:false, user:null};
-const snapshot = () => ({coins:S.coins, owned:[...S.owned], look:S.look, best:S.best, bestFish:S.bestFish || 0, bestSled:S.bestSled || 0, found:[...S.found], stamps:[...S.stamps], visited:[...S.visited], lastGift:S.lastGift, sound:S.sound, hut:S.hut || [], member:!!S.member, open:S.open, silly:S.silly});
+const snapshot = () => ({coins:S.coins, owned:[...S.owned], look:S.look, best:S.best, bestFish:S.bestFish || 0, bestSled:S.bestSled || 0, found:[...S.found], quests:S.quests, flags:S.flags, fishCaught:S.fishCaught || 0, served:S.served || 0, bestPairs:S.bestPairs || 0, bestSnack:S.bestSnack || 0, stamps:[...S.stamps], visited:[...S.visited], lastGift:S.lastGift, sound:S.sound, hut:S.hut || [], member:!!S.member, open:S.open, silly:S.silly});
 function applySave(d){
   if (!d) return;
   if (typeof d.coins === 'number') S.coins = d.coins;
@@ -1785,6 +2037,9 @@ function applySave(d){
   if (typeof d.bestSled === 'number') S.bestSled = d.bestSled;
   if (Array.isArray(d.found)) S.found = new Set(d.found);
   if (Array.isArray(d.stamps)) S.stamps = new Set(d.stamps);
+  if (d.quests && typeof d.quests === 'object') S.quests = d.quests;
+  if (d.flags && typeof d.flags === 'object') S.flags = d.flags;
+  ['fishCaught', 'served', 'bestPairs', 'bestSnack'].forEach(k => { if (typeof d[k] === 'number') S[k] = d[k]; });
   if (Array.isArray(d.visited)) S.visited = new Set(d.visited);
   if (d.lastGift) S.lastGift = d.lastGift;
   if (typeof d.sound === 'boolean') S.sound = d.sound;
